@@ -154,6 +154,7 @@ routes/
   rules/              Projektregeln für KI-Agenten
   skills/learn-content/
                       Skill zum Erstellen von Lernpfaden (siehe unten)
+docs/                 Dokumentation (siehe unten)
 deploy/               Beispielkonfiguration für einen Betrieb mit Podman und Caddy;
                       wie LEARN betrieben wird, ist frei wählbar
 ```
@@ -261,6 +262,16 @@ noch keine Freigabe.
 
 Zwei GitHub-Workflows sichern `main` und jeden Pull Request ab:
 [`tests.yml`](.github/workflows/tests.yml) und [`lint.yml`](.github/workflows/lint.yml).
+
+## Dokumentation
+
+| Seite | Für wen |
+| --- | --- |
+| [Admin-Handbuch](docs/admin-handbuch.md) | Admins: Gruppen, Einladungen, Import, Freigabe, Quizze, Auswertung |
+| [Konfiguration](docs/konfiguration.md) | Betreiber: Umgebungsvariablen, Hintergrundprozesse, Artisan-Befehle |
+| [Domänenmodell](docs/domaenenmodell.md) | Mitwirkende: Begriffe, Kerntabellen, Regeln im Code |
+
+Wie Lernpfade entstehen, beschreibt der Skill [`learn-content`](.ai/skills/learn-content/SKILL.md).
 
 ## Lizenz
 
