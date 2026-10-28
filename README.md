@@ -68,7 +68,7 @@ Artisan-Namespace `lapp:`). Nach außen heißt das Produkt **LEARN**.
 | Framework     | Laravel 13                                             |
 | Frontend      | Livewire 4, Flux UI 2 (freie Fassung), Tailwind CSS 4, Vite 8 |
 | Auth          | Laravel Fortify inkl. Passkeys                         |
-| Datenbank     | PostgreSQL 18 (produktiv), SQLite (schnelle Testläufe)  |
+| Datenbank     | PostgreSQL oder SQLite (siehe Datenbanken)             |
 | Tests         | Pest 4                                                 |
 | Codequalität  | Laravel Pint, Larastan (PHPStan)                       |
 
@@ -77,7 +77,7 @@ Artisan-Namespace `lapp:`). Nach außen heißt das Produkt **LEARN**.
 - PHP 8.5 mit den üblichen Laravel-Extensions
 - Composer 2
 - Node.js 22 samt npm
-- PostgreSQL 18 für produktionsnahe Läufe
+- PostgreSQL (getestet mit Version 18) oder SQLite ab 3.8
 
 ## Installation
 
@@ -108,6 +108,14 @@ Nicht interaktiv geht es ebenso:
 ```bash
 php artisan lapp:make-admin admin@example.test --name="Vorname Nachname" --password="…"
 ```
+
+## Datenbanken
+
+| Datenbank | Unterstützt | Hinweis |
+| --- | --- | --- |
+| PostgreSQL | ja | für den Betrieb empfohlen; die CI testet gegen Version 18 |
+| SQLite | ja, ab 3.8 | Voreinstellung für Entwicklung und Tests |
+| MySQL, MariaDB | nein | kennen keine partiellen Indizes, auf die sich mehrere Eindeutigkeitsregeln stützen |
 
 ## Entwicklung
 
@@ -146,7 +154,8 @@ routes/
   rules/              Projektregeln für KI-Agenten
   skills/learn-content/
                       Skill zum Erstellen von Lernpfaden (siehe unten)
-deploy/               Betrieb mit Podman: Caddy, Entrypoint, Quadlet-Units, Vorlage app.env
+deploy/               Beispielkonfiguration für einen Betrieb mit Podman und Caddy;
+                      wie LEARN betrieben wird, ist frei wählbar
 ```
 
 ## Lernpfade
@@ -245,7 +254,7 @@ php artisan test --compact --filter=QuizBuilder
 ```
 
 Die Suite läuft in der CI **zweimal**: zuerst gegen SQLite (in-memory, schnell), danach
-gegen PostgreSQL 18, die produktiv eingesetzte Engine. Der Grund ist bewusst gewählt:
+gegen PostgreSQL 18. Der Grund ist bewusst gewählt:
 SQLite kennt weder einen echten Boolean-Typ noch die strenge GROUP-BY-Prüfung, eine ganze
 Fehlerklasse ist dort schlicht nicht testbar. Ein grüner SQLite-Lauf allein ist deshalb
 noch keine Freigabe.
