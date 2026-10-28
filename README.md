@@ -5,7 +5,7 @@
 
 <h1 align="center">LEARN</h1>
 
-<p align="center">Lernplattform zur Vorbereitung auf die Lehrabschlussprüfung.</p>
+<p align="center">Lernplattform für geerdete Lernpfade und Quizze, entstanden für die Vorbereitung auf die Lehrabschlussprüfung.</p>
 
 <p align="center">
   <a href="https://github.com/markusKautz/Pixelorum_LEARN/actions/workflows/tests.yml"><img src="https://github.com/markusKautz/Pixelorum_LEARN/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
@@ -19,30 +19,45 @@
 
 ## Über das Projekt
 
-**LEARN** ist eine Lernplattform, mit der sich Lehrlinge auf die Lehrabschlussprüfung
-vorbereiten. Sie bündelt geerdete Lernpfade und Quizze an einem Ort und macht den
-Lernfortschritt für Lehrlinge wie für die Kursleitung sichtbar.
+**LEARN** ist eine schlanke Lernplattform für Ausbildungsgruppen und ihre
+Ausbildner. Entstanden ist sie, damit sich Lehrlinge auf die Lehrabschlussprüfung
+vorbereiten können. Sie bündelt Lernpfade und Quizze, deren Inhalte gegen Quellen
+geprüft und freigegeben sind, und macht den Lernfortschritt für Lernende wie für die
+Kursleitung sichtbar.
 
 Die Plattform kennt zwei Rollen:
 
-- **Lehrling** — gehört genau einer Gruppe an, arbeitet Lernpfade durch und
-  absolviert die zugehörigen Quizze.
-- **Admin** — global über alle Gruppen hinweg, verwaltet Inhalte, Gruppen und
-  Mitgliedschaften und sieht den Fortschritt der Lehrlinge.
+- **Lernende** gehören genau einer Gruppe an, arbeiten Lernpfade durch und
+  absolvieren die zugehörigen Quizze.
+- **Admins** arbeiten global über alle Gruppen hinweg, verwalten Inhalte, Gruppen
+  und Mitgliedschaften und sehen den Fortschritt ihrer Gruppen.
 
-`LAPP` ist der Repo- und Codename; er bleibt in Code-Bezeichnern erhalten
-(zum Beispiel im Artisan-Namespace `lapp:`). Nach außen heißt das Produkt **LEARN**.
+LEARN soll beim Lernen unterstützen, nicht überwachen: Gespeichert werden
+Lernergebnisse (abgeschlossene Lektionen, Quizversuche, Antworten), keine Klicks,
+Seitenaufrufe oder Verweildauern.
+
+`LAPP` ist der Codename; er bleibt in Code-Bezeichnern erhalten (zum Beispiel im
+Artisan-Namespace `lapp:`). Nach außen heißt das Produkt **LEARN**.
 
 ## Funktionsumfang
 
-- **Lernpfade** aus Lektionen, die aus typisierten Lektionsblöcken bestehen
-  (Text, Code mit Syntaxhervorhebung, Mermaid-Diagramme, Callouts, Abschnitts-Trenner).
-- **Quizze** je Lernpfad, mit Fragen, Antwortoptionen und Erklärungen zur richtigen Lösung.
-- **Übungsquiz** zum wiederholten Üben ohne Wertung des Versuchs.
-- **Fortschrittsverfolgung** über abgeschlossene Lektionen und Quizversuche.
-- **Gruppenverwaltung** mit Einladungen und Mitgliedschaften.
-- **Adminbereich** für Lernpfade, Quizze und die Auswertung des Jahrgangs.
-- **Authentifizierung** über Laravel Fortify inklusive Passkeys.
+- **Lernpfade** aus Lektionen mit typisierten Blöcken: Markdown-Text, Callouts,
+  aufklappbare Aufgaben, Code mit Syntaxhervorhebung, Mermaid-Diagramme, Bilder und
+  Videos, Glossare (Begriffe werden im Text als Tooltip verlinkt) und
+  Abschnittstrenner.
+- **Zwischen-Checks** in den Lektionen und ein **Abschlussquiz** je Lernpfad, mit
+  Erklärungen zur richtigen Lösung.
+- **Übungsquiz** aus zufälligen Fragen gewählter Pfade; die Antworten fließen in die
+  Auswertung der eigenen Schwachstellen.
+- **Quellenbelege** an jeder Lektion und jeder Frage, dazu eine Freigabeansicht, in
+  der ein Admin die Belege prüft, bevor ein Pfad veröffentlicht wird.
+- **Import und Export** von Lernpfaden als JSON, mit hochgeladenen Bildern als ZIP.
+- **Fortschrittsverfolgung** und Auswertungen je Gruppe und je Person.
+- **Gruppenverwaltung** mit Einladungen; ohne Mailserver lassen sich die
+  Aktivierungslinks als CSV exportieren.
+- **Papierkorb** für gelöschte Lernpfade.
+- **Authentifizierung** über Laravel Fortify; Passkeys und Zwei-Faktor-Anmeldung
+  lassen sich über `FORTIFY_PASSKEYS` und `FORTIFY_TWO_FACTOR` zuschalten.
 - **Deutschsprachige Oberfläche** (`lang/de.json`).
 
 ## Tech-Stack
@@ -51,7 +66,7 @@ Die Plattform kennt zwei Rollen:
 | ------------- | ------------------------------------------------------ |
 | Sprache       | PHP 8.5                                                |
 | Framework     | Laravel 13                                             |
-| Frontend      | Livewire 4, Flux UI 2, Tailwind CSS 4, Vite 8           |
+| Frontend      | Livewire 4, Flux UI 2 (freie Fassung), Tailwind CSS 4, Vite 8 |
 | Auth          | Laravel Fortify inkl. Passkeys                         |
 | Datenbank     | PostgreSQL 18 (produktiv), SQLite (schnelle Testläufe)  |
 | Tests         | Pest 4                                                 |
@@ -61,7 +76,7 @@ Die Plattform kennt zwei Rollen:
 
 - PHP 8.5 mit den üblichen Laravel-Extensions
 - Composer 2
-- Node.js 20 oder neuer samt npm
+- Node.js 22 samt npm
 - PostgreSQL 18 für produktionsnahe Läufe
 
 ## Installation
@@ -74,8 +89,8 @@ cd learn
 composer setup
 ```
 
-Anschließend in `.env` die Datenbankverbindung eintragen und die Migrationen bei Bedarf
-erneut ausführen:
+Ohne weitere Angaben läuft LEARN auf SQLite. Für PostgreSQL in `.env` die
+Datenbankverbindung eintragen und die Migrationen erneut ausführen:
 
 ```bash
 php artisan migrate
@@ -116,18 +131,22 @@ Die Verzeichnisse folgen den Laravel-Konventionen. Erklärungsbedürftig sind vo
 
 ```
 app/
-  Actions/            Fachlogik als aufrufbare Einzelschritte (u. a. Content-Pipeline)
-  Livewire/           Livewire-Komponenten der Oberfläche
+  Actions/            Fachlogik als aufrufbare Einzelschritte (Content, Lernen,
+                      Auswertung, Gruppen)
   Models/             Domänenmodelle: LearningPath, Lesson, LessonBlock, Quiz,
                       Question, QuizAttempt, Team, Membership, …
+resources/views/pages/
+                      Seiten als Livewire-Single-File-Components (⚡*.blade.php)
 routes/
   web.php             öffentliche Seiten und Auth
-  learn.php           Lernbereich der Lehrlinge
+  learn.php           Lernbereich der Lernenden
   admin.php           Adminbereich
   settings.php        Kontoeinstellungen
-.ai/skills/
-  learn-content/      Skill zum Erstellen von Lernpfaden samt Formatreferenz
-docs/                 Dokumentation
+.ai/
+  rules/              Projektregeln für KI-Agenten
+  skills/learn-content/
+                      Skill zum Erstellen von Lernpfaden (siehe unten)
+deploy/               Betrieb mit Podman: Caddy, Entrypoint, Quadlet-Units, Vorlage app.env
 ```
 
 ## Lernpfade
@@ -139,8 +158,7 @@ importieren* hoch; der Pfad entsteht als ungeprüfter Entwurf und wird erst nach
 Freigabe und Veröffentlichung für Lernende sichtbar. Jeder Pfad lässt sich als
 JSON (mit hochgeladenen Bildern als ZIP) wieder exportieren.
 
-Format, Didaktik und Ablauf beschreibt der Skill
-[`learn-content`](.ai/skills/learn-content/SKILL.md);
+Das Format beschreibt [`format.md`](.ai/skills/learn-content/references/format.md);
 [`example.json`](.ai/skills/learn-content/references/example.json) ist eine
 vollständige, importierbare Vorlage.
 
@@ -148,7 +166,7 @@ vollständige, importierbare Vorlage.
 # eine oder mehrere Dateien prüfen, wie es der Upload tut
 php artisan lapp:content:validate --file=pfad/zur/datei.json
 
-# Lernpfade aus der Datenbank exportieren
+# Lernpfade aus der Datenbank exportieren (Standard: storage/app/private/content-export)
 php artisan lapp:content:export --all
 ```
 
@@ -158,6 +176,58 @@ Optional gibt es eine lokale Pipeline, die Belege gegen ein Quellenarchiv prüft
 bricht ohne dieses Verzeichnis mit einer Meldung ab:
 `lapp:content:validate` ohne `--file`, `lapp:content:extract` und
 `lapp:content:upgrade`.
+
+## Skill `learn-content`
+
+Lernpfade lassen sich mit einem KI-Agenten erstellen. Der Skill
+[`learn-content`](.ai/skills/learn-content/SKILL.md) leitet ihn dabei an: Er schreibt
+aus dem Quellmaterial, das du mitbringst (Skripte, Foliensätze, PDFs oder
+freigegebene Webseiten), einen vollständigen Lernpfad als hochladbare JSON-Datei.
+
+Was den Skill ausmacht:
+
+- **Belegt statt erfunden.** Jede Lektion und jede Frage trägt Fundstellen (Seite,
+  Folie oder Überschrift), die die Aussage tatsächlich tragen. Fehlt etwas im
+  Material, benennt der Agent die Lücke, statt sie aus seinem Modellwissen zu füllen.
+- **Webrecherche nur nach Rückfrage**, und zwar zweimal: vor der Suche und vor der
+  Verwendung einer gefundenen Quelle.
+- **Zwei Haltepunkte.** Zuerst legt der Agent die Struktur vor (Lernziele, Lektionen
+  mit geplanten Blöcken und Belegen, Fragen, Lückenliste) und wartet auf Freigabe.
+  Am Ende übergibt er die geprüfte Datei mit Zusammenfassung und offener Lückenliste.
+- **Didaktik und Sprache** sind festgelegt: passende Blocktypen je Inhalt,
+  Zwischen-Checks und Pool-Fragen je Lernziel, Distraktoren aus typischen
+  Fehlvorstellungen, Lernendentext ohne KI-Floskeln.
+- **Geprüft wie beim Upload.** Der Agent validiert die Datei mit
+  `php artisan lapp:content:validate --file=…`, bis keine Befunde mehr kommen.
+  Die Datei bleibt ein Entwurf; freigeben und veröffentlichen muss eine Person im
+  Adminbereich.
+
+Ablauf in Kürze: Rahmen klären (Thema, Zielgruppe, Ziel, Umfang, Quellen) →
+Quellen erfassen → Struktur vorlegen → Inhalt schreiben → validieren → selbst
+durchsehen → übergeben.
+
+| Datei | Inhalt |
+| --- | --- |
+| [`SKILL.md`](.ai/skills/learn-content/SKILL.md) | Ablauf und feste Regeln |
+| [`references/format.md`](.ai/skills/learn-content/references/format.md) | JSON-Format, Blocktypen, Fragetypen, erlaubte Werte |
+| [`references/sources.md`](.ai/skills/learn-content/references/sources.md) | Quellen, Belege, Lücken, Webrecherche |
+| [`references/didactics.md`](.ai/skills/learn-content/references/didactics.md) | Struktur, Blöcke, Fragen, Erklärungen |
+| [`references/style.md`](.ai/skills/learn-content/references/style.md) | Sprache im Lernendentext |
+| [`references/example.json`](.ai/skills/learn-content/references/example.json) | vollständiger Beispielpfad |
+
+**Verwenden.** In diesem Repository steht der Skill Claude Code und anderen Agenten
+automatisch zur Verfügung (`.claude/skills` und `.agents/skills` verlinken auf
+`.ai/skills`). Ein Auftrag wie „Erstelle einen Lernpfad zu … aus diesen Folien“
+genügt. Außerhalb des Repositorys lässt sich der Ordner `.ai/skills/learn-content`
+in das Skill-Verzeichnis des eigenen Agenten kopieren, etwa `~/.claude/skills/`;
+ohne LEARN-Projekt übernimmt dann „Datei prüfen“ im Upload-Dialog die Validierung.
+
+> Die Verknüpfungen sind symbolische Links. Unter Windows braucht Git dafür
+> `core.symlinks=true` und die nötigen Rechte; sonst den Ordner kopieren.
+
+Tests in `tests/Feature/Content/LearnContentSkillTest.php` halten den Skill am Code
+fest: Ändert sich das Format, schlägt ein Test an, statt dass die Referenz still
+veraltet.
 
 ## Tests und Codequalität
 
@@ -192,5 +262,12 @@ Nutzenden den Quelltext dieser Fassung anbieten.
 
 LEARN setzt das Paket `livewire/flux` voraus. Es wird nicht mitgeliefert und steht
 nicht unter der AGPL; `LICENSE` enthält dafür eine Zusatzerlaubnis nach § 7 AGPL.
+
+Der Skill `learn-content` steht zusätzlich unter der MIT-Lizenz (siehe Kopf von
+[`SKILL.md`](.ai/skills/learn-content/SKILL.md)), damit er sich frei in andere
+Projekte übernehmen lässt.
+
+Wer LEARN betreibt, trägt unter `LAPP_SOURCE_URL` die Adresse des eigenen Quelltexts
+ein; die Seite „Über“ verlinkt sie.
 
 Copyright (c) 2026 Markus Kautz.
