@@ -1,0 +1,19 @@
+# Quadlet-Unit. Ablage: ~/.config/containers/systemd/ des Systemusers learn.
+# Danach: systemctl --user daemon-reload
+
+[Unit]
+Description=LEARN
+
+[Pod]
+PodName=learn
+
+# Rootless darf standardmaessig keine Ports unter 1024 binden. Voraussetzung
+# ist deshalb net.ipv4.ip_unprivileged_port_start=80 in /etc/sysctl.d/.
+# Ohne diesen Eintrag stattdessen 8080:80 verwenden und die URL mit Port.
+#
+# Der Postgres-Port wird bewusst nicht veroeffentlicht. Die Anwendung erreicht
+# ihn ueber den geteilten Netzwerk-Namespace des Pods.
+PublishPort=80:80
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,36 @@
+[Unit]
+Description=LEARN Anwendung
+Requires=learn-db.service
+After=learn-db.service
+
+[Container]
+ContainerName=learn-app
+Image=localhost/lapp:latest
+Pod=learn.pod
+
+# Bleibt auf dem Server, kommt nie ins Image und nie ins Repository.
+EnvironmentFile=/etc/learn/app.env
+
+# Dasselbe Secret wie beim Datenbankcontainer, damit beide Seiten nicht
+# auseinanderlaufen koennen.
+Secret=learn-db-password,type=env,target=DB_PASSWORD
+
+# Einladungs-CSV aus AppendInvitationToCsv
+Volume=learn-storage:/app/storage/app:Z
+# Enthaelt bei MAIL_MAILER=log die Passwort-Reset-Links. Betrieblich noetig,
+# nicht nur zur Fehlersuche.
+Volume=learn-logs:/app/storage/logs:Z
+# Kein Volume fuer Caddy: ohne TLS gibt es keine Zertifikate zu behalten.
+
+# Die Route /up ist in bootstrap/app.php als health registriert. Der
+# Site-Block bindet an jeden Host, 127.0.0.1 trifft ihn also direkt.
+HealthCmd=curl -fsS http://127.0.0.1/up
+HealthInterval=30s
+HealthRetries=3
+HealthStartPeriod=60s
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

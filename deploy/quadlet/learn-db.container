@@ -1,0 +1,28 @@
+[Unit]
+Description=LEARN Datenbank
+
+[Container]
+ContainerName=learn-db
+Image=docker.io/library/postgres:18-alpine
+Pod=learn.pod
+
+# postgres:18 legt die Daten unter /var/lib/postgresql/18/docker ab und
+# deklariert /var/lib/postgresql als Volume. Ein Mount auf
+# /var/lib/postgresql/data (wie bei aelteren Versionen ueblich) wuerde nichts
+# persistieren, ohne einen Fehler zu melden.
+Volume=learn-pgdata:/var/lib/postgresql:Z
+
+Environment=POSTGRES_DB=learn
+Environment=POSTGRES_USER=learn
+Secret=learn-db-password,type=env,target=POSTGRES_PASSWORD
+
+HealthCmd=pg_isready -U learn -d learn
+HealthInterval=10s
+HealthRetries=6
+HealthStartPeriod=30s
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

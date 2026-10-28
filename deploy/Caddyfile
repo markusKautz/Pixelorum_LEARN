@@ -1,0 +1,26 @@
+{
+	frankenphp
+	order php_server before file_server
+}
+
+# SERVER_NAME ist :80, der Block bindet also an jeden Host. Das hat zwei
+# Folgen, die beide erwuenscht sind: Caddys automatisches HTTPS bleibt aus,
+# weil es keinen Namen gibt, fuer den ein Zertifikat auszustellen waere, und
+# der Healthcheck kann 127.0.0.1 aufrufen, ohne dass ein eigener Listener
+# noetig ist.
+#
+# Kein TLS: Der Server laeuft ausschliesslich im LAN und ohne Domain.
+# Ein selbst ausgestelltes Zertifikat brauchte auf jedem Geraet die
+# installierte Root-CA; ohne sie saehen die Lernenden bei jedem Zugriff eine
+# Zertifikatswarnung und gewoehnten sich an, sie wegzuklicken. Entscheidung
+# vom 2026-08-29.
+{$SERVER_NAME} {
+	root /app/public
+	encode zstd br gzip
+
+	# Laravel schreibt sein eigenes Log nach storage/logs. Caddys Zugriffslog
+	# geht auf stdout und landet damit im Journal des Systemd-Dienstes.
+	log
+
+	php_server
+}

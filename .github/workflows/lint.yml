@@ -1,0 +1,60 @@
+name: linter
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+# Ueberholte Laeufe auf demselben Branch abbrechen, statt sie zu Ende laufen zu lassen.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.5'
+
+      - name: Determine Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer Packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-lint-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-lint-
+
+      # Pint ist reines PHP -- npm wird in diesem Job nicht gebraucht.
+      - name: Install Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Run Pint
+        run: composer lint:check
+
+      # Beim Reaktivieren: permissions oben wieder auf "contents: write" setzen
+      # und persist-credentials im Checkout auf true, sonst schlaegt der Push fehl.
+      # - name: Commit Changes
+      #   uses: stefanzweifel/git-auto-commit-action@v7
+      #   with:
+      #     commit_message: fix code style
+      #     commit_options: '--no-verify'
+      #     file_pattern: |
+      #       **/*
+      #       !.github/workflows/*

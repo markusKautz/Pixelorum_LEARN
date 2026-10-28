@@ -1,0 +1,49 @@
+# Alles, was nicht ins Image gehoert. Reihenfolge: Geheimnisse zuerst.
+
+# Geheimnisse. .env und auth.json sind gitignored, liegen lokal aber vor und
+# wuerden von COPY . . sonst mitgenommen.
+.env
+.env.*
+auth.json
+
+# Wird im Image neu erzeugt
+node_modules
+vendor
+public/build
+public/hot
+# Absoluter Symlink auf das Home des Entwicklungsrechners, im Image kaputt.
+public/storage
+public/fonts-manifest.dev.json
+bootstrap/cache/*.php
+storage/framework
+storage/logs
+storage/app/public
+storage/app/private
+
+# Entwicklung und Werkzeuge
+.git
+.github
+.claude
+.codex
+.agents
+.ai
+graphify-out
+tests
+phpunit.xml
+phpstan.neon
+pint.json
+.php-cs-fixer.cache
+.editorconfig
+.mcp.json
+boost.json
+opencode.json
+.phpactor.json
+.npmrc
+
+# Dokumentation. doc/ ist die private Content-Pipeline (eigenes Repository im
+# Arbeitsverzeichnis) und darf nie ins Image, docs/ ist die oeffentliche Doku.
+doc
+docs
+AGENTS.md
+CLAUDE.md
+README.md

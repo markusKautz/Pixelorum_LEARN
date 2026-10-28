@@ -1,0 +1,231 @@
+{
+  "schema_version": 3,
+  "slug": "http-grundlagen",
+  "title": "HTTP-Grundlagen",
+  "summary": "Wie Browser und Webserver über HTTP Anfragen und Antworten austauschen und was Methoden und Statuscodes dabei aussagen.",
+  "objectives": [
+    "Du kannst den Ablauf von Anfrage und Antwort zwischen Client und Server beschreiben.",
+    "Du kannst die Methoden GET und POST nach ihrem Zweck unterscheiden.",
+    "Du kannst Statuscodes ihren Klassen zuordnen und typische Codes erklären."
+  ],
+  "position": 1,
+  "difficulty": "einsteiger",
+  "estimated_minutes": 20,
+  "pass_threshold": 80,
+  "status": "draft",
+  "sources": [
+    {
+      "source_id": "kursskript-web",
+      "kind": "pdf",
+      "title": "Kursskript Webtechnologien",
+      "publisher": "Beispielschule",
+      "url": null,
+      "version": "2026",
+      "published_at": null,
+      "accessed_at": null,
+      "content_sha256": null
+    },
+    {
+      "source_id": "wikipedia-http",
+      "kind": "web",
+      "title": "Hypertext Transfer Protocol",
+      "publisher": "Wikipedia",
+      "url": "https://de.wikipedia.org/wiki/Hypertext_Transfer_Protocol",
+      "version": null,
+      "published_at": null,
+      "accessed_at": "2026-10-27",
+      "content_sha256": null
+    }
+  ],
+  "lessons": [
+    {
+      "position": 1,
+      "title": "Anfrage und Antwort",
+      "source_reference": [
+        { "source_id": "kursskript-web", "page": 12 },
+        { "source_id": "wikipedia-http", "section": "Funktionsweise" }
+      ],
+      "blocks": [
+        {
+          "position": 1,
+          "type": "markdown",
+          "content": {
+            "body": "HTTP ist ein **zustandsloses** Protokoll nach dem Prinzip Anfrage und Antwort. Der **Client**, meist ein Browser, schickt eine Anfrage an einen **Webserver**. Der Server beantwortet jede Anfrage mit genau einer Antwort und vergisst sie danach wieder.\n\nEine Anfrage besteht aus einer Methode, dem angefragten Pfad, Kopfzeilen und bei manchen Methoden einem Inhalt."
+          }
+        },
+        {
+          "position": 2,
+          "type": "diagram",
+          "content": {
+            "format": "mermaid",
+            "source": "sequenceDiagram\n    participant C as Browser\n    participant S as Webserver\n    C->>S: GET /index.html\n    S-->>C: 200 OK und HTML-Dokument",
+            "caption": "Eine Anfrage, eine Antwort"
+          }
+        },
+        {
+          "position": 3,
+          "type": "code_snippet",
+          "content": {
+            "language": "text",
+            "filename": "Anfrage",
+            "code": "GET /index.html HTTP/1.1\nHost: www.example.com\nAccept: text/html"
+          }
+        },
+        {
+          "position": 4,
+          "type": "section_break",
+          "content": {
+            "title": "Methoden"
+          }
+        },
+        {
+          "position": 5,
+          "type": "markdown",
+          "content": {
+            "body": "Die **Methode** sagt, was der Client vom Server will. **GET** fordert eine Ressource an und überträgt keine Formulardaten im Inhalt. **POST** schickt Daten zur Verarbeitung an den Server, etwa ein ausgefülltes Formular."
+          }
+        },
+        {
+          "position": 6,
+          "type": "callout",
+          "content": {
+            "variant": "info",
+            "body": "Zustandslos heißt: Jede Anfrage steht für sich. Dass ein Nutzer angemeldet bleibt, regelt die Anwendung zusätzlich, etwa über Cookies."
+          }
+        },
+        {
+          "position": 7,
+          "type": "glossary",
+          "content": {
+            "terms": [
+              { "term": "Client", "definition": "Programm, das eine Anfrage an einen Server stellt, meist ein Browser." },
+              { "term": "Webserver", "definition": "Programm, das HTTP-Anfragen entgegennimmt und beantwortet." },
+              { "term": "Methode", "definition": "Teil der Anfrage, der die gewünschte Aktion angibt, etwa GET oder POST." }
+            ]
+          }
+        }
+      ],
+      "questions": [
+        {
+          "position": 1,
+          "type": "single",
+          "prompt": "Was bedeutet es, dass HTTP zustandslos ist?",
+          "explanation": "Zustandslos bedeutet, dass jede Anfrage für sich steht. Der Server behält zwischen zwei Anfragen keine Information über den Client.",
+          "source_reference": [{ "source_id": "kursskript-web", "page": 12 }],
+          "options": [
+            { "position": 1, "label": "Jede Anfrage steht für sich, der Server merkt sich nichts zwischen zwei Anfragen.", "is_correct": true },
+            { "position": 2, "label": "Der Server bewahrt jede Anfrage dauerhaft auf.", "is_correct": false },
+            { "position": 3, "label": "Eine Verbindung bleibt so lange offen, bis der Browser geschlossen wird.", "is_correct": false }
+          ]
+        }
+      ]
+    },
+    {
+      "position": 2,
+      "title": "Statuscodes",
+      "source_reference": [
+        { "source_id": "wikipedia-http", "section": "HTTP-Statuscodes" }
+      ],
+      "blocks": [
+        {
+          "position": 1,
+          "type": "markdown",
+          "content": {
+            "body": "Jede Antwort beginnt mit einem dreistelligen **Statuscode**. Die erste Ziffer gibt die Klasse an:\n\n| Klasse | Bedeutung | Beispiel |\n| --- | --- | --- |\n| 2xx | Erfolg | 200 OK |\n| 3xx | Umleitung | 301 Moved Permanently |\n| 4xx | Fehler beim Client | 404 Not Found |\n| 5xx | Fehler beim Server | 500 Internal Server Error |"
+          }
+        },
+        {
+          "position": 2,
+          "type": "callout",
+          "content": {
+            "variant": "exam",
+            "body": "4xx bedeutet, die Anfrage war fehlerhaft oder nicht erlaubt. 5xx bedeutet, der Server konnte eine an sich gültige Anfrage nicht ausführen."
+          }
+        },
+        {
+          "position": 3,
+          "type": "accordion",
+          "content": {
+            "items": [
+              {
+                "heading": "Ein Nutzer ruft eine Seite auf, die es nicht gibt. Welcher Statuscode kommt zurück, und auf welcher Seite liegt der Fehler?",
+                "body": "Der Server antwortet mit **404 Not Found**. Der Fehler liegt beim Client, weil er eine Ressource anfragt, die nicht existiert."
+              },
+              {
+                "heading": "Eine Seite ist dauerhaft unter eine neue Adresse umgezogen. Welche Klasse von Statuscodes passt?",
+                "body": "Eine **Umleitung**, also 3xx, genauer **301 Moved Permanently**. Der Browser ruft danach die neue Adresse auf."
+              }
+            ]
+          }
+        },
+        {
+          "position": 4,
+          "type": "glossary",
+          "content": {
+            "terms": [
+              { "term": "Statuscode", "definition": "Dreistellige Zahl am Anfang jeder Antwort, die das Ergebnis der Anfrage angibt." }
+            ]
+          }
+        }
+      ],
+      "questions": [
+        {
+          "position": 1,
+          "type": "boolean",
+          "prompt": "Ein Statuscode der Klasse 5xx weist auf einen Fehler beim Server hin.",
+          "explanation": "Die Aussage ist wahr. Codes der Klasse 5xx bedeuten, dass der Server eine Anfrage nicht ausführen konnte.",
+          "source_reference": [{ "source_id": "wikipedia-http", "section": "HTTP-Statuscodes" }],
+          "options": [
+            { "position": 1, "label": "Wahr", "is_correct": true },
+            { "position": 2, "label": "Falsch", "is_correct": false }
+          ]
+        }
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "position": 1,
+      "type": "single",
+      "prompt": "Welche Methode verwendet ein Browser, um ein ausgefülltes Formular zur Verarbeitung an den Server zu schicken?",
+      "explanation": "Mit POST schickt der Client Daten zur Verarbeitung an den Server, zum Beispiel den Inhalt eines Formulars.",
+      "source_reference": [{ "source_id": "kursskript-web", "page": 14 }],
+      "options": [
+        { "position": 1, "label": "POST", "is_correct": true },
+        { "position": 2, "label": "GET", "is_correct": false },
+        { "position": 3, "label": "HEAD", "is_correct": false }
+      ]
+    },
+    {
+      "position": 2,
+      "type": "multiple",
+      "prompt": "Welche Statuscodes melden einen Fehler beim Client?",
+      "explanation": "Fehler beim Client haben Codes der Klasse 4xx, also 404 Not Found und 403 Forbidden.",
+      "source_reference": [{ "source_id": "wikipedia-http", "section": "HTTP-Statuscodes" }],
+      "options": [
+        { "position": 1, "label": "404 Not Found", "is_correct": true },
+        { "position": 2, "label": "403 Forbidden", "is_correct": true },
+        { "position": 3, "label": "500 Internal Server Error", "is_correct": false },
+        { "position": 4, "label": "200 OK", "is_correct": false }
+      ]
+    },
+    {
+      "position": 3,
+      "type": "boolean",
+      "prompt": "Ein Server beantwortet eine HTTP-Anfrage mit genau einer Antwort.",
+      "explanation": "Die Aussage ist wahr. HTTP folgt dem Prinzip Anfrage und Antwort: Auf jede Anfrage folgt genau eine Antwort.",
+      "source_reference": [{ "source_id": "kursskript-web", "page": 12 }],
+      "options": [
+        { "position": 1, "label": "Wahr", "is_correct": true },
+        { "position": 2, "label": "Falsch", "is_correct": false }
+      ]
+    }
+  ],
+  "quiz": {
+    "title": "Abschlussquiz: HTTP-Grundlagen",
+    "description": "Prüfe, ob du Anfrage und Antwort, Methoden und Statuscodes sicher einordnen kannst.",
+    "pass_threshold": 80,
+    "status": "draft",
+    "question_positions": [1, 2, 3]
+  }
+}

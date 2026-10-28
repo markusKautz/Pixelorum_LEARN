@@ -1,0 +1,327 @@
+@import 'tailwindcss';
+@import '../../vendor/livewire/flux/dist/flux.css';
+@import 'highlight.js/styles/github-dark-dimmed.min.css';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../vendor/livewire/flux/stubs/**/*.blade.php';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * LAP-Coder Design-Tokens — Quelle der Wahrheit ist das Claude-Design-Projekt
+ * „LAP-Coder Design System" (tokens/*.css); Änderungen dort nachziehen.
+ * Semantik: success = Erfolg/bestanden, warning = Hinweis & falsche Quiz-Antwort
+ * (bewusst nicht-bestrafend, nie rot), danger = nur destruktive Admin-Aktionen,
+ * highlight = sparsamer Sekundär-Akzent.
+ */
+@theme static {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --color-zinc-50: #fafafa;
+    --color-zinc-100: #f5f5f5;
+    --color-zinc-200: #e5e5e5;
+    --color-zinc-300: #d4d4d4;
+    --color-zinc-400: #a3a3a3;
+    --color-zinc-500: #737373;
+    --color-zinc-600: #525252;
+    --color-zinc-700: #404040;
+    --color-zinc-800: #262626;
+    --color-zinc-900: #171717;
+    --color-zinc-950: #0a0a0a;
+
+    --color-brand-50: #eef1ff;
+    --color-brand-100: #dde3ff;
+    --color-brand-300: #a9b6ff;
+    --color-brand-400: #7f92ff;
+    --color-brand-500: #5271ff;
+    --color-brand-600: #3d57e0;
+    --color-brand-700: #3044b8;
+    --color-brand-950: #131c4d;
+
+    --color-accent: var(--color-brand-500);
+    --color-accent-content: var(--color-brand-700);
+    --color-accent-foreground: var(--color-white);
+
+    --color-success: #00bf63;
+    --color-success-subtle: #e6faf0;
+    --color-success-subtle-border: #c3f2dc;
+    --color-success-content: #05623a;
+
+    --color-warning: #ffbd59;
+    --color-warning-subtle: #fff8ec;
+    --color-warning-subtle-border: #ffedc9;
+    --color-warning-content: #7a4e0a;
+
+    --color-danger: #ff3131;
+    --color-danger-hover: #db1f1f;
+    --color-danger-subtle: #ffefec;
+    --color-danger-subtle-border: #ffdad2;
+    --color-danger-content: #8a1414;
+
+    --color-highlight: #ff66c4;
+    --color-highlight-subtle: #fff0f9;
+    --color-highlight-content: #e0409f;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+
+    --shadow-color: 220 15% 50%;
+    --shadow-sm: 0 1px 2px hsl(var(--shadow-color) / .06);
+    --shadow-md: 0 4px 12px hsl(var(--shadow-color) / .08), 0 1px 2px hsl(var(--shadow-color) / .06);
+    --shadow-lg: 0 12px 32px hsl(var(--shadow-color) / .12), 0 2px 6px hsl(var(--shadow-color) / .06);
+
+    --ease-standard: cubic-bezier(.2, 0, 0, 1);
+    --duration-fast: 120ms;
+    --duration-base: 180ms;
+
+    --text-reading: 1.125rem;
+    --text-reading--line-height: 1.85;
+    --container-reading: 68ch;
+}
+
+@layer theme {
+    .dark {
+        --color-accent: var(--color-brand-400);
+        --color-accent-content: var(--color-brand-100);
+        --color-accent-foreground: var(--color-white);
+
+        --color-success: #22cd7c;
+        --color-success-subtle: #052e1c;
+        --color-success-subtle-border: #0f5c39;
+        --color-success-content: #c3f2dc;
+
+        --color-warning: #ffce85;
+        --color-warning-subtle: #402c07;
+        --color-warning-subtle-border: #5c3d0e;
+        --color-warning-content: #ffedc9;
+
+        --color-danger: #ff5c4d;
+        --color-danger-hover: #ff3131;
+        --color-danger-subtle: #400d0d;
+        --color-danger-subtle-border: #6b1919;
+        --color-danger-content: #ffdad2;
+
+        --color-highlight: #ff8fd9;
+        --color-highlight-subtle: #3d1230;
+        --color-highlight-content: #ffdcf0;
+
+        --shadow-color: 220 40% 2%;
+    }
+}
+
+@layer base {
+
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentColor);
+    }
+}
+
+/*
+ * Render-Pipeline der Lesson-Blocks (S3.3): Markdown-Grundtypografie
+ * (bewusst ohne Typography-Plugin) und Fehlerzustand für Mermaid-Diagramme.
+ */
+.lesson-markdown :where(p, ul, ol, pre, blockquote, h1, h2, h3, h4) {
+    margin-block: 0.5em;
+}
+
+.lesson-markdown :where(h1, h2, h3, h4) {
+    font-weight: 600;
+}
+
+.lesson-markdown h1 {
+    font-size: 1.25em;
+}
+
+.lesson-markdown h2 {
+    font-size: 1.15em;
+}
+
+.lesson-markdown h3 {
+    font-size: 1.05em;
+}
+
+.lesson-markdown ul {
+    list-style: disc;
+    padding-inline-start: 1.5em;
+}
+
+.lesson-markdown ol {
+    list-style: decimal;
+    padding-inline-start: 1.5em;
+}
+
+.lesson-markdown a {
+    text-decoration: underline;
+    color: var(--color-accent-content);
+}
+
+.lesson-markdown :not(pre) > code {
+    font-size: 0.9em;
+    background: var(--color-zinc-100);
+    padding: 0.1em 0.3em;
+    border-radius: var(--radius-sm);
+}
+
+.dark .lesson-markdown :not(pre) > code {
+    background: var(--color-zinc-800);
+}
+
+.lesson-markdown blockquote {
+    border-inline-start: 3px solid var(--color-zinc-300);
+    padding-inline-start: 0.75em;
+    color: var(--color-zinc-600);
+}
+
+.dark .lesson-markdown blockquote {
+    border-color: var(--color-zinc-600);
+    color: var(--color-zinc-400);
+}
+
+/*
+ * GFM-Tabellen (S6, Gate 5): Der Markdown-Konverter liefert korrektes
+ * <table>-Markup, aber Tailwinds Preflight entfernt die Rahmen des Browsers.
+ * Ohne diese Regeln stehen Tabellenzellen als unlesbare Textwüste da.
+ *
+ * Der Wrapper scrollt horizontal statt umzubrechen: Die Lernpfade enthalten
+ * fünfspaltige Tabellen (SI-Präfixe, Binärpräfixe), die auf einem Telefon
+ * sonst die ganze Seite in die Breite ziehen würden.
+ */
+.lesson-markdown .lesson-table-scroll {
+    overflow-x: auto;
+    margin-block: 0.75em;
+}
+
+.lesson-markdown table {
+    border-collapse: collapse;
+    width: auto;
+    min-width: 100%;
+    font-size: 0.95em;
+}
+
+.lesson-markdown :where(th, td) {
+    border: 1px solid var(--color-zinc-300);
+    padding: 0.35em 0.6em;
+    text-align: start;
+    vertical-align: top;
+}
+
+.lesson-markdown th {
+    background: var(--color-zinc-100);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.dark .lesson-markdown :where(th, td) {
+    border-color: var(--color-zinc-600);
+}
+
+.dark .lesson-markdown th {
+    background: var(--color-zinc-800);
+}
+
+/* Glossar-Begriff im Fließtext (S4.3): gepunktet unterstrichen statt wie ein
+   Link, damit er nicht mit einer Navigation verwechselt wird. */
+.lesson-glossary {
+    position: relative;
+    display: inline;
+}
+
+.lesson-glossary-term {
+    text-decoration: underline dotted;
+    text-underline-offset: 0.2em;
+    cursor: help;
+}
+
+/*
+ * Die Erklärung liegt in einem Inline-Element, nicht in einem <div>: Ein
+ * Blockelement innerhalb eines <p> lässt den Browser den Absatz vorzeitig
+ * schließen, was den Satz mitten im Text umbrechen ließ.
+ *
+ * Sichtbar bei Hover und bei Fokus. Der Fokus ist der Zugang auf
+ * Touch-Geräten, wo es kein Hover gibt, und zugleich der Weg über die
+ * Tastatur.
+ */
+.lesson-glossary-definition {
+    position: absolute;
+    bottom: calc(100% + 0.4em);
+    left: 0;
+    z-index: 30;
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    width: max-content;
+    max-width: min(18rem, 70vw);
+    padding: 0.4em 0.6em;
+    border-radius: var(--radius-md);
+    background: var(--color-zinc-800);
+    color: var(--color-white);
+    font-size: 0.8rem;
+    font-weight: 400;
+    line-height: 1.4;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.18);
+    transition: opacity 120ms ease-out;
+}
+
+.lesson-glossary:hover .lesson-glossary-definition,
+.lesson-glossary:focus .lesson-glossary-definition,
+.lesson-glossary:focus-within .lesson-glossary-definition {
+    visibility: visible;
+    opacity: 1;
+}
+
+.dark .lesson-glossary-definition {
+    background: var(--color-zinc-700);
+    border: 1px solid var(--color-white-10, rgb(255 255 255 / 0.1));
+}
+
+@media (max-width: 40rem) {
+    .lesson-glossary-definition {
+        position: fixed;
+        right: 1rem;
+        bottom: 1rem;
+        left: 1rem;
+        width: auto;
+        max-width: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lesson-glossary-definition {
+        transition: none;
+    }
+}
+
+.lesson-diagram-error {
+    border: 1px solid var(--color-danger-subtle-border);
+    background: var(--color-danger-subtle);
+    color: var(--color-danger-content);
+    border-radius: var(--radius-md);
+    padding: 0.75rem;
+    font-size: 0.875rem;
+}
+
+[data-flux-field]:not(ui-radio, ui-checkbox) {
+    @apply grid gap-2;
+}
+
+[data-flux-label] {
+    @apply  !mb-0 !leading-tight;
+}
+
+input:focus[data-flux-control],
+textarea:focus[data-flux-control],
+select:focus[data-flux-control] {
+    @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
+}
+
+/* \[:where(&)\]:size-4 {
+    @apply size-4;
+} */
