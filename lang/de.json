@@ -748,5 +748,15 @@
     "Administrator created.": "Administrator erstellt.",
     "Start password": "Startpasswort",
     "The new administrator signs in with this start password and should change it under Settings.": "Der neue Administrator meldet sich mit diesem Startpasswort an und ändert es danach unter Einstellungen.",
-    "Create": "Erstellen"
+    "Create": "Erstellen",
+    ":count selected|:count selected": ":count ausgewählt|:count ausgewählt",
+    "Delete selected": "Ausgewählte löschen",
+    "Select all on this page": "Alle auf dieser Seite auswählen",
+    "Select :name": ":name auswählen",
+    "Delete :count apprentice for good?|Delete :count apprentices for good?": ":count Lehrling endgültig löschen?|:count Lehrlinge endgültig löschen?",
+    "This cannot be undone. The accounts and all of their personal data are removed. Administrators are deleted one by one and are not part of this.": "Das lässt sich nicht rückgängig machen. Die Accounts und alle ihre personenbezogenen Daten werden entfernt. Administratoren werden einzeln gelöscht und sind nicht dabei.",
+    "and :count more": "und :count weitere",
+    "Type \":count\" to confirm": "Tippe „:count“ zur Bestätigung",
+    "The number does not match.": "Die Anzahl stimmt nicht überein.",
+    ":count user deleted.|:count users deleted.": ":count Nutzer gelöscht.|:count Nutzer gelöscht."
 }

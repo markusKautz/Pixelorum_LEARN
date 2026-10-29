@@ -169,6 +169,14 @@ des letzten Ausbildners, damit sich niemand aussperrt. Derselbe Schutz gilt in d
 Kontoeinstellungen: Bist du der letzte Ausbildner, siehst du dort statt „Account
 löschen“ einen Hinweis.
 
+Mehrere Lehrlinge löschst du gemeinsam: Hake sie in der Liste an oder wähle über
+das Kästchen im Tabellenkopf alle Lehrlinge der aktuellen Seite, dann „Ausgewählte
+löschen“. Der Dialog nennt bis zu zehn Namen und die Summe der erledigten Lektionen
+und Quizversuche, bestätigt wird mit der Anzahl. Die Auswahl gilt nur für die
+aktuelle Seite; Gruppe und Suche helfen beim Eingrenzen, und ein Filter- oder
+Seitenwechsel leert sie. Ausbildner lassen sich nicht anhaken, sie löschst du
+einzeln.
+
 Mit „Administrator erstellen“ legst du einen weiteren Ausbildner an: Name, E-Mail
 und ein Startpasswort, das du ihm mitteilst. Er meldet sich damit an und ändert es
 in den Einstellungen. Das Formular legt nur neue Konten an; gehört die Adresse
