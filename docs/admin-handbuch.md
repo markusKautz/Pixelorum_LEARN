@@ -8,7 +8,8 @@ Anführungszeichen stehen so auf dem Bildschirm. Die Oberfläche nennt Admins
 
 - **Ausbildner** (Admins) sehen alle Gruppen und verwalten Inhalte, Gruppen und
   Nutzer. Den ersten Admin legst du auf der Kommandozeile an:
-  `php artisan lapp:make-admin`. Weitere Admins entstehen auf demselben Weg.
+  `php artisan lapp:make-admin`. Weitere Admins legst du unter „Nutzer“ an
+  (siehe [Nutzer verwalten](#nutzer-verwalten)).
 - **Lehrlinge** gehören genau einer Gruppe an, meist einem Jahrgang. Sie sehen nur
   veröffentlichte und freigegebene Lernpfade und die Quizze, die ihrer Gruppe
   ausgegeben sind.
@@ -167,3 +168,9 @@ sich hier nicht löschen: dein eigenes (das geht in den Kontoeinstellungen) und 
 des letzten Ausbildners, damit sich niemand aussperrt. Derselbe Schutz gilt in den
 Kontoeinstellungen: Bist du der letzte Ausbildner, siehst du dort statt „Account
 löschen“ einen Hinweis.
+
+Mit „Administrator erstellen“ legst du einen weiteren Ausbildner an: Name, E-Mail
+und ein Startpasswort, das du ihm mitteilst. Er meldet sich damit an und ändert es
+in den Einstellungen. Das Formular legt nur neue Konten an; gehört die Adresse
+schon einem Lehrling, lehnt es sie ab. Ein bestehendes Konto zum Ausbildner machen
+kann nur `php artisan lapp:make-admin` auf der Kommandozeile.
