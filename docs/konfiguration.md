@@ -47,7 +47,7 @@ Link `php artisan storage:link` oder eine entsprechende Regel im Webserver.
 
 | Befehl | Zweck |
 | --- | --- |
-| `lapp:make-admin` | Admin anlegen oder bestehendes Konto zum Admin machen |
+| `lapp:make-admin` | Ersteinrichtung: ersten Admin anlegen; außerdem ein bestehendes Konto zum Admin machen. Weitere Admins entstehen im Adminbereich unter „Nutzer“ |
 | `lapp:invitations:export` | CSV-Datei mit den Aktivierungslinks einer Gruppe neu schreiben |
 | `lapp:content:validate --file=…` | Content-Datei prüfen wie der Upload |
 | `lapp:content:export` | Lernpfade als JSON oder ZIP exportieren (`--all`, `--dir=`) |

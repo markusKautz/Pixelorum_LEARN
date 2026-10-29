@@ -2,14 +2,12 @@
 
 namespace App\Console\Commands;
 
-use App\Actions\Teams\CreateTeam;
-use App\Actions\Users\CreateUser;
+use App\Actions\Users\CreateAdmin;
 use App\Concerns\ProfileValidationRules;
 use App\Models\User;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
@@ -29,7 +27,7 @@ class MakeAdmin extends Command
     /**
      * Execute the console command.
      */
-    public function handle(CreateTeam $createTeam, CreateUser $createUser): int
+    public function handle(CreateAdmin $createAdmin): int
     {
         $email = $this->argument('email');
         $email = is_string($email) ? $email : null;
@@ -52,7 +50,7 @@ class MakeAdmin extends Command
             return $this->promoteExistingUser($user);
         }
 
-        return $this->createAdminUser($email, $createTeam, $createUser);
+        return $this->createAdminUser($email, $createAdmin);
     }
 
     /**
@@ -76,7 +74,7 @@ class MakeAdmin extends Command
     /**
      * Create a new, verified admin account with a personal team.
      */
-    protected function createAdminUser(string $email, CreateTeam $createTeam, CreateUser $createUser): int
+    protected function createAdminUser(string $email, CreateAdmin $createAdmin): int
     {
         $name = $this->option('name');
         $name = is_string($name) ? $name : null;
@@ -108,15 +106,7 @@ class MakeAdmin extends Command
             return self::FAILURE;
         }
 
-        $user = DB::transaction(function () use ($name, $email, $password, $createTeam, $createUser): User {
-            $user = $createUser->handle($name, $email, $password, verified: true);
-
-            $user->forceFill(['is_admin' => true])->save();
-
-            $createTeam->handle($user, __(":name's Team", ['name' => $user->name]), isPersonal: true);
-
-            return $user;
-        });
+        $user = $createAdmin->handle($name, $email, $password);
 
         $this->components->info("Admin-Account {$user->email} wurde angelegt.");
 

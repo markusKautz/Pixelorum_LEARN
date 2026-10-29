@@ -743,5 +743,10 @@
     "Download anyway": "Trotzdem herunterladen",
     "The last administrator cannot be deleted.": "Der letzte Administrator kann nicht gelöscht werden.",
     "You are the last administrator": "Du bist der letzte Administrator",
-    "Your account cannot be deleted while no other administrator exists.": "Dein Account kann nicht gelöscht werden, solange es keinen weiteren Administrator gibt."
+    "Your account cannot be deleted while no other administrator exists.": "Dein Account kann nicht gelöscht werden, solange es keinen weiteren Administrator gibt.",
+    "Create administrator": "Administrator erstellen",
+    "Administrator created.": "Administrator erstellt.",
+    "Start password": "Startpasswort",
+    "The new administrator signs in with this start password and should change it under Settings.": "Der neue Administrator meldet sich mit diesem Startpasswort an und ändert es danach unter Einstellungen.",
+    "Create": "Erstellen"
 }

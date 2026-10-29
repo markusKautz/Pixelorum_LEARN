@@ -1,7 +1,9 @@
 <?php
 
 use App\Actions\Analytics\ComputeLastActivity;
+use App\Actions\Users\CreateAdmin;
 use App\Actions\Users\DeleteUser;
+use App\Concerns\ProfileValidationRules;
 use App\Exceptions\LastAdminException;
 use App\Models\Team;
 use App\Models\User;
@@ -12,11 +14,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 new class extends Component {
+    use ProfileValidationRules;
     use WithPagination;
 
     /** @var int|string|null */
@@ -35,6 +41,12 @@ new class extends Component {
 
     /** Die Namenseingabe, mit der die Löschung bestätigt wird. */
     public string $deleteConfirmation = '';
+
+    public string $newAdminName = '';
+
+    public string $newAdminEmail = '';
+
+    public string $newAdminPassword = '';
 
     /**
      * Anders als die Geschwister-Listen autorisiert diese Seite schon beim
@@ -211,6 +223,46 @@ new class extends Component {
         Flux::toast(variant: 'success', text: __('User deleted.'));
     }
 
+    /**
+     * Ein weiteres Admin-Konto mit Startpasswort anlegen (#13, E3).
+     *
+     * Nur neue Konten: eine vergebene Adresse ist ein Validierungsfehler,
+     * Befördern bleibt bei `lapp:make-admin` (E3a). Die Adresse wird vor der
+     * Prüfung kleingeschrieben, weil `User` sie so speichert und die
+     * Eindeutigkeit sonst an der Schreibweise vorbeiprüfte. Die Regeln stehen
+     * hier statt über `emailRules()`: deren `Rule::unique` leitet die Spalte
+     * aus dem Feldnamen ab und suchte nach `newAdminEmail`.
+     */
+    public function createAdmin(CreateAdmin $createAdmin): void
+    {
+        Gate::authorize('admin');
+
+        $this->newAdminEmail = Str::lower(trim($this->newAdminEmail));
+
+        $validated = $this->validate(
+            [
+                'newAdminName' => $this->nameRules(),
+                'newAdminEmail' => ['required', 'string', 'email', 'max:255', Rule::unique(User::class, 'email')],
+                'newAdminPassword' => ['required', 'string', Password::default()],
+            ],
+            attributes: [
+                'newAdminName' => __('Name'),
+                'newAdminEmail' => __('Email'),
+                'newAdminPassword' => __('Password'),
+            ],
+        );
+
+        $createAdmin->handle($validated['newAdminName'], $validated['newAdminEmail'], $validated['newAdminPassword']);
+
+        $this->reset('newAdminName', 'newAdminEmail', 'newAdminPassword');
+
+        unset($this->users, $this->lastActivity);
+
+        $this->modal('create-admin')->close();
+
+        Flux::toast(variant: 'success', text: __('Administrator created.'));
+    }
+
     private function closeDeleteModal(): void
     {
         $this->deletingId = null;
@@ -228,9 +280,15 @@ new class extends Component {
 }; ?>
 
 <section class="w-full space-y-6">
-    <div>
-        <flux:heading size="xl">{{ __('Users') }}</flux:heading>
-        <flux:subheading>{{ __('Everyone with an account: apprentices and trainers.') }}</flux:subheading>
+    <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+            <flux:heading size="xl">{{ __('Users') }}</flux:heading>
+            <flux:subheading>{{ __('Everyone with an account: apprentices and trainers.') }}</flux:subheading>
+        </div>
+
+        <flux:modal.trigger name="create-admin">
+            <flux:button icon="plus" data-test="create-admin-button">{{ __('Create administrator') }}</flux:button>
+        </flux:modal.trigger>
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2">
@@ -344,6 +402,30 @@ new class extends Component {
             @endforelse
         </flux:table.rows>
     </flux:table>
+
+    <flux:modal name="create-admin" class="max-w-lg" data-test="create-admin-modal">
+        <form wire:submit="createAdmin" class="space-y-6">
+            <div>
+                <flux:heading size="lg">{{ __('Create administrator') }}</flux:heading>
+                <flux:subheading>
+                    {{ __('The new administrator signs in with this start password and should change it under Settings.') }}
+                </flux:subheading>
+            </div>
+
+            <flux:input wire:model="newAdminName" :label="__('Name')" required autocomplete="off" data-test="create-admin-name" />
+            <flux:input wire:model="newAdminEmail" :label="__('Email')" type="email" required autocomplete="off" data-test="create-admin-email" />
+            <flux:input wire:model="newAdminPassword" :label="__('Start password')" type="password" required viewable autocomplete="new-password" data-test="create-admin-password" />
+
+            <div class="flex justify-end space-x-2 rtl:space-x-reverse">
+                <flux:modal.close>
+                    <flux:button variant="filled">{{ __('Cancel') }}</flux:button>
+                </flux:modal.close>
+                <flux:button variant="primary" type="submit" data-test="create-admin-submit">
+                    {{ __('Create') }}
+                </flux:button>
+            </div>
+        </form>
+    </flux:modal>
 
     <flux:modal name="delete-user" class="max-w-lg" data-test="delete-user-modal">
         @if ($this->deletingUser !== null)
