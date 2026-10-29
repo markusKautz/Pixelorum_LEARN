@@ -6,10 +6,12 @@ use App\Models\LearningPath;
 use App\Models\Lesson;
 use App\Models\LessonBlock;
 use App\Models\User;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
+use Mockery\MockInterface;
 use Tests\Support\ContentSourceFixture;
 
 beforeEach(function () {
@@ -23,7 +25,10 @@ afterEach(function () {
     ContentSourceFixture::clean();
 });
 
-function blockOfType(?string $state, Lesson $lesson): LessonBlock
+/**
+ * @param  array<string, mixed>  $attributes
+ */
+function blockOfType(?string $state, Lesson $lesson, array $attributes = []): LessonBlock
 {
     $factory = LessonBlock::factory()->for($lesson);
 
@@ -31,7 +36,7 @@ function blockOfType(?string $state, Lesson $lesson): LessonBlock
         $factory = $factory->{$state}();
     }
 
-    return $factory->create();
+    return $factory->create($attributes);
 }
 
 test('updating the lesson head persists title and page reference', function () {
@@ -268,6 +273,7 @@ test('saving persists valid content per type', function (?string $state, array $
     'callout' => ['callout', ['variant' => 'exam', 'body' => 'Prüfungsrelevant!']],
     'code_snippet' => ['codeSnippet', ['language' => 'php', 'code' => "echo 'Hallo';", 'filename' => 'hallo.php']],
     'code_snippet csharp' => ['codeSnippet', ['language' => 'csharp', 'code' => 'public abstract class Fahrzeug { }', 'filename' => 'Fahrzeug.cs']],
+    'code_snippet python' => ['codeSnippet', ['language' => 'python', 'code' => "def begruessung(name):\n    return f'Hallo {name}'", 'filename' => 'begruessung.py']],
     'diagram' => ['diagram', ['format' => 'mermaid', 'source' => 'graph TD; A-->B;', 'caption' => null]],
     'media' => ['media', ['kind' => 'image', 'url' => 'https://example.test/bild.png', 'caption' => null, 'alt' => 'Ein Bild']],
     'glossary' => ['glossary', ['terms' => [['term' => 'Compiler', 'definition' => 'Übersetzt Quellcode.']]]],
@@ -333,7 +339,7 @@ test('deleting a block removes it', function () {
         ->call('deleteBlock', $block->id)
         ->assertDispatched('modal-close', name: "delete-block-{$block->id}");
 
-    expect(LessonBlock::find($block->id))->toBeNull();
+    expect($block->fresh())->toBeNull();
 });
 
 test('an uploaded image lands in lesson-media and its url in the media shape', function () {
@@ -350,13 +356,15 @@ test('an uploaded image lands in lesson-media and its url in the media shape', f
         // Der Upload-Modus bleibt aktiv — das Bild ist kein externer Link.
         ->assertSet('imageSource', 'upload');
 
-    $files = Storage::disk('public')->allFiles('lesson-media');
+    /** @var FilesystemAdapter $disk */
+    $disk = Storage::disk('public');
+    $files = $disk->allFiles('lesson-media');
 
     expect($files)->toHaveCount(1);
 
     // Site-relativer /storage-Pfad, ohne Schema und Host.
     expect($block->refresh()->content['url'])
-        ->toBe(parse_url(Storage::disk('public')->url($files[0]), PHP_URL_PATH))
+        ->toBe(parse_url($disk->url($files[0]), PHP_URL_PATH))
         ->toStartWith('/storage/lesson-media/');
 });
 
@@ -372,18 +380,19 @@ test('an uploaded image fills the diagram source in image format', function () {
         ->call('save')
         ->assertHasNoErrors();
 
-    $files = Storage::disk('public')->allFiles('lesson-media');
+    /** @var FilesystemAdapter $disk */
+    $disk = Storage::disk('public');
+    $files = $disk->allFiles('lesson-media');
 
     expect($files)->toHaveCount(1);
 
     expect($block->refresh()->content['source'])
-        ->toBe(parse_url(Storage::disk('public')->url($files[0]), PHP_URL_PATH))
+        ->toBe(parse_url($disk->url($files[0]), PHP_URL_PATH))
         ->toStartWith('/storage/lesson-media/');
 });
 
 test('editing a block with an uploaded image opens in upload mode and shows only the filename', function () {
-    $block = blockOfType('media', $this->lesson);
-    $block->update(['content' => [
+    $block = blockOfType('media', $this->lesson, ['content' => [
         'kind' => 'image',
         'url' => '/storage/lesson-media/abc123.png',
         'caption' => null,
@@ -400,8 +409,7 @@ test('editing a block with an uploaded image opens in upload mode and shows only
 });
 
 test('editing a block with an external image url stays in url mode', function () {
-    $block = blockOfType('media', $this->lesson);
-    $block->update(['content' => [
+    $block = blockOfType('media', $this->lesson, ['content' => [
         'kind' => 'image',
         'url' => 'https://example.test/extern.png',
         'caption' => null,
@@ -501,7 +509,7 @@ test('apprentices are forbidden on every block editor action', function () {
         ->call('save')
         ->assertForbidden();
 
-    expect(LessonBlock::find($block->id))->not->toBeNull();
+    expect($block->fresh())->not->toBeNull();
 });
 
 test('stable rowKeys survive editing source_id', function () {
@@ -519,6 +527,7 @@ test('stable rowKeys survive editing source_id', function () {
 });
 
 test('blank rows validate without calling the source registry loader', function () {
+    /** @var MockInterface $spy */
     $spy = Mockery::mock(LoadSourceRegistry::class);
     $spy->shouldReceive('handle')->never();
     app()->instance(LoadSourceRegistry::class, $spy);

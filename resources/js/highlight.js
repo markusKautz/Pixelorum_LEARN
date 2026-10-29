@@ -15,6 +15,7 @@ import sql from 'highlight.js/lib/languages/sql';
 import json from 'highlight.js/lib/languages/json';
 import yaml from 'highlight.js/lib/languages/yaml';
 import csharp from 'highlight.js/lib/languages/csharp';
+import python from 'highlight.js/lib/languages/python';
 import plaintext from 'highlight.js/lib/languages/plaintext';
 
 hljs.registerLanguage('php', php);
@@ -26,6 +27,7 @@ hljs.registerLanguage('sql', sql);
 hljs.registerLanguage('json', json);
 hljs.registerLanguage('yaml', yaml);
 hljs.registerLanguage('csharp', csharp);
+hljs.registerLanguage('python', python);
 hljs.registerLanguage('plaintext', plaintext);
 hljs.registerAliases(['js'], { languageName: 'javascript' });
 hljs.registerAliases(['html'], { languageName: 'xml' });
