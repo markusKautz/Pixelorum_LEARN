@@ -3,8 +3,11 @@
 use App\Actions\Analytics\ComputeLastActivity;
 use App\Actions\Users\CreateAdmin;
 use App\Actions\Users\DeleteUser;
+use App\Actions\Users\DeleteUsers;
 use App\Concerns\ProfileValidationRules;
 use App\Exceptions\LastAdminException;
+use App\Models\LessonCompletion;
+use App\Models\QuizAttempt;
 use App\Models\Team;
 use App\Models\User;
 use Flux\Flux;
@@ -42,6 +45,19 @@ new class extends Component {
     /** Die Namenseingabe, mit der die Löschung bestätigt wird. */
     public string $deleteConfirmation = '';
 
+    /**
+     * Die für die Mehrfachlöschung angehakten Konten (#6).
+     *
+     * Nur auf der aktuellen Seite (E7): Filter- und Seitenwechsel leeren sie,
+     * damit keine unsichtbaren Zeilen in der Löschung landen.
+     *
+     * @var array<int, int|string>
+     */
+    public array $selected = [];
+
+    /** Die eingetippte Anzahl, mit der die Mehrfachlöschung bestätigt wird (E6). */
+    public string $bulkDeleteConfirmation = '';
+
     public string $newAdminName = '';
 
     public string $newAdminEmail = '';
@@ -62,11 +78,18 @@ new class extends Component {
     public function updatedGroupFilter(): void
     {
         $this->resetPage();
+        $this->selected = [];
     }
 
     public function updatedSearch(): void
     {
         $this->resetPage();
+        $this->selected = [];
+    }
+
+    public function updatedPaginators(): void
+    {
+        $this->selected = [];
     }
 
     /**
@@ -224,6 +247,119 @@ new class extends Component {
     }
 
     /**
+     * Die Lehrlinge, die die Mehrfachlöschung träfe: die Auswahl ohne Admins
+     * und ohne den Handelnden, so wie {@see DeleteUsers} sie löscht.
+     *
+     * @return Collection<int, User>
+     */
+    #[Computed]
+    public function selectedUsers(): Collection
+    {
+        /** @var User $actor */
+        $actor = Auth::user();
+
+        return app(DeleteUsers::class)->deletable($this->selected, $actor);
+    }
+
+    /**
+     * Die IDs der Zeilen dieser Seite, die sich anhaken lassen.
+     *
+     * @return array<int, int>
+     */
+    #[Computed]
+    public function selectableIds(): array
+    {
+        return $this->users->getCollection()
+            ->filter(fn (User $user) => ! $user->is_admin)
+            ->modelKeys();
+    }
+
+    /**
+     * „Alle auf dieser Seite“ an- oder abwählen.
+     */
+    public function toggleSelectPage(): void
+    {
+        $pageIds = $this->selectableIds;
+
+        $allSelected = array_diff($pageIds, array_map(intval(...), $this->selected)) === [];
+
+        $this->selected = $allSelected ? [] : $pageIds;
+    }
+
+    /**
+     * Was die Mehrfachlöschung mitnimmt, in Summen (E6).
+     *
+     * @return array{completions: int, attempts: int}
+     */
+    #[Computed]
+    public function bulkStats(): array
+    {
+        $ids = $this->selectedUsers->modelKeys();
+
+        return [
+            'completions' => LessonCompletion::query()->whereIn('user_id', $ids)->count(),
+            'attempts' => QuizAttempt::query()->whereIn('user_id', $ids)->count(),
+        ];
+    }
+
+    /**
+     * Das Label der Anzahl-Eingabe; als Computed aus demselben Grund wie
+     * {@see deleteConfirmLabel()}.
+     */
+    #[Computed]
+    public function bulkDeleteConfirmLabel(): string
+    {
+        return __('Type ":count" to confirm', ['count' => $this->selectedUsers->count()]);
+    }
+
+    /**
+     * Den Dialog der Mehrfachlöschung aufziehen.
+     */
+    public function confirmBulkDelete(): void
+    {
+        Gate::authorize('admin');
+
+        $this->bulkDeleteConfirmation = '';
+
+        $this->resetErrorBag();
+
+        $this->modal('bulk-delete-users')->show();
+    }
+
+    /**
+     * Die ausgewählten Lehrlinge endgültig löschen (#6).
+     *
+     * Bestätigt wird mit der Anzahl, nicht mit Namen (E6): zwölf Namen
+     * einzutippen ist nicht praktikabel, die Zahl zwingt trotzdem zum Hinsehen.
+     */
+    public function bulkDeleteUsers(DeleteUsers $deleteUsers): void
+    {
+        Gate::authorize('admin');
+
+        $expected = $this->selectedUsers->count();
+
+        if ($expected === 0 || trim($this->bulkDeleteConfirmation) !== (string) $expected) {
+            $this->addError('bulkDeleteConfirmation', __('The number does not match.'));
+
+            return;
+        }
+
+        /** @var User $actor */
+        $actor = Auth::user();
+
+        $deleted = $deleteUsers->handle($this->selectedUsers->modelKeys(), $actor);
+
+        $this->selected = [];
+        $this->bulkDeleteConfirmation = '';
+
+        unset($this->users, $this->lastActivity, $this->selectedUsers, $this->selectableIds, $this->bulkStats);
+
+        $this->modal('bulk-delete-users')->close();
+
+        Flux::toast(variant: 'success', text: trans_choice(':count user deleted.|:count users deleted.', $deleted, ['count' => $deleted]));
+    }
+
+    /**
      * Ein weiteres Admin-Konto mit Startpasswort anlegen (#13, E3).
      *
      * Nur neue Konten: eine vergebene Adresse ist ein Validierungsfehler,
@@ -311,8 +447,27 @@ new class extends Component {
         />
     </div>
 
+    @if ($selected !== [])
+        <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-zinc-200 px-4 py-2 dark:border-zinc-700" data-test="bulk-delete-bar">
+            <flux:text>{{ trans_choice(':count selected|:count selected', count($selected), ['count' => count($selected)]) }}</flux:text>
+            <flux:button variant="danger" size="sm" icon="trash" wire:click="confirmBulkDelete" data-test="bulk-delete-button">
+                {{ __('Delete selected') }}
+            </flux:button>
+        </div>
+    @endif
+
     <flux:table :paginate="$this->users" data-test="users-table">
         <flux:table.columns>
+            <flux:table.column class="w-0">
+                @if ($this->selectableIds !== [])
+                    <flux:checkbox
+                        wire:click="toggleSelectPage"
+                        :checked="array_diff($this->selectableIds, array_map('intval', $selected)) === []"
+                        :aria-label="__('Select all on this page')"
+                        data-test="bulk-select-page"
+                    />
+                @endif
+            </flux:table.column>
             <flux:table.column>{{ __('Name') }}</flux:table.column>
             <flux:table.column>{{ __('Email') }}</flux:table.column>
             <flux:table.column>{{ __('Role') }}</flux:table.column>
@@ -327,6 +482,17 @@ new class extends Component {
                 @php($activeAt = $this->lastActivity[$user->id] ?? null)
 
                 <flux:table.row :key="$user->id" data-test="user-row">
+                    <flux:table.cell>
+                        {{-- Admins werden einzeln gelöscht (E5). --}}
+                        @unless ($user->is_admin)
+                            <flux:checkbox
+                                wire:model.live="selected"
+                                value="{{ $user->id }}"
+                                :aria-label="__('Select :name', ['name' => $user->name])"
+                                data-test="bulk-select-user"
+                            />
+                        @endunless
+                    </flux:table.cell>
                     <flux:table.cell variant="strong">
                         <span class="block max-w-3xs truncate" title="{{ $user->name }}">{{ $user->name }}</span>
                     </flux:table.cell>
@@ -395,7 +561,7 @@ new class extends Component {
                 </flux:table.row>
             @empty
                 <flux:table.row>
-                    <flux:table.cell colspan="6" class="py-8 text-center text-zinc-500 dark:text-zinc-400">
+                    <flux:table.cell colspan="7" class="py-8 text-center text-zinc-500 dark:text-zinc-400">
                         {{ __('No users match this filter.') }}
                     </flux:table.cell>
                 </flux:table.row>
@@ -422,6 +588,54 @@ new class extends Component {
                 </flux:modal.close>
                 <flux:button variant="primary" type="submit" data-test="create-admin-submit">
                     {{ __('Create') }}
+                </flux:button>
+            </div>
+        </form>
+    </flux:modal>
+
+    <flux:modal name="bulk-delete-users" class="max-w-lg" data-test="bulk-delete-modal">
+        <form wire:submit="bulkDeleteUsers" class="space-y-6">
+            <div>
+                <flux:heading size="lg">
+                    {{ trans_choice('Delete :count apprentice for good?|Delete :count apprentices for good?', $this->selectedUsers->count(), ['count' => $this->selectedUsers->count()]) }}
+                </flux:heading>
+                <flux:subheading>
+                    {{ __('This cannot be undone. The accounts and all of their personal data are removed. Administrators are deleted one by one and are not part of this.') }}
+                </flux:subheading>
+            </div>
+
+            <ul class="list-inside list-disc text-sm" data-test="bulk-delete-names">
+                @foreach ($this->selectedUsers->take(10) as $user)
+                    <li wire:key="bulk-name-{{ $user->id }}">{{ $user->name }}</li>
+                @endforeach
+                @if ($this->selectedUsers->count() > 10)
+                    <li class="list-none text-zinc-500 dark:text-zinc-400">{{ __('and :count more', ['count' => $this->selectedUsers->count() - 10]) }}</li>
+                @endif
+            </ul>
+
+            <flux:callout icon="exclamation-triangle" variant="warning" data-test="bulk-delete-stats">
+                <flux:callout.text>
+                    {{ __(':completions completed lessons and :attempts quiz attempts are deleted with it.', [
+                        'completions' => $this->bulkStats['completions'],
+                        'attempts' => $this->bulkStats['attempts'],
+                    ]) }}
+                </flux:callout.text>
+            </flux:callout>
+
+            <flux:input
+                wire:model="bulkDeleteConfirmation"
+                :label="$this->bulkDeleteConfirmLabel"
+                inputmode="numeric"
+                autocomplete="off"
+                data-test="bulk-delete-confirmation"
+            />
+
+            <div class="flex justify-end space-x-2 rtl:space-x-reverse">
+                <flux:modal.close>
+                    <flux:button variant="filled">{{ __('Cancel') }}</flux:button>
+                </flux:modal.close>
+                <flux:button variant="danger" type="submit" data-test="bulk-delete-submit">
+                    {{ __('Delete permanently') }}
                 </flux:button>
             </div>
         </form>
