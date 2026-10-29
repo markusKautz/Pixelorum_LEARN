@@ -5,7 +5,7 @@
 
 <h1 align="center">LEARN</h1>
 
-<p align="center">Lernplattform für geerdete Lernpfade und Quizze, entstanden für die Vorbereitung auf die Lehrabschlussprüfung.</p>
+<p align="center">Lernplattform für geerdete Lernpfade und Quizze, deren Inhalte mit dem passenden KI-Skill schnell bereitstehen.</p>
 
 <p align="center">
   <a href="https://github.com/markusKautz/Pixelorum_LEARN/actions/workflows/tests.yml"><img src="https://github.com/markusKautz/Pixelorum_LEARN/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
@@ -19,11 +19,13 @@
 
 ## Über das Projekt
 
-**LEARN** ist eine schlanke Lernplattform für Ausbildungsgruppen und ihre
-Ausbildner. Entstanden ist sie, damit sich Lehrlinge auf die Lehrabschlussprüfung
-vorbereiten können. Sie bündelt Lernpfade und Quizze, deren Inhalte gegen Quellen
-geprüft und freigegeben sind, und macht den Lernfortschritt für Lernende wie für die
-Kursleitung sichtbar.
+**LEARN** ist eine schlanke Lernplattform, die das Bereitstellen von Lerninhalten
+deutlich erleichtert: Zusammen mit dem passenden KI-Skill
+([`learn-content`](#skill-learn-content)) entstehen aus
+vorhandenem Quellmaterial fertige Lernpfade. Die Plattform bietet Lernpfade und
+Quizze, ist nach didaktischen Grundlagen aufgebaut und macht den Lernfortschritt für
+Lernende wie für die Kursleitung sichtbar. Inhalte werden gegen Quellen geprüft und
+erst nach Freigabe veröffentlicht.
 
 Die Plattform kennt zwei Rollen:
 
