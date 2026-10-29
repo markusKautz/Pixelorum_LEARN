@@ -164,4 +164,6 @@ Unter „Nutzer“ findest du alle Konten mit Gruppe und letzter Aktivität. Ein
 löschst du nach Eingabe des Namens endgültig, samt Fortschritt, Versuchen und
 Passkeys. Inhalte, die die Person angelegt hat, bleiben erhalten. Zwei Konten lassen
 sich hier nicht löschen: dein eigenes (das geht in den Kontoeinstellungen) und das
-des letzten Ausbildners, damit sich niemand aussperrt.
+des letzten Ausbildners, damit sich niemand aussperrt. Derselbe Schutz gilt in den
+Kontoeinstellungen: Bist du der letzte Ausbildner, siehst du dort statt „Account
+löschen“ einen Hinweis.

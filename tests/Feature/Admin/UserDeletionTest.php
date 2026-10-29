@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\Users\DeleteUser;
+use App\Exceptions\LastAdminException;
 use App\Models\LearningPath;
 use App\Models\Lesson;
 use App\Models\LessonCompletion;
@@ -16,9 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
 use Livewire\Livewire;
 
-beforeEach(function () {
-    $this->admin = User::factory()->admin()->create(['name' => 'Anna Ausbildnerin']);
-});
+use function Pest\Laravel\mock;
 
 /**
  * Baut einen Lehrling mit vollem Datenschatten: Fortschritt, Versuche,
@@ -78,7 +77,7 @@ test('deleting a user leaves no personal data behind', function () {
     $this->assertDatabaseMissing('lesson_completions', ['user_id' => $learner->id]);
     $this->assertDatabaseMissing('quiz_attempts', ['user_id' => $learner->id]);
     $this->assertDatabaseMissing('path_progress', ['user_id' => $learner->id]);
-    expect(QuestionResponse::count())->toBe(0);
+    $this->assertDatabaseEmpty('question_responses');
 
     // … und die vier, die *nicht* kaskadieren und deshalb einzeln geräumt werden.
     $this->assertDatabaseMissing('sessions', ['user_id' => $learner->id]);
@@ -124,9 +123,10 @@ test('a reset link of a deleted account cannot claim the next account with that 
 });
 
 test('an admin deletes a learner from the user list', function () {
+    $admin = User::factory()->admin()->create();
     ['learner' => $learner] = learnerWithFullTrail();
 
-    Livewire::actingAs($this->admin)
+    Livewire::actingAs($admin)
         ->test('pages::admin.users.index')
         ->call('confirmDelete', $learner->id)
         ->set('deleteConfirmation', 'Lena Lehrling')
@@ -137,9 +137,10 @@ test('an admin deletes a learner from the user list', function () {
 });
 
 test('a mistyped name does not delete', function () {
+    $admin = User::factory()->admin()->create();
     ['learner' => $learner] = learnerWithFullTrail();
 
-    Livewire::actingAs($this->admin)
+    Livewire::actingAs($admin)
         ->test('pages::admin.users.index')
         ->call('confirmDelete', $learner->id)
         ->set('deleteConfirmation', 'Lena Lehrlin')
@@ -150,55 +151,71 @@ test('a mistyped name does not delete', function () {
 });
 
 test('an admin cannot delete their own account from the list', function () {
-    Livewire::actingAs($this->admin)
+    $admin = User::factory()->admin()->create();
+
+    Livewire::actingAs($admin)
         ->test('pages::admin.users.index')
-        ->call('confirmDelete', $this->admin->id)
-        ->set('deleteConfirmation', $this->admin->name)
+        ->call('confirmDelete', $admin->id)
+        ->set('deleteConfirmation', $admin->name)
         ->call('deleteUser')
         ->assertForbidden();
 
-    $this->assertDatabaseHas('users', ['id' => $this->admin->id]);
+    $this->assertDatabaseHas('users', ['id' => $admin->id]);
 });
 
-test('the last trainer cannot be deleted', function () {
-    $second = User::factory()->admin()->create(['name' => 'Bruno Ausbildner']);
+test('the last admin cannot be deleted', function () {
+    $admin = User::factory()->admin()->create();
 
-    expect($this->admin->fresh()->isLastAdmin())->toBeFalse();
+    expect(fn () => app(DeleteUser::class)->handle($admin))->toThrow(LastAdminException::class);
 
-    // Solange es zwei gibt, geht es.
-    Livewire::actingAs($this->admin)
-        ->test('pages::admin.users.index')
-        ->call('confirmDelete', $second->id)
-        ->set('deleteConfirmation', 'Bruno Ausbildner')
-        ->call('deleteUser')
-        ->assertHasNoErrors();
+    // Die Transaktion rollt zurück: weder Konto noch persönliches Team fehlen.
+    $this->assertDatabaseHas('users', ['id' => $admin->id]);
+    expect($admin->teams()->where('teams.is_personal', true)->exists())->toBeTrue();
+});
+
+test('of two admins one can be deleted, then the other cannot', function () {
+    $first = User::factory()->admin()->create();
+    $second = User::factory()->admin()->create();
+
+    app(DeleteUser::class)->handle($second);
 
     $this->assertDatabaseMissing('users', ['id' => $second->id]);
 
-    // Jetzt ist der Handelnde der letzte — und käme ohnehin schon an der
-    // Selbstlöschungs-Sperre nicht vorbei. Also über einen zweiten Admin prüfen,
-    // der zwischenzeitlich wieder verschwindet.
-    expect($this->admin->fresh()->isLastAdmin())->toBeTrue();
+    expect(fn () => app(DeleteUser::class)->handle($first))->toThrow(LastAdminException::class);
 
-    $other = User::factory()->admin()->create();
+    $this->assertDatabaseHas('users', ['id' => $first->id]);
+});
 
-    expect($this->admin->fresh()->isDeletableBy($other))->toBeTrue();
+test('the user list reports a refused deletion of the last admin', function () {
+    // Zwischen Vorprüfung und Löschung kann ein anderer Admin verschwunden
+    // sein; diesen Wettlauf stellt die Aktion fest, nicht die Liste.
+    $admin = User::factory()->admin()->create();
+    $other = User::factory()->admin()->create(['name' => 'Bruno Ausbildner']);
 
-    $other->delete();
+    mock(DeleteUser::class)->shouldReceive('handle')->once()->andThrow(new LastAdminException);
 
-    expect($this->admin->fresh()->isDeletableBy($this->admin->fresh()))->toBeFalse();
+    Livewire::actingAs($admin)
+        ->test('pages::admin.users.index')
+        ->call('confirmDelete', $other->id)
+        ->set('deleteConfirmation', 'Bruno Ausbildner')
+        ->call('deleteUser')
+        ->assertOk()
+        ->assertDispatched('toast-show');
+
+    $this->assertDatabaseHas('users', ['id' => $other->id]);
 });
 
 test('the delete button is hidden for the acting admin', function () {
+    $admin = User::factory()->admin()->create();
     $group = Team::factory()->create();
     $learner = User::factory()->apprentice($group)->create();
 
-    $component = Livewire::actingAs($this->admin)->test('pages::admin.users.index');
+    $component = Livewire::actingAs($admin)->test('pages::admin.users.index');
 
     // Genau ein Löschen-Knopf: für den Lehrling, nicht für den Admin selbst.
     expect(substr_count($component->html(), 'data-test="user-delete-button"'))->toBe(1)
         ->and($component->instance()->users->pluck('id')->all())
-        ->toContain($learner->id, $this->admin->id);
+        ->toContain($learner->id, $admin->id);
 });
 
 test('apprentices cannot delete users', function () {
