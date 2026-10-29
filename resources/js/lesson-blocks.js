@@ -33,6 +33,9 @@ const loadMermaid = () => {
             startOnLoad: false,
             securityLevel: 'strict',
             theme: 'neutral',
+            // Mermaid 12 ordnet und färbt Diagramme sonst neu an; so bleibt der Look aus Version 11.
+            layout: 'dagre',
+            look: 'classic',
         });
 
         return mermaid;
