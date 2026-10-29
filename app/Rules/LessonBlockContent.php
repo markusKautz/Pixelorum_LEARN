@@ -25,7 +25,7 @@ class LessonBlockContent implements ValidationRule
     public const array MEDIA_KINDS = ['video', 'image'];
 
     /** @var array<int, string> */
-    public const array CODE_LANGUAGES = ['php', 'bash', 'js', 'html', 'css', 'sql', 'json', 'yaml', 'csharp', 'text'];
+    public const array CODE_LANGUAGES = ['php', 'bash', 'js', 'html', 'css', 'sql', 'json', 'yaml', 'csharp', 'python', 'text'];
 
     public function __construct(private readonly LessonBlockType $type) {}
 

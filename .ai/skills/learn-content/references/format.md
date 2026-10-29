@@ -75,7 +75,7 @@ Erlaubte Werte:
   - `highlight` (pink): Kernaussage, die man behalten soll
   - `exam` (indigo): besonders prüfungsrelevant
 - `code_snippet.language`: `php`, `bash`, `js`, `html`, `css`, `sql`, `json`,
-  `yaml`, `csharp`, `text`
+  `yaml`, `csharp`, `python`, `text`
 - `diagram.format`: `mermaid`, `image`
 - `media.kind`: `video`, `image`
 
