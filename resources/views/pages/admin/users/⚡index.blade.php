@@ -2,6 +2,7 @@
 
 use App\Actions\Analytics\ComputeLastActivity;
 use App\Actions\Users\DeleteUser;
+use App\Exceptions\LastAdminException;
 use App\Models\Team;
 use App\Models\User;
 use Flux\Flux;
@@ -173,6 +174,8 @@ new class extends Component {
      * einer Policy — `Gate::before` gibt einem Admin jede Fähigkeit frei, eine
      * Policy liefe für ihn nie. Hier stehen sie ein zweites Mal, obwohl die
      * Zeile den Knopf schon verbirgt: das Markup ist keine Zugriffskontrolle.
+     * Verbindlich prüft {@see DeleteUser} den letzten Admin noch einmal unter
+     * Sperre; verliert die Liste diesen Wettlauf, meldet sie es als Toast.
      */
     public function deleteUser(): void
     {
@@ -193,16 +196,29 @@ new class extends Component {
             return;
         }
 
-        app(DeleteUser::class)->handle($user);
+        try {
+            app(DeleteUser::class)->handle($user);
+        } catch (LastAdminException) {
+            $this->closeDeleteModal();
 
+            Flux::toast(variant: 'danger', text: __('The last administrator cannot be deleted.'));
+
+            return;
+        }
+
+        $this->closeDeleteModal();
+
+        Flux::toast(variant: 'success', text: __('User deleted.'));
+    }
+
+    private function closeDeleteModal(): void
+    {
         $this->deletingId = null;
         $this->deleteConfirmation = '';
 
         unset($this->users, $this->lastActivity, $this->deletingUser, $this->deletingStats);
 
         $this->modal('delete-user')->close();
-
-        Flux::toast(variant: 'success', text: __('User deleted.'));
     }
 
     public function render(): mixed

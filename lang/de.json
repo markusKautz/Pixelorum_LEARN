@@ -740,5 +740,8 @@
     "Unknown source": "Unbekannte Quelle",
     "Export": "Exportieren",
     "The file is a complete backup of the content, but it cannot be uploaded again as it is:": "Die Datei sichert den Inhalt vollständig, lässt sich so aber nicht wieder hochladen:",
-    "Download anyway": "Trotzdem herunterladen"
+    "Download anyway": "Trotzdem herunterladen",
+    "The last administrator cannot be deleted.": "Der letzte Administrator kann nicht gelöscht werden.",
+    "You are the last administrator": "Du bist der letzte Administrator",
+    "Your account cannot be deleted while no other administrator exists.": "Dein Account kann nicht gelöscht werden, solange es keinen weiteren Administrator gibt."
 }

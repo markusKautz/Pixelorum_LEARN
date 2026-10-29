@@ -1,7 +1,9 @@
 <?php
 
+use App\Actions\Users\DeleteUser;
 use App\Concerns\PasswordValidationRules;
 use App\Livewire\Actions\Logout;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -12,14 +14,27 @@ new class extends Component {
 
     /**
      * Delete the currently authenticated user.
+     *
+     * Über {@see DeleteUser}, damit die Selbstlöschung dieselben Reste räumt
+     * wie die Nutzerliste. Erst ausloggen, dann löschen: der Logout rotiert
+     * den Remember-Token und speichert dabei das Model, ein schon gelöschtes
+     * legte er neu an. Den letzten Admin deshalb vorher abweisen, damit er
+     * eingeloggt bleibt; die gesperrte Prüfung in der Aktion fängt den Rest.
      */
-    public function deleteUser(Logout $logout): void
+    public function deleteUser(Logout $logout, DeleteUser $deleteUser): void
     {
         $this->validate([
             'password' => $this->currentPasswordRules(),
         ]);
 
-        tap(Auth::user(), $logout(...))->delete();
+        /** @var User $user */
+        $user = Auth::user();
+
+        abort_if($user->isLastAdmin(), 403);
+
+        $logout();
+
+        $deleteUser->handle($user);
 
         $this->redirect('/', navigate: true);
     }

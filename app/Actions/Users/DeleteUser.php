@@ -2,6 +2,7 @@
 
 namespace App\Actions\Users;
 
+use App\Exceptions\LastAdminException;
 use App\Models\Team;
 use App\Models\TeamInvitation;
 use App\Models\User;
@@ -33,10 +34,24 @@ class DeleteUser
      * Alles in einer Transaktion: bricht ein Schritt ab, bleibt kein
      * halb gelöschter Nutzer zurück, dessen Fortschritt weg und dessen Konto
      * noch da ist.
+     *
+     * @throws LastAdminException
      */
     public function handle(User $user): void
     {
         DB::transaction(function () use ($user) {
+            // 0. Nie den letzten Admin (#10). Die Admin-Zeilen bleiben bis zum
+            //    Ende der Transaktion gesperrt: löschen sich zwei Admins
+            //    gleichzeitig gegenseitig, sieht die zweite Löschung das
+            //    Ergebnis der ersten, statt beide auf veraltetem Stand zu prüfen.
+            if ($user->is_admin) {
+                $adminIds = User::query()->where('is_admin', true)->lockForUpdate()->pluck('id');
+
+                if ($adminIds->reject(fn (int $id) => $id === $user->id)->isEmpty()) {
+                    throw new LastAdminException;
+                }
+            }
+
             // 1. Das persönliche Team. Es heißt „<Name>'s Team", trägt also den
             //    Klarnamen, und `teams` hat keinen Fremdschlüssel auf den
             //    Nutzer. **Vor** dem Löschen des Kontos einsammeln: die

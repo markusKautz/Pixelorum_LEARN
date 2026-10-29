@@ -87,7 +87,7 @@ nicht, sondern speist nur den Hinweis „Seit Freigabe geändert“.
 | Übungsquizze ziehen nur Fragen aus sichtbaren Pfaden. | `BuildPracticeQuiz` |
 | Der Content-Import legt nur an; ein vorhandener Slug ergibt eine Kopie. Status und Freigabe setzt der Import selbst auf Entwurf und ungeprüft. | `ImportLearningPath::create()` |
 | Reihenfolge-Änderungen an Pfaden laufen unter einem gemeinsamen Lock. | `ImportLearningPath::ORDER_LOCK` |
-| Ein Konto lässt sich nicht selbst und nicht als letzter Admin löschen. | `User::isDeletableBy()`, `DeleteUser` |
+| Ein Admin löscht in der Nutzerliste nicht sein eigenes Konto. Der letzte Admin lässt sich weder dort noch über die Selbstlöschung löschen; die verbindliche Prüfung sperrt die Admin-Zeilen in der Transaktion. | `User::isDeletableBy()`, `DeleteUser` |
 | Gespeichert werden nur Lernergebnisse, kein Nutzungsverhalten. | `.ai/rules/app.md` |
 
 ## Content-Format und Schema-Version

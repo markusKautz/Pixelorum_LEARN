@@ -100,6 +100,8 @@ class User extends Authenticatable implements PasskeyUser
      *   Kontoeinstellungen, wo sie ausloggt und umleitet.
      * - **Nicht den letzten Ausbildner.** Sonst sperrt sich das Projekt aus:
      *   neue Admins entstehen nur über `lapp:make-admin` auf der Kommandozeile.
+     *   Hier die Vorprüfung für Knopf und Aufruf; verbindlich und gegen
+     *   gleichzeitige Löschungen gesperrt prüft `DeleteUser`.
      */
     public function isDeletableBy(self $actor): bool
     {

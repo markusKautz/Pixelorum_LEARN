@@ -79,6 +79,15 @@ new class extends Component {
             || (Auth::user() instanceof MustVerifyEmail && Auth::user()->hasVerifiedEmail());
     }
 
+    /**
+     * Der letzte Admin sieht statt der Selbstlöschung einen Hinweis (#10).
+     */
+    #[Computed]
+    public function isLastAdmin(): bool
+    {
+        return Auth::user()->isLastAdmin();
+    }
+
     public function render(): mixed
     {
         return $this->view()->title(__('Profile settings'));
@@ -126,7 +135,11 @@ new class extends Component {
             </div>
         </form>
 
-        @if ($this->showDeleteUser)
+        @if ($this->showDeleteUser && $this->isLastAdmin)
+            <flux:callout class="mt-10" variant="warning" icon="shield-exclamation" data-test="last-admin-callout"
+                :heading="__('You are the last administrator')"
+                :text="__('Your account cannot be deleted while no other administrator exists.')" />
+        @elseif ($this->showDeleteUser)
             <livewire:pages::settings.delete-user-form />
         @endif
     </x-pages::settings.layout>
