@@ -52,7 +52,7 @@ class BuildPracticeQuiz
      */
     public function handle(User $learner, array $pathIds, int $count, array $pinnedQuestionIds = []): Quiz
     {
-        $questionIds = $this->drawQuestionIds($pathIds, $count, $pinnedQuestionIds);
+        $questionIds = $this->drawQuestionIds($learner, $pathIds, $count, $pinnedQuestionIds);
 
         return DB::transaction(function () use ($learner, $questionIds): Quiz {
             $quiz = $this->practiceQuizOf($learner);
@@ -79,14 +79,14 @@ class BuildPracticeQuiz
      * @param  array<int, int>  $pathIds
      * @return array<int, int> Pfad-ID => Fragenzahl
      */
-    public function availableCounts(array $pathIds): array
+    public function availableCounts(User $learner, array $pathIds): array
     {
         if ($pathIds === []) {
             return [];
         }
 
         /** @var array<int, int> $counts */
-        $counts = $this->practicableQuestions($pathIds)
+        $counts = $this->practicableQuestions($learner, $pathIds)
             ->groupBy('learning_path_id')
             ->select('learning_path_id')
             ->selectRaw('COUNT(*) as question_count')
@@ -108,20 +108,20 @@ class BuildPracticeQuiz
      * @param  array<int, int>  $pinnedQuestionIds
      * @return array<int, int>
      */
-    protected function drawQuestionIds(array $pathIds, int $count, array $pinnedQuestionIds): array
+    protected function drawQuestionIds(User $learner, array $pathIds, int $count, array $pinnedQuestionIds): array
     {
         if ($pathIds === [] || $count < 1) {
             return [];
         }
 
-        $pinned = $this->validPinnedQuestionIds($pathIds, $pinnedQuestionIds);
+        $pinned = $this->validPinnedQuestionIds($learner, $pathIds, $pinnedQuestionIds);
         $remaining = max(0, $count - count($pinned));
 
         if ($remaining === 0) {
             return $pinned;
         }
 
-        $query = $this->practicableQuestions($pathIds);
+        $query = $this->practicableQuestions($learner, $pathIds);
 
         if ($pinned !== []) {
             $query->whereNotIn('id', $pinned);
@@ -145,14 +145,14 @@ class BuildPracticeQuiz
      * @param  array<int, int>  $pinnedQuestionIds
      * @return array<int, int>
      */
-    protected function validPinnedQuestionIds(array $pathIds, array $pinnedQuestionIds): array
+    protected function validPinnedQuestionIds(User $learner, array $pathIds, array $pinnedQuestionIds): array
     {
         if ($pinnedQuestionIds === []) {
             return [];
         }
 
         /** @var array<int, int> $valid */
-        $valid = $this->practicableQuestions($pathIds)
+        $valid = $this->practicableQuestions($learner, $pathIds)
             ->whereIn('id', $pinnedQuestionIds)
             ->pluck('id')
             ->all();
@@ -165,17 +165,18 @@ class BuildPracticeQuiz
      *
      * Das Grounding-Gate aus Konzept e) gilt auch beim Üben: gezogen wird
      * ausschließlich aus **freigegebenen** Pfaden — auf ungeprüftem Stoff soll
-     * niemand üben. Fragen ohne Optionen fallen heraus, weil sie unbeantwortbar
+     * niemand üben —, und nur aus solchen, die die Gruppe des Lehrlings sieht
+     * (#9). Fragen ohne Optionen fallen heraus, weil sie unbeantwortbar
      * wären und den Versuch blockieren würden.
      *
      * @param  array<int, int>  $pathIds
      * @return Builder<Question>
      */
-    protected function practicableQuestions(array $pathIds): Builder
+    protected function practicableQuestions(User $learner, array $pathIds): Builder
     {
         return Question::query()
             ->whereIn('learning_path_id', LearningPath::query()
-                ->visibleToLearners()
+                ->visibleTo($learner)
                 ->whereIn('id', $pathIds)
                 ->select('id'))
             ->whereHas('options');

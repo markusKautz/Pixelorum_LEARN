@@ -16,7 +16,7 @@ class LearningPathPolicy
      * Determine whether the user can view any models.
      *
      * Die Liste selbst steht jedem Eingeloggten offen; welche Pfade darin
-     * auftauchen, entscheidet der visibleToLearners-Scope.
+     * auftauchen, entscheidet der visibleTo-Scope.
      */
     public function viewAny(User $user): bool
     {
@@ -28,7 +28,7 @@ class LearningPathPolicy
      */
     public function view(User $user, LearningPath $learningPath): bool
     {
-        return $learningPath->isVisibleToLearners();
+        return $learningPath->isVisibleTo($user);
     }
 
     /**

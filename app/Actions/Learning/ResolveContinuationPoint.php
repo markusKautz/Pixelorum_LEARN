@@ -81,7 +81,7 @@ class ResolveContinuationPoint
             }
         } else {
             // Regel 4: noch nichts gelernt → erster sichtbarer Pfad.
-            $point = $this->fromFirstVisiblePath();
+            $point = $this->fromFirstVisiblePath($user);
             if ($point instanceof ContinuationPoint) {
                 return $point;
             }
@@ -186,7 +186,7 @@ class ResolveContinuationPoint
      *
      * Die Sichtbarkeit steht in der Query, nicht in einer Schleife darüber.
      * Das ist nicht nur kürzer, es bindet die Regel auch an dieselbe eine
-     * Formulierung wie überall sonst im Projekt (den `visibleToLearners`-Scope)
+     * Formulierung wie überall sonst im Projekt (den `visibleTo`-Scope)
      * statt an ihre instanzseitige Zwillingsmethode. `whereHas` bringt die
      * globalen Scopes des Ziels mit, ein soft-gelöschter Pfad fällt also
      * genauso heraus wie ein unveröffentlichter — nur eben in SQL statt als
@@ -201,7 +201,7 @@ class ResolveContinuationPoint
     {
         $completion = LessonCompletion::query()
             ->where('user_id', $user->id)
-            ->whereHas('lesson.learningPath', $this->nurSichtbarePfade(...))
+            ->whereHas('lesson.learningPath', fn (Builder $paths) => $this->nurSichtbarePfade($paths, $user))
             ->with('lesson.learningPath')
             ->latest('completed_at')
             ->latest('id')
@@ -219,18 +219,18 @@ class ResolveContinuationPoint
      *
      * @param  Builder<LearningPath>  $query
      */
-    protected function nurSichtbarePfade(Builder $query): void
+    protected function nurSichtbarePfade(Builder $query, User $user): void
     {
-        $query->visibleToLearners();
+        $query->visibleTo($user);
     }
 
     /**
      * Regel 3: noch nichts gelernt — der erste sichtbare Pfad.
      */
-    protected function fromFirstVisiblePath(): ?ContinuationPoint
+    protected function fromFirstVisiblePath(User $user): ?ContinuationPoint
     {
         $path = LearningPath::query()
-            ->visibleToLearners()
+            ->visibleTo($user)
             ->orderBy('position')
             ->orderBy('id')
             ->first();

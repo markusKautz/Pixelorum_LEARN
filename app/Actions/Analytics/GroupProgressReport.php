@@ -15,6 +15,7 @@ use App\Models\LearningPath;
 use App\Models\Quiz;
 use App\Models\Team;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -61,7 +62,7 @@ class GroupProgressReport
         /** @var EloquentCollection<int, User> $members */
         $members = $team->apprentices()->orderBy('name')->get();
 
-        $paths = $this->visiblePaths();
+        $paths = $this->visiblePaths($team);
         $memberIds = $members->modelKeys();
 
         $matrix = $this->matrix($memberIds, $paths);
@@ -264,17 +265,19 @@ class GroupProgressReport
         $userIds = $memberships->pluck('user_id')->unique()->map(intval(...))->values()->all();
 
         $paths = $this->visiblePaths();
+        $paths->load('teams:teams.id');
         $matrix = $this->matrix($userIds, $paths);
         $lastActivity = $this->computeLastActivity->handle($userIds);
 
         $activeSince = Carbon::now()->subDays(self::ACTIVE_WINDOW_DAYS);
 
         return $teams
-            ->mapWithKeys(function (Team $team) use ($memberIdsByTeam, $matrix, $lastActivity, $activeSince): array {
+            ->mapWithKeys(function (Team $team) use ($memberIdsByTeam, $matrix, $lastActivity, $activeSince, $paths): array {
                 $inactiveSince = Carbon::now()->subDays($team->inactivity_threshold_days);
+                $teamPathIds = array_flip($this->pathsVisibleTo($team, $paths)->modelKeys());
 
-                $stats = array_map(function (int $memberId) use ($matrix, $lastActivity, $inactiveSince, $activeSince): array {
-                    $memberRows = array_values($matrix[$memberId] ?? []);
+                $stats = array_map(function (int $memberId) use ($matrix, $lastActivity, $inactiveSince, $activeSince, $teamPathIds): array {
+                    $memberRows = array_values(array_intersect_key($matrix[$memberId] ?? [], $teamPathIds));
                     $activeAt = $lastActivity[$memberId] ?? null;
 
                     return $this->memberStats(
@@ -295,16 +298,40 @@ class GroupProgressReport
      * nicht künstlich schlecht aussehen lassen. Ein unveröffentlichtes
      * Abschluss-Quiz zählt wie „kein Quiz" (kann niemand ablegen).
      *
+     * Mit Gruppe nur die Pfade, die sie sieht (#9, E10), direkt in SQL; ohne
+     * Gruppe alle, und `summarize()` teilt sie danach je Gruppe auf.
+     *
      * @return EloquentCollection<int, LearningPath>
      */
-    protected function visiblePaths(): EloquentCollection
+    protected function visiblePaths(?Team $team = null): EloquentCollection
     {
         return LearningPath::query()
             ->visibleToLearners()
+            ->when($team, fn (Builder $paths, Team $team) => $paths->where(fn (Builder $paths) => $paths
+                ->whereDoesntHave('teams')
+                ->orWhereHas('teams', fn (Builder $teams) => $teams->whereKey($team->id))))
             ->withCount('lessons')
             ->withPlayableFinalQuiz()
             ->orderBy('position')
             ->get();
+    }
+
+    /**
+     * Die Pfade, die diese Gruppe sieht: ohne Zuweisung oder ihr zugewiesen
+     * (#9, E10).
+     *
+     * In PHP gefiltert statt je Gruppe neu abgefragt, damit `summarize()` bei
+     * einer Sammelabfrage bleibt; dieselbe Regel wie in `visiblePaths()`.
+     * Erwartet die Pfade mit geladener `teams`-Relation.
+     *
+     * @param  EloquentCollection<int, LearningPath>  $paths
+     * @return EloquentCollection<int, LearningPath>
+     */
+    protected function pathsVisibleTo(Team $team, EloquentCollection $paths): EloquentCollection
+    {
+        return $paths
+            ->filter(fn (LearningPath $path): bool => $path->teams->isEmpty() || $path->teams->contains('id', $team->id))
+            ->values();
     }
 
     /**

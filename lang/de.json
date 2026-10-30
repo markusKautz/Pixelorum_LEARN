@@ -758,5 +758,13 @@
     "and :count more": "und :count weitere",
     "Type \":count\" to confirm": "Tippe „:count“ zur Bestätigung",
     "The number does not match.": "Die Anzahl stimmt nicht überein.",
-    ":count user deleted.|:count users deleted.": ":count Nutzer gelöscht.|:count Nutzer gelöscht."
+    ":count user deleted.|:count users deleted.": ":count Nutzer gelöscht.|:count Nutzer gelöscht.",
+    "Assigned": "Zugewiesen",
+    "Assign": "Zuweisen",
+    "Remove": "Entfernen",
+    "{1} :count group|[2,*] :count groups": "{1} :count Gruppe|[2,*] :count Gruppen",
+    "Every group sees this path. Pick groups to limit it to them.": "Jede Gruppe sieht diesen Pfad. Wähle Gruppen, um ihn auf sie einzuschränken.",
+    "Only the groups picked here see this path. Progress of other groups is kept and returns when you assign them again.": "Nur die hier gewählten Gruppen sehen diesen Pfad. Der Fortschritt anderer Gruppen bleibt erhalten und ist wieder da, sobald du sie erneut zuweist.",
+    "Released paths this group sees. You limit a path to groups on its page.": "Freigegebene Pfade, die diese Gruppe sieht. Auf Gruppen einschränken kannst du einen Pfad auf seiner Seite.",
+    "No released paths for this group yet.": "Für diese Gruppe gibt es noch keine freigegebenen Pfade."
 }

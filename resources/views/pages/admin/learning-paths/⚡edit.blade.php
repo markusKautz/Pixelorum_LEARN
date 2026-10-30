@@ -8,6 +8,7 @@ use App\Enums\ReviewStatus;
 use App\Models\LearningPath;
 use App\Models\Lesson;
 use App\Models\Question;
+use App\Models\Team;
 use Flux\Flux;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -318,6 +319,55 @@ new class extends Component {
     /**
      * @return Collection<int, Lesson>
      */
+    /**
+     * Den Pfad auf eine Gruppe einschränken oder die Einschränkung
+     * zurücknehmen (#9).
+     *
+     * Sofort wirksam wie „An Gruppen ausgeben“ im Quiz-Editor: die Zuweisung
+     * ist keine Eigenschaft des Formulars, ein Validierungsfehler im Titel
+     * soll sie nicht mit verwerfen.
+     */
+    public function toggleGroup(int $teamId): void
+    {
+        Gate::authorize('update', $this->learningPath);
+
+        $team = Team::query()
+            ->where('is_personal', false)
+            ->findOrFail($teamId);
+
+        $this->learningPath->teams()->toggle($team->id);
+
+        unset($this->assignedTeamIds);
+
+        Flux::toast(variant: 'success', text: __('Assignment updated.'));
+    }
+
+    /**
+     * Die Gruppen, auf die dieser Pfad eingeschränkt ist.
+     *
+     * @return array<int, int>
+     */
+    #[Computed]
+    public function assignedTeamIds(): array
+    {
+        return $this->learningPath->teams()->pluck('teams.id')->all();
+    }
+
+    /**
+     * Die Lehrlingsgruppen, auf die eingeschränkt werden kann.
+     *
+     * @return Collection<int, Team>
+     */
+    #[Computed]
+    public function assignableTeams(): Collection
+    {
+        return Team::query()
+            ->groups()
+            ->withCount('apprentices')
+            ->orderBy('name')
+            ->get();
+    }
+
     #[Computed]
     public function lessons(): Collection
     {
@@ -495,6 +545,59 @@ new class extends Component {
             <flux:input wire:model="pass_threshold" type="number" min="1" max="100" :label="__('Pass threshold (%)')" required data-test="path-threshold-input" />
         </div>
     </form>
+
+    <flux:separator />
+
+    {{-- Gruppen (#9): ohne Auswahl sieht jede Gruppe den Pfad (E8). --}}
+    <div class="space-y-3" data-test="path-groups-section">
+        <div>
+            <flux:heading size="lg">{{ __('Groups') }}</flux:heading>
+            <flux:subheading>
+                {{ $this->assignedTeamIds === []
+                    ? __('Every group sees this path. Pick groups to limit it to them.')
+                    : __('Only the groups picked here see this path. Progress of other groups is kept and returns when you assign them again.') }}
+            </flux:subheading>
+        </div>
+
+        @forelse ($this->assignableTeams as $team)
+            @php($isAssigned = in_array($team->id, $this->assignedTeamIds, true))
+
+            <div
+                wire:key="path-team-{{ $team->id }}"
+                class="flex items-center gap-3 rounded-lg border border-zinc-200 p-3 dark:border-zinc-700"
+                data-test="path-group-row"
+            >
+                <div class="min-w-0 flex-1">
+                    <p class="truncate font-medium">{{ $team->name }}</p>
+                    <div class="mt-1 flex flex-wrap items-center gap-1">
+                        <flux:badge size="sm" color="zinc">
+                            {{ trans_choice('{1} :count apprentice|[2,*] :count apprentices', $team->apprentices_count, ['count' => $team->apprentices_count]) }}
+                        </flux:badge>
+                        @if ($team->isArchived())
+                            <flux:badge size="sm" color="zinc">{{ __('archived') }}</flux:badge>
+                        @endif
+                        @if ($isAssigned)
+                            <flux:badge size="sm" color="green" icon="check">{{ __('Assigned') }}</flux:badge>
+                        @endif
+                    </div>
+                </div>
+
+                <flux:button
+                    :variant="$isAssigned ? 'ghost' : 'filled'"
+                    size="sm"
+                    :icon="$isAssigned ? 'x-mark' : 'plus'"
+                    wire:click="toggleGroup({{ $team->id }})"
+                    data-test="path-group-toggle"
+                >
+                    {{ $isAssigned ? __('Remove') : __('Assign') }}
+                </flux:button>
+            </div>
+        @empty
+            <flux:text class="py-4 text-center text-zinc-500 dark:text-zinc-400">
+                {{ __('No groups yet.') }}
+            </flux:text>
+        @endforelse
+    </div>
 
     <flux:separator />
 

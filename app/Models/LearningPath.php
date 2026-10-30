@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -47,6 +48,7 @@ use Illuminate\Support\Str;
  * @property-read Collection<int, LessonBlock> $lessonBlocks
  * @property-read Collection<int, QuestionOption> $questionOptions
  * @property-read User|null $verifier
+ * @property-read Collection<int, Team> $teams
  */
 #[Fillable([
     'title',
@@ -204,6 +206,20 @@ class LearningPath extends Model
     }
 
     /**
+     * Get the groups this path is limited to (#9).
+     *
+     * Leer heißt „für alle Gruppen“ (E8); erst eine Zuweisung schränkt ein.
+     * Betriebsdaten der Installation, deshalb nicht Teil von Export und
+     * Import (E11).
+     *
+     * @return BelongsToMany<Team, $this>
+     */
+    public function teams(): BelongsToMany
+    {
+        return $this->belongsToMany(Team::class, 'learning_path_team')->withTimestamps();
+    }
+
+    /**
      * Scope a query to the paths apprentices may see.
      *
      * Grounding-Gate (Konzept e): ein Pfad wird erst sichtbar, wenn er
@@ -216,6 +232,29 @@ class LearningPath extends Model
     {
         $query->where('status', PathStatus::Published)
             ->where('review_status', ReviewStatus::Verified);
+    }
+
+    /**
+     * Scope a query to the paths this apprentice may see (#9).
+     *
+     * Das Grounding-Gate aus {@see self::visibleToLearners()} und dazu die
+     * Gruppenregel (E8): ohne Zuweisung für alle, mit Zuweisung nur für die
+     * zugewiesenen Gruppen. Persönliche Teams sind keine Lehrlingsgruppen und
+     * taugen nicht als Zugang (wie {@see Quiz::assignedTo()}). Entzieht man
+     * eine Zuweisung, bleibt der Fortschritt erhalten, der Pfad ist nur nicht
+     * mehr sichtbar (E9).
+     *
+     * @param  Builder<LearningPath>  $query
+     */
+    #[Scope]
+    protected function visibleTo(Builder $query, User $learner): void
+    {
+        $query->visibleToLearners()
+            ->where(fn (Builder $paths) => $paths
+                ->whereDoesntHave('teams')
+                ->orWhereHas('teams', fn (Builder $teams) => $teams
+                    ->where('teams.is_personal', false)
+                    ->whereIn('teams.id', $learner->teams()->select('teams.id'))));
     }
 
     /**
@@ -268,6 +307,26 @@ class LearningPath extends Model
     {
         return $this->status === PathStatus::Published
             && $this->review_status === ReviewStatus::Verified;
+    }
+
+    /**
+     * Determine whether this apprentice may see the path — die
+     * instanzseitige Entsprechung zum visibleTo-Scope.
+     */
+    public function isVisibleTo(User $learner): bool
+    {
+        if (! $this->isVisibleToLearners()) {
+            return false;
+        }
+
+        if (! $this->teams()->exists()) {
+            return true;
+        }
+
+        return $this->teams()
+            ->where('teams.is_personal', false)
+            ->whereIn('teams.id', $learner->teams()->select('teams.id'))
+            ->exists();
     }
 
     /**

@@ -136,7 +136,7 @@ class LearnerProgressReport
     protected function visiblePaths(User $learner): EloquentCollection
     {
         return LearningPath::query()
-            ->visibleToLearners()
+            ->visibleTo($learner)
             ->withLessonProgressFor($learner)
             ->withPlayableFinalQuiz()
             ->orderBy('position')
@@ -327,7 +327,7 @@ class LearnerProgressReport
                 ->whereNull('questions.learning_path_id')
                 ->orWhereIn(
                     'questions.learning_path_id',
-                    LearningPath::query()->visibleToLearners()->select('id'),
+                    LearningPath::query()->visibleTo($learner)->select('id'),
                 ))
             ->select('question_responses.question_id')
             ->selectRaw('question_responses.is_correct')

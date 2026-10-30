@@ -5,6 +5,7 @@ use App\Enums\QuizKind;
 use App\Models\LearningPath;
 use App\Models\Quiz;
 use App\Models\QuizAttempt;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
@@ -145,15 +146,19 @@ new class extends Component {
     }
 
     /**
-     * Die zur Auswahl stehenden Pfade — nur freigegebene (Konzept e).
+     * Die zur Auswahl stehenden Pfade — nur freigegebene (Konzept e), die die
+     * Gruppe des Lehrlings sieht (#9).
      *
      * @return Collection<int, LearningPath>
      */
     #[Computed]
     public function paths(): Collection
     {
+        /** @var User $learner */
+        $learner = Auth::user();
+
         return LearningPath::query()
-            ->visibleToLearners()
+            ->visibleTo($learner)
             ->orderBy('position')
             ->get();
     }
@@ -169,7 +174,10 @@ new class extends Component {
     #[Computed]
     public function availableCounts(): array
     {
-        return app(BuildPracticeQuiz::class)->availableCounts($this->paths->modelKeys());
+        /** @var User $learner */
+        $learner = Auth::user();
+
+        return app(BuildPracticeQuiz::class)->availableCounts($learner, $this->paths->modelKeys());
     }
 
     /** Wie viele Fragen die aktuelle Auswahl hergibt. */

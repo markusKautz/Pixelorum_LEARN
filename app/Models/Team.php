@@ -28,6 +28,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $deleted_at
  * @property-read Collection<int, TeamInvitation> $invitations
  * @property-read Collection<int, Membership> $memberships
+ * @property-read Collection<int, LearningPath> $learningPaths
  * @property-read Collection<int, User> $members
  * @property-read Collection<int, Quiz> $quizzes
  */
@@ -128,6 +129,19 @@ class Team extends Model
     public function quizzes(): BelongsToMany
     {
         return $this->belongsToMany(Quiz::class, 'quiz_team')->withTimestamps();
+    }
+
+    /**
+     * Get the learning paths limited to this group (#9).
+     *
+     * Nur die Einschränkungen: Pfade ohne jede Zuweisung sieht die Gruppe
+     * ebenfalls (E8).
+     *
+     * @return BelongsToMany<LearningPath, $this>
+     */
+    public function learningPaths(): BelongsToMany
+    {
+        return $this->belongsToMany(LearningPath::class, 'learning_path_team')->withTimestamps();
     }
 
     /**

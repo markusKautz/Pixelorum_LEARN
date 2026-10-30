@@ -11,8 +11,8 @@ Anführungszeichen stehen so auf dem Bildschirm. Die Oberfläche nennt Admins
   `php artisan lapp:make-admin`. Weitere Admins legst du unter „Nutzer“ an
   (siehe [Nutzer verwalten](#nutzer-verwalten)).
 - **Lehrlinge** gehören genau einer Gruppe an, meist einem Jahrgang. Sie sehen nur
-  veröffentlichte und freigegebene Lernpfade und die Quizze, die ihrer Gruppe
-  ausgegeben sind.
+  veröffentlichte und freigegebene Lernpfade, die für alle Gruppen gelten oder
+  ihrer Gruppe zugewiesen sind, und die Quizze, die ihrer Gruppe ausgegeben sind.
 
 ## Gruppe anlegen und Lehrlinge einladen
 
@@ -103,6 +103,14 @@ In der Detailansicht eines Pfades:
   zum Aufklappen, Code, Diagramm (Mermaid), Bild oder Video, Glossar,
   Abschnittstrenner. Bilder lädst du im Blockformular hoch.
 - **Quellenbelege** je Lektion und je Frage: Quelle und genau eine Fundstelle.
+- **Gruppen:** Ohne Auswahl sieht jede Gruppe den Pfad. Mit „Zuweisen“ schränkst du
+  ihn auf einzelne Gruppen ein; dann sehen ihn nur noch diese. Die Änderung gilt
+  sofort. Nimmst du eine Gruppe wieder heraus, bleibt der Fortschritt ihrer
+  Lehrlinge erhalten und ist wieder da, sobald du sie erneut zuweist. In der Liste
+  „Lernpfade“ zeigt ein Badge, auf wie viele Gruppen ein Pfad eingeschränkt ist; auf
+  der Seite einer Gruppe stehen die freigegebenen Pfade, die sie sieht. Wird die
+  einzige zugewiesene Gruppe gelöscht, sieht danach wieder jede Gruppe den Pfad.
+  Zuweisungen gehören nicht zum Export.
 
 Oben in der Detailansicht steht dauerhaft, was einen erneuten Upload des exportierten
 Pfades verhindern würde, etwa eine fehlende Quellenangabe.
@@ -147,7 +155,8 @@ deiner Quizliste; ihre Antworten fließen aber in die Auswertung der Schwachstel
 
 - **Dashboard:** die laufenden Jahrgänge auf einen Blick, mit der Zahl der Lehrlinge,
   die in den letzten sieben Tagen aktiv waren. Archivierte Jahrgänge zählen nicht mit.
-- **Auswertung einer Gruppe:** Lesefortschritt je Pfad, Verteilung der Lehrlinge
+- **Auswertung einer Gruppe:** Lesefortschritt je Pfad (nur die Pfade, die die
+  Gruppe sieht), Verteilung der Lehrlinge
   nach Lesefortschritt, Abschluss-Quizze mit Bestehensquote, ausgegebene freie
   Quizze und inaktive Lehrlinge. Die Bestehensquote zählt alle Mitglieder der
   Gruppe, nicht nur die, die angetreten sind.

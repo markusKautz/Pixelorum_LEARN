@@ -43,6 +43,7 @@ erDiagram
     quizzes ||--o{ quiz_questions : ordnet
     questions ||--o{ quiz_questions : steckt_in
     quizzes }o--o{ teams : "ausgegeben (quiz_team)"
+    learning_paths }o--o{ teams : "eingeschraenkt (learning_path_team)"
     users ||--o{ quiz_attempts : legt_ab
     quizzes ||--o{ quiz_attempts : hat
     quiz_attempts ||--o{ question_responses : enthaelt
@@ -67,8 +68,17 @@ Ein Lernpfad hat zwei unabhängige Felder:
   die Inhalte gegen die Belege geprüft hat. Dazu `verified_at` und `verified_by`.
 
 Für Lernende sichtbar ist ein Pfad nur mit beidem
-(`LearningPath::isVisibleToLearners()`, Scope `visibleToLearners`). Quizze haben
-einen eigenen `status`.
+(`LearningPath::isVisibleToLearners()`, Scope `visibleToLearners`). Dazu kommt die
+Gruppe: Ein Pfad ohne Zeile in `learning_path_team` ist für alle Gruppen sichtbar,
+mit Zuweisungen nur für die zugewiesenen. Persönliche Teams geben keinen Zugang.
+Für einen bestimmten Lernenden gilt deshalb `LearningPath::isVisibleTo()` bzw. der
+Scope `visibleTo`. Quizze haben einen eigenen `status`.
+
+Wird eine Zuweisung entzogen, bleibt der Fortschritt erhalten; der Pfad ist nur
+nicht mehr sichtbar und kommt mit einer neuen Zuweisung samt Fortschritt zurück.
+Wird eine Gruppe endgültig gelöscht, fallen ihre Zuweisungen mit weg. War sie die
+einzige, ist der Pfad danach wieder für alle sichtbar. Zuweisungen sind
+Betriebsdaten und reisen nicht im Content-Export mit.
 
 `LearningPath::changedSinceVerification()` vergleicht das jüngste `updated_at` von
 Pfad, Lektionen, Blöcken und Fragen mit `verified_at`. Es entwertet die Freigabe
@@ -84,7 +94,9 @@ nicht, sondern speist nur den Hinweis „Seit Freigabe geändert“.
 | Veröffentlichen, Sortieren und Freigeben ändern `updated_at` nicht, damit sie nicht als Inhaltsänderung gelten. | `SetPathStatus`, `sortPaths()` in `admin/learning-paths/⚡index`, Freigabeansicht |
 | Wird eine Lektion gelöscht, wandern ihre Zwischen-Checks in den Pool. | `admin/learning-paths/⚡edit`, `deleteLesson()` |
 | Gemischte Quizze und Übungsquizze frieren die Fragenliste je Versuch ein, damit alte Versuche gegen ihre eigenen Fragen gewertet bleiben. | `Quiz::freezesQuestionOrder()`, `quiz_attempts.question_order` |
-| Übungsquizze ziehen nur Fragen aus sichtbaren Pfaden. | `BuildPracticeQuiz` |
+| Übungsquizze ziehen nur Fragen aus Pfaden, die der Lernende sieht. | `BuildPracticeQuiz` |
+| Lernende sehen nur Pfade ohne Zuweisung oder solche, die ihrer Gruppe zugewiesen sind; das gilt für Pfad, Lektionen, Abschluss-Quiz, Weiterlernen und Fortschritt. | `LearningPath::visibleTo()`, `LearningPathPolicy`, `QuizPolicy` |
+| Die Gruppenauswertung zählt je Gruppe nur die Pfade, die diese Gruppe sieht. | `GroupProgressReport` |
 | Der Content-Import legt nur an; ein vorhandener Slug ergibt eine Kopie. Status und Freigabe setzt der Import selbst auf Entwurf und ungeprüft. | `ImportLearningPath::create()` |
 | Reihenfolge-Änderungen an Pfaden laufen unter einem gemeinsamen Lock. | `ImportLearningPath::ORDER_LOCK` |
 | Ein Admin löscht in der Nutzerliste nicht sein eigenes Konto. Der letzte Admin lässt sich weder dort noch über die Selbstlöschung löschen; die verbindliche Prüfung sperrt die Admin-Zeilen in der Transaktion. | `User::isDeletableBy()`, `DeleteUser` |
