@@ -24,12 +24,12 @@ deutlich erleichtert: Zusammen mit dem passenden KI-Skill
 ([`learn-content`](#skill-learn-content)) entstehen aus
 vorhandenem Quellmaterial fertige Lernpfade. Die Plattform bietet Lernpfade und
 Quizze, ist nach didaktischen Grundlagen aufgebaut und macht den Lernfortschritt für
-Lernende wie für die Kursleitung sichtbar. Inhalte werden gegen Quellen geprüft und
+Teilnehmer_innen wie für die Kursadmins sichtbar. Inhalte werden gegen Quellen geprüft und
 erst nach Freigabe sichtbar geschaltet und Gruppen zugewiesen.
 
 Die Plattform kennt zwei Rollen:
 
-- **Lernende** gehören genau einer Gruppe an, arbeiten Lernpfade durch und
+- **Teilnehmer_innen** gehören genau einer Gruppe an, arbeiten Lernpfade durch und
   absolvieren die zugehörigen Quizze.
 - **Admins** arbeiten global über alle Gruppen hinweg, verwalten Inhalte, Gruppen
   und Mitgliedschaften und sehen den Fortschritt ihrer Gruppen.
@@ -134,7 +134,7 @@ Wer nur das Frontend braucht, nutzt `npm run dev`; für einen Produktionsbuild `
 > `npm run dev` läuft nicht oder `npm run build` wurde nach der Änderung nicht ausgeführt.
 
 Für die lokale Entwicklung (`APP_ENV=local`) legt `php artisan db:seed` Dev-Zugänge
-(`admin@example.com`, zwei Lernende, Passwort `password`) und einen Demo-Lernpfad an.
+(`admin@example.com`, zwei Teilnehmer_innen, Passwort `password`) und einen Demo-Lernpfad an.
 Der Lauf ist wiederholbar; außerhalb von `local` legt der Seeder nichts an.
 
 ## Projektstruktur
@@ -151,7 +151,7 @@ resources/views/pages/
                       Seiten als Livewire-Single-File-Components (⚡*.blade.php)
 routes/
   web.php             öffentliche Seiten und Auth
-  learn.php           Lernbereich der Lernenden
+  learn.php           Lernbereich der Teilnehmer_innen
   admin.php           Adminbereich
   settings.php        Kontoeinstellungen
 .ai/
@@ -169,7 +169,7 @@ Lernpfade sind JSON-Dateien: ein Lernpfad je Datei, mit Lektionen, Blöcken,
 Zwischen-Checks, Pool-Fragen, Abschlussquiz und den Quellen, auf die sich jede
 Lektion und jede Frage stützt. Ein Admin lädt sie unter *Lernpfade → Lernpfad
 importieren* hoch; der Pfad entsteht ungeprüft und nicht sichtbar und erscheint
-für Lernende erst nach Freigabe, Sichtbarschalten und Zuweisung an ihre Gruppe. Jeder Pfad lässt sich als
+für Teilnehmer_innen erst nach Freigabe, Sichtbarschalten und Zuweisung an ihre Gruppe. Jeder Pfad lässt sich als
 JSON (mit hochgeladenen Bildern als ZIP) wieder exportieren.
 
 Das Format beschreibt [`format.md`](.ai/skills/learn-content/references/format.md);
@@ -210,7 +210,7 @@ Was den Skill ausmacht:
   Am Ende übergibt er die geprüfte Datei mit Zusammenfassung und offener Lückenliste.
 - **Didaktik und Sprache** sind festgelegt: passende Blocktypen je Inhalt,
   Zwischen-Checks und Pool-Fragen je Lernziel, Distraktoren aus typischen
-  Fehlvorstellungen, Lernendentext ohne KI-Floskeln.
+  Fehlvorstellungen, Text für Teilnehmer_innen ohne KI-Floskeln.
 - **Geprüft wie beim Upload.** Der Agent validiert die Datei mit
   `php artisan lapp:content:validate --file=…`, bis keine Befunde mehr kommen.
   Die Datei bleibt nicht sichtbar; freigeben, sichtbar schalten und Gruppen
@@ -226,7 +226,7 @@ durchsehen → übergeben.
 | [`references/format.md`](.ai/skills/learn-content/references/format.md) | JSON-Format, Blocktypen, Fragetypen, erlaubte Werte |
 | [`references/sources.md`](.ai/skills/learn-content/references/sources.md) | Quellen, Belege, Lücken, Webrecherche |
 | [`references/didactics.md`](.ai/skills/learn-content/references/didactics.md) | Struktur, Blöcke, Fragen, Erklärungen |
-| [`references/style.md`](.ai/skills/learn-content/references/style.md) | Sprache im Lernendentext |
+| [`references/style.md`](.ai/skills/learn-content/references/style.md) | Sprache im Text für Teilnehmer_innen |
 | [`references/example.json`](.ai/skills/learn-content/references/example.json) | vollständiger Beispielpfad |
 
 **Verwenden.** In diesem Repository steht der Skill Claude Code und anderen Agenten

@@ -99,7 +99,7 @@ test('the summary card shows the apprentices per reading progress band', functio
     $html = Livewire::actingAs($this->admin)
         ->test('pages::admin.analytics.group', ['team' => $this->group])
         ->assertOk()
-        ->assertSee('Lehrlinge nach Lesefortschritt')
+        ->assertSee('Teilnehmer_innen nach Lesefortschritt')
         ->assertSeeInOrder(['unter 25 %', '25 bis unter 50 %', '50 bis unter 75 %', 'ab 75 %'])
         ->assertDontSeeHtml('data-test="summary-completed"')
         ->html();

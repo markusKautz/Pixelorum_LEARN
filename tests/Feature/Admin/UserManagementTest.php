@@ -22,7 +22,7 @@ test('the list is fully in German', function () {
     Livewire::actingAs($this->admin)
         ->test('pages::admin.users.index')
         ->assertOk()
-        ->assertSee('Lehrling')
+        ->assertSee('Teilnehmer_in')
         ->assertDontSee('Apprentice')
         // Die Paginierungszeile kommt aus Flux' eigenem View und läuft über
         // vier einzelne `__()`-Aufrufe.
