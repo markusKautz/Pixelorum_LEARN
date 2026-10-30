@@ -68,7 +68,7 @@ class QuizPolicy
         }
 
         // Relation null = Pfad soft-gelöscht ⇒ kein Gate erfüllbar.
-        return $quiz->learningPath?->isVisibleToLearners() ?? false;
+        return $quiz->learningPath?->isVisibleTo($user) ?? false;
     }
 
     /**

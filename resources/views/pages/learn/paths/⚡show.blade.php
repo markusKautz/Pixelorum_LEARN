@@ -18,7 +18,7 @@ new class extends Component {
     /**
      * Lehrlinge sehen nur freigegebene Pfade (403 sonst); Admins passieren
      * Gate::before und können den Pfad per Direktlink vorschauen — die Listen
-     * laufen über den visibleToLearners-Scope (Entscheidung 8).
+     * laufen über den visibleTo-Scope (Entscheidung 8, Gruppen ab #9).
      */
     public function mount(LearningPath $learningPath): void
     {

@@ -222,7 +222,7 @@ new class extends Component {
         // vier Aggregate je Zeile. Vorgeladen sind sie Subselects derselben
         // Abfrage; ohne den Scope holt sie jede Zeile einzeln nach.
         return LearningPath::query()
-            ->withCount(['lessons', 'questions', 'quizzes'])
+            ->withCount(['lessons', 'questions', 'quizzes', 'teams'])
             ->withContentTimestamps()
             ->orderBy('position')
             ->get();
@@ -338,6 +338,12 @@ new class extends Component {
                     </flux:table.cell>
                     <flux:table.cell variant="strong">
                         <span class="block max-w-xs truncate" title="{{ $path->title }}">{{ $path->title }}</span>
+                        {{-- Ohne Zuweisung sieht jede Gruppe den Pfad (#9, E8). --}}
+                        @if ($path->teams_count > 0)
+                            <flux:badge size="sm" color="sky" icon="user-group" class="mt-1" data-test="path-limited-badge">
+                                {{ trans_choice('{1} :count group|[2,*] :count groups', $path->teams_count, ['count' => $path->teams_count]) }}
+                            </flux:badge>
+                        @endif
                     </flux:table.cell>
                     <flux:table.cell>
                         <flux:badge size="sm" :color="$path->status === PathStatus::Published ? 'green' : 'zinc'">
