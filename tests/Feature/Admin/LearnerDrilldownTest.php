@@ -84,8 +84,8 @@ test('an apprentice of another group yields a 404', function () {
 });
 
 test('the path list includes untouched paths as not started', function () {
-    $started = LearningPath::factory()->published()->verified()->create(['position' => 1]);
-    $untouched = LearningPath::factory()->published()->verified()->create(['position' => 2]);
+    $started = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['position' => 1]);
+    $untouched = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['position' => 2]);
 
     $lessons = Lesson::factory()->for($started)->count(2)->sequence(
         ['position' => 1], ['position' => 2],
@@ -113,7 +113,7 @@ test('the path list includes untouched paths as not started', function () {
 });
 
 test('the quiz history lists the newest attempt first', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     QuizAttempt::factory()->failed()->create([
@@ -143,7 +143,7 @@ test('the quiz history shows the achieved percentage of each attempt', function 
     // falsche Prozentzahl in der Tabelle durchgehen. Diese Zeile ist die
     // einzige der vier Anzeigestellen von QuizAttempt::$percent, die bisher
     // gerendert, aber nicht geprüft wurde.
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     QuizAttempt::factory()->create([
@@ -163,7 +163,7 @@ test('the quiz history shows the achieved percentage of each attempt', function 
 });
 
 test('a running attempt does not show up in the history', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     QuizAttempt::factory()->inProgress()->create([
@@ -180,7 +180,7 @@ test('a running attempt does not show up in the history', function () {
 });
 
 test('weak spots are ranked by how often the question was answered wrong', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     $often = Question::factory()->singleChoice()->for($path)->create(['prompt' => 'Was ist ein Subnetz?']);
@@ -205,7 +205,7 @@ test('weak spots are ranked by how often the question was answered wrong', funct
 });
 
 test('a withdrawn path takes its weak spots out of the evaluation', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     $question = Question::factory()->singleChoice()->for($path)->create(['prompt' => 'Was ist ein Subnetz?']);
@@ -233,7 +233,7 @@ test('a withdrawn path takes its weak spots out of the evaluation', function () 
 });
 
 test('a pool question without a path stays a weak spot', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     // `learning_path_id` ist laut Konzept d) eine bloße Herkunftsangabe und
@@ -253,7 +253,7 @@ test('a pool question without a path stays a weak spot', function () {
 });
 
 test('a correctly answered question is no weak spot', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     $question = Question::factory()->singleChoice()->for($path)->create();
@@ -274,7 +274,7 @@ test('a correctly answered question is no weak spot', function () {
 });
 
 test('answers of another apprentice never enter the drilldown', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     $question = Question::factory()->singleChoice()->for($path)->create(['prompt' => 'Fremde Schwachstelle?']);
@@ -294,7 +294,7 @@ test('answers of another apprentice never enter the drilldown', function () {
 });
 
 test('the weak spots stop at the top ten, without an expander', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     foreach (range(1, 12) as $index) {
@@ -321,7 +321,7 @@ test('the weak spots stop at the top ten, without an expander', function () {
 });
 
 test('weak spots are ranked by error rate, not by absolute mistakes', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     $stubborn = Question::factory()->singleChoice()->for($path)->create(['prompt' => 'Hartnäckig?']);
@@ -349,7 +349,7 @@ test('weak spots are ranked by error rate, not by absolute mistakes', function (
 });
 
 test('a single wrong answer does not outrank a well evidenced gap', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     $gap = Question::factory()->singleChoice()->for($path)->create(['prompt' => 'Echte Lücke?']);
@@ -371,7 +371,7 @@ test('a single wrong answer does not outrank a well evidenced gap', function () 
 });
 
 test('a learned question drops out of the top weak spots', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     // Zehn andere Schwachstellen mit jeweils einer einzigen Fehlantwort halten
@@ -406,7 +406,7 @@ test('a learned question drops out of the top weak spots', function () {
 });
 
 test('a relapse lifts a learned question back up', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     $learned = Question::factory()->singleChoice()->for($path)->create(['prompt' => 'Rückfall?']);
@@ -432,7 +432,7 @@ test('a relapse lifts a learned question back up', function () {
 });
 
 test('the drilldown stays within its query budget', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
     Lesson::factory()->for($path)->count(3)->create();
 
@@ -457,8 +457,8 @@ test('the drilldown stays within its query budget', function () {
 });
 
 test('attempts are aggregated per quiz in the drilldown', function () {
-    $pathA = LearningPath::factory()->published()->verified()->create();
-    $pathB = LearningPath::factory()->published()->verified()->create();
+    $pathA = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
+    $pathB = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quizA = Quiz::factory()->pathFinal($pathA)->published()->create();
     $quizB = Quiz::factory()->pathFinal($pathB)->published()->create();
 
@@ -507,8 +507,8 @@ test('attempts are aggregated per quiz in the drilldown', function () {
 });
 
 test('the rows are ordered by the latest attempt, not by the best one', function () {
-    $pathA = LearningPath::factory()->published()->verified()->create();
-    $pathB = LearningPath::factory()->published()->verified()->create();
+    $pathA = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
+    $pathB = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quizA = Quiz::factory()->pathFinal($pathA)->published()->create();
     $quizB = Quiz::factory()->pathFinal($pathB)->published()->create();
 
@@ -554,7 +554,7 @@ test('the rows are ordered by the latest attempt, not by the best one', function
 });
 
 test('the best attempt breaks ties by score then recency', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     // Gleicher Prozentwert (50 %), aber unterschiedlicher Score.
@@ -586,7 +586,7 @@ test('the best attempt breaks ties by score then recency', function () {
 });
 
 test('everything but the path table is wrapped in the accordion', function () {
-    $path = LearningPath::factory()->published()->verified()->create(['title' => 'Netzwerke']);
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['title' => 'Netzwerke']);
     Lesson::factory()->for($path)->create();
 
     $html = Livewire::actingAs($this->admin)

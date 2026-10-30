@@ -30,7 +30,7 @@ beforeEach(function () {
  */
 function practicePath(int $questionCount, string $title = 'Netzwerke'): LearningPath
 {
-    $path = LearningPath::factory()->published()->verified()->create(['title' => $title]);
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['title' => $title]);
 
     foreach (range(1, $questionCount) as $index) {
         $question = Question::factory()->for($path)->create([
@@ -371,7 +371,7 @@ test('the builder rejects an empty topic selection', function () {
 });
 
 test('the builder refuses topics without any questions', function () {
-    $empty = LearningPath::factory()->published()->verified()->create(['title' => 'Leer']);
+    $empty = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['title' => 'Leer']);
 
     Livewire::actingAs($this->learner)
         ->test('pages::learn.practice.create')
@@ -398,7 +398,7 @@ test('the builder offers only released paths with their question counts', functi
 test('the builder selects all paths that contain practice questions', function () {
     $first = practicePath(2, 'Netzwerke');
     $second = practicePath(2, 'Datenbanken');
-    $empty = LearningPath::factory()->published()->verified()->create(['title' => 'Leer']);
+    $empty = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['title' => 'Leer']);
     $expectedPathIds = collect([$first, $second])
         ->sortBy('position')
         ->pluck('id')
@@ -435,7 +435,7 @@ test('the select-all button toggles the selection back off on the second press',
 test('the select-all button offers to deselect once every drawable path is already ticked', function () {
     $first = practicePath(2, 'Netzwerke');
     $second = practicePath(2, 'Datenbanken');
-    LearningPath::factory()->published()->verified()->create(['title' => 'Leer']);
+    LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['title' => 'Leer']);
 
     Livewire::actingAs($this->learner)
         ->test('pages::learn.practice.create')

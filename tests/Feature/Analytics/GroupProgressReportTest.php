@@ -30,7 +30,7 @@ function completeLessons(User $learner, LearningPath $path, int $count): void
 }
 
 test('the per path block averages the reading progress over all members', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     Lesson::factory()->for($path)->count(4)->sequence(
         ['position' => 1], ['position' => 2], ['position' => 3], ['position' => 4],
     )->create();
@@ -52,7 +52,7 @@ test('the per path block averages the reading progress over all members', functi
 });
 
 test('the pass rate uses all members as the denominator', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     $passer = User::factory()->apprentice($this->group)->create();
@@ -73,8 +73,8 @@ test('the pass rate uses all members as the denominator', function () {
 });
 
 test('members appear alphabetically with their own averages', function () {
-    $first = LearningPath::factory()->published()->verified()->create(['position' => 1]);
-    $second = LearningPath::factory()->published()->verified()->create(['position' => 2]);
+    $first = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['position' => 1]);
+    $second = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['position' => 2]);
     Lesson::factory()->for($first)->count(2)->sequence(['position' => 1], ['position' => 2])->create();
     Lesson::factory()->for($second)->count(2)->sequence(['position' => 1], ['position' => 2])->create();
 
@@ -98,7 +98,7 @@ test('members appear alphabetically with their own averages', function () {
 });
 
 test('only published and verified paths enter the group aggregates', function () {
-    LearningPath::factory()->published()->verified()->create();
+    LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     LearningPath::factory()->published()->create();
     LearningPath::factory()->verified()->create();
 
@@ -110,7 +110,7 @@ test('only published and verified paths enter the group aggregates', function ()
 test('a member is marked inactive according to the group threshold', function () {
     $this->group->update(['inactivity_threshold_days' => 7]);
 
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $lesson = Lesson::factory()->for($path)->create();
 
     $recent = User::factory()->apprentice($this->group)->create(['name' => 'Anna']);
@@ -142,7 +142,7 @@ test('a member is marked inactive according to the group threshold', function ()
 test('a raised threshold keeps the same member active', function () {
     $this->group->update(['inactivity_threshold_days' => 30]);
 
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $lesson = Lesson::factory()->for($path)->create();
 
     $learner = User::factory()->apprentice($this->group)->create();
@@ -157,8 +157,8 @@ test('a raised threshold keeps the same member active', function () {
 });
 
 test('the summary counts completed path slots out of all path slots', function () {
-    $first = LearningPath::factory()->published()->verified()->create(['position' => 1]);
-    $second = LearningPath::factory()->published()->verified()->create(['position' => 2]);
+    $first = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['position' => 1]);
+    $second = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['position' => 2]);
     Lesson::factory()->for($first)->create();
     Lesson::factory()->for($second)->create();
 
@@ -177,7 +177,7 @@ test('the summary counts completed path slots out of all path slots', function (
 });
 
 test('the summary sorts every member into exactly one reading progress band', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     Lesson::factory()->for($path)->count(4)->sequence(
         ['position' => 1], ['position' => 2], ['position' => 3], ['position' => 4],
     )->create();
@@ -206,7 +206,7 @@ test('a group without members has empty progress bands', function () {
 test('summarize reports every group separately', function () {
     $other = Team::factory()->create(['name' => 'Lehrjahr 2']);
 
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     Lesson::factory()->for($path)->count(2)->sequence(['position' => 1], ['position' => 2])->create();
 
     $mine = User::factory()->apprentice($this->group)->create();
@@ -233,7 +233,7 @@ test('the group report stays within its query budget regardless of size', functi
     // GROUP-BY-Abfragen geholt und in PHP verrechnet — die Abfragezahl darf
     // mit keiner der beiden Dimensionen wachsen.
     foreach (range(1, 4) as $index) {
-        $path = LearningPath::factory()->published()->verified()->create(['position' => $index]);
+        $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['position' => $index]);
         Lesson::factory()->for($path)->count(3)->create();
         Quiz::factory()->pathFinal($path)->published()->create();
     }
@@ -255,7 +255,7 @@ test('the group report stays within its query budget regardless of size', functi
 });
 
 test('an admin sitting in the group is no apprentice', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     Lesson::factory()->for($path)->count(2)->sequence(['position' => 1], ['position' => 2])->create();
 
     $learner = User::factory()->apprentice($this->group)->create(['name' => 'Anna']);
@@ -285,7 +285,7 @@ test('an admin sitting in the group is no apprentice', function () {
 test('the group summary ignores admins as well', function () {
     // Eigener Test, weil summarize() nicht über Team::apprentices() geht,
     // sondern über eine rohe Sammelabfrage — die Mengen müssen übereinstimmen.
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     Lesson::factory()->for($path)->count(2)->sequence(['position' => 1], ['position' => 2])->create();
 
     $learner = User::factory()->apprentice($this->group)->create();

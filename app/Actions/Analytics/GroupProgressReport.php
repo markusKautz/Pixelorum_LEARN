@@ -307,9 +307,8 @@ class GroupProgressReport
     {
         return LearningPath::query()
             ->visibleToLearners()
-            ->when($team, fn (Builder $paths, Team $team) => $paths->where(fn (Builder $paths) => $paths
-                ->whereDoesntHave('teams')
-                ->orWhereHas('teams', fn (Builder $teams) => $teams->whereKey($team->id))))
+            ->when($team, fn (Builder $paths, Team $team) => $paths
+                ->whereHas('teams', fn (Builder $teams) => $teams->whereKey($team->id)))
             ->withCount('lessons')
             ->withPlayableFinalQuiz()
             ->orderBy('position')
@@ -317,8 +316,7 @@ class GroupProgressReport
     }
 
     /**
-     * Die Pfade, die diese Gruppe sieht: ohne Zuweisung oder ihr zugewiesen
-     * (#9, E10).
+     * Die Pfade, die diese Gruppe sieht: die ihr zugewiesenen (#9, E10, E12).
      *
      * In PHP gefiltert statt je Gruppe neu abgefragt, damit `summarize()` bei
      * einer Sammelabfrage bleibt; dieselbe Regel wie in `visiblePaths()`.
@@ -330,7 +328,7 @@ class GroupProgressReport
     protected function pathsVisibleTo(Team $team, EloquentCollection $paths): EloquentCollection
     {
         return $paths
-            ->filter(fn (LearningPath $path): bool => $path->teams->isEmpty() || $path->teams->contains('id', $team->id))
+            ->filter(fn (LearningPath $path): bool => $path->teams->contains('id', $team->id))
             ->values();
     }
 

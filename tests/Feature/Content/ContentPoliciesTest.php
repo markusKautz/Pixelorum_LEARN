@@ -22,8 +22,8 @@ it('lässt Admins Lernpfade anlegen und auflisten', function () {
         ->and($this->admin->can('create', LearningPath::class))->toBeTrue();
 });
 
-it('zeigt Lehrlingen nur veröffentlichte und geprüfte Pfade', function (bool $published, bool $verified, bool $sichtbar) {
-    $factory = LearningPath::factory();
+it('zeigt Lehrlingen nur sichtbare und geprüfte Pfade ihrer Gruppe', function (bool $published, bool $verified, bool $sichtbar) {
+    $factory = LearningPath::factory()->assignedToAllGroups();
     $factory = $published ? $factory->published() : $factory;
     $factory = $verified ? $factory->verified() : $factory;
 
@@ -36,7 +36,7 @@ it('zeigt Lehrlingen nur veröffentlichte und geprüfte Pfade', function (bool $
 ]);
 
 it('lässt Lehrlinge die Pfad-Liste sehen, aber nichts verwalten', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
 
     expect($this->lehrling->can('viewAny', LearningPath::class))->toBeTrue()
         ->and($this->lehrling->can('create', LearningPath::class))->toBeFalse()
@@ -47,7 +47,7 @@ it('lässt Lehrlinge die Pfad-Liste sehen, aber nichts verwalten', function () {
 });
 
 it('filtert die Pfad-Liste per Scope auf sichtbare Pfade', function () {
-    $sichtbar = LearningPath::factory()->published()->verified()->create();
+    $sichtbar = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     LearningPath::factory()->published()->create();
     LearningPath::factory()->verified()->create();
     LearningPath::factory()->create();
@@ -127,7 +127,7 @@ it('verbirgt das Abschluss-Quiz weiterhin, wenn sein Pfad gelöscht wird', funct
 });
 
 it('verbirgt auch das Quiz eines gelöschten freigegebenen Pfades', function () {
-    $pfad = LearningPath::factory()->published()->verified()->create();
+    $pfad = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($pfad)->published()->create();
 
     $pfad->delete();
@@ -136,7 +136,7 @@ it('verbirgt auch das Quiz eines gelöschten freigegebenen Pfades', function () 
 });
 
 it('zeigt Lehrlingen das Abschluss-Quiz eines freigegebenen Pfades', function () {
-    $pfad = LearningPath::factory()->published()->verified()->create();
+    $pfad = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($pfad)->published()->create();
 
     expect($this->lehrling->can('view', $quiz))->toBeTrue();

@@ -11,7 +11,7 @@ use Livewire\Livewire;
 
 beforeEach(function () {
     $this->learner = User::factory()->apprentice()->create();
-    $this->path = LearningPath::factory()->published()->verified()->create();
+    $this->path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $this->lesson = Lesson::factory()->for($this->path)->create(['title' => 'Erste Lektion', 'position' => 1]);
 });
 
@@ -162,7 +162,7 @@ test('a step out of range is clamped instead of rejected', function (int $reques
 ]);
 
 test('a lesson of another path results in a 404', function () {
-    $otherPath = LearningPath::factory()->published()->verified()->create();
+    $otherPath = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $otherLesson = Lesson::factory()->for($otherPath)->create();
 
     $this->actingAs($this->learner)

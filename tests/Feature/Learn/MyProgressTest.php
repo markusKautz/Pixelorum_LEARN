@@ -37,7 +37,7 @@ function answerWrongOnce(User $learner, Quiz $quiz, Question $question): QuizAtt
 }
 
 test('the page shows the progress stats, weak spots and attempts', function () {
-    $path = LearningPath::factory()->published()->verified()->create(['title' => 'Netzwerkgrundlagen']);
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['title' => 'Netzwerkgrundlagen']);
     $lessons = Lesson::factory()->for($path)->count(2)->sequence(
         ['position' => 1], ['position' => 2],
     )->create();
@@ -70,7 +70,7 @@ test('the page shows the progress stats, weak spots and attempts', function () {
 });
 
 test('the page never shows another apprentices data', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create(['title' => 'Fremdes Quiz']);
 
     $question = Question::factory()->singleChoice()->for($path)->create([
@@ -92,7 +92,7 @@ test('the page never shows another apprentices data', function () {
 });
 
 test('the correct answer is shown with the weak spot', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     $question = Question::factory()->for($path)->create(['prompt' => 'Welcher Port gehört zu HTTPS?']);
@@ -112,7 +112,7 @@ test('the correct answer is shown with the weak spot', function () {
 test('a failed attempt is shown in amber rather than red', function () {
     // Merkmal 3: ein misslungener Versuch ist eine Zwischenstation, kein
     // Verstoß — das Quiz ist beliebig wiederholbar.
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     QuizAttempt::factory()->failed()->create([
@@ -133,7 +133,7 @@ test('a failed attempt is shown in amber rather than red', function () {
 });
 
 test('the dashboard card appears only when there are weak spots', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     $this->actingAs($this->learner)
@@ -154,7 +154,7 @@ test('the dashboard card appears only when there are weak spots', function () {
 });
 
 test('the dashboard card lists at most the top three weak spots', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     foreach (range(1, 4) as $index) {
@@ -191,7 +191,7 @@ test('the sidebar offers my progress to apprentices but not to admins', function
 });
 
 test('only the five most recent attempts are shown', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     foreach (range(1, 6) as $index) {
@@ -212,7 +212,7 @@ test('only the five most recent attempts are shown', function () {
 });
 
 test('practising a weak spot builds a round from its path and pins the question', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     $weakQuestion = Question::factory()->singleChoice()->for($path)->create();
@@ -240,7 +240,7 @@ test('practising a weak spot builds a round from its path and pins the question'
 });
 
 test('practising a weak spot keeps the pinned question even when the path has fewer than ten', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     $weakQuestion = Question::factory()->singleChoice()->for($path)->create();
@@ -261,7 +261,7 @@ test('practising a weak spot keeps the pinned question even when the path has fe
 });
 
 test('a weak spot without a path falls back to the quiz of the latest wrong attempt', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     $pooled = Question::factory()->singleChoice()->create();
@@ -281,7 +281,7 @@ test('a weak spot without a path falls back to the quiz of the latest wrong atte
 
 test('my progress stays within its query budget', function () {
     foreach (range(1, 3) as $index) {
-        $path = LearningPath::factory()->published()->verified()->create(['position' => $index]);
+        $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['position' => $index]);
         Lesson::factory()->for($path)->count(3)->create();
         $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 

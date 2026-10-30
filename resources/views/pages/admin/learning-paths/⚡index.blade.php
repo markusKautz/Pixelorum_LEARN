@@ -338,10 +338,14 @@ new class extends Component {
                     </flux:table.cell>
                     <flux:table.cell variant="strong">
                         <span class="block max-w-xs truncate" title="{{ $path->title }}">{{ $path->title }}</span>
-                        {{-- Ohne Zuweisung sieht jede Gruppe den Pfad (#9, E8). --}}
+                        {{-- Ohne Zuweisung sieht den Pfad niemand (#9, E12, E17). --}}
                         @if ($path->teams_count > 0)
-                            <flux:badge size="sm" color="sky" icon="user-group" class="mt-1" data-test="path-limited-badge">
+                            <flux:badge size="sm" color="sky" icon="user-group" class="mt-1" data-test="path-groups-badge">
                                 {{ trans_choice('{1} :count group|[2,*] :count groups', $path->teams_count, ['count' => $path->teams_count]) }}
+                            </flux:badge>
+                        @else
+                            <flux:badge size="sm" color="amber" icon="user-group" class="mt-1" data-test="path-no-group-badge">
+                                {{ __('No group') }}
                             </flux:badge>
                         @endif
                     </flux:table.cell>

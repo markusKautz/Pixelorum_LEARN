@@ -25,7 +25,7 @@ deutlich erleichtert: Zusammen mit dem passenden KI-Skill
 vorhandenem Quellmaterial fertige Lernpfade. Die Plattform bietet Lernpfade und
 Quizze, ist nach didaktischen Grundlagen aufgebaut und macht den Lernfortschritt für
 Lernende wie für die Kursleitung sichtbar. Inhalte werden gegen Quellen geprüft und
-erst nach Freigabe veröffentlicht.
+erst nach Freigabe sichtbar geschaltet und Gruppen zugewiesen.
 
 Die Plattform kennt zwei Rollen:
 
@@ -52,7 +52,9 @@ Artisan-Namespace `lapp:`). Nach außen heißt das Produkt **LEARN**.
 - **Übungsquiz** aus zufälligen Fragen gewählter Pfade; die Antworten fließen in die
   Auswertung der eigenen Schwachstellen.
 - **Quellenbelege** an jeder Lektion und jeder Frage, dazu eine Freigabeansicht, in
-  der ein Admin die Belege prüft, bevor ein Pfad veröffentlicht wird.
+  der ein Admin die Belege prüft, bevor ein Pfad sichtbar wird.
+- **Zuweisung an Gruppen:** Jeder Pfad wird den Gruppen zugewiesen, die ihn sehen
+  sollen.
 - **Import und Export** von Lernpfaden als JSON, mit hochgeladenen Bildern als ZIP.
 - **Fortschrittsverfolgung** und Auswertungen je Gruppe und je Person.
 - **Gruppenverwaltung** mit Einladungen; ohne Mailserver lassen sich die
@@ -166,8 +168,8 @@ deploy/               Beispielkonfiguration für einen Betrieb mit Podman und Ca
 Lernpfade sind JSON-Dateien: ein Lernpfad je Datei, mit Lektionen, Blöcken,
 Zwischen-Checks, Pool-Fragen, Abschlussquiz und den Quellen, auf die sich jede
 Lektion und jede Frage stützt. Ein Admin lädt sie unter *Lernpfade → Lernpfad
-importieren* hoch; der Pfad entsteht als ungeprüfter Entwurf und wird erst nach
-Freigabe und Veröffentlichung für Lernende sichtbar. Jeder Pfad lässt sich als
+importieren* hoch; der Pfad entsteht ungeprüft und nicht sichtbar und erscheint
+für Lernende erst nach Freigabe, Sichtbarschalten und Zuweisung an ihre Gruppe. Jeder Pfad lässt sich als
 JSON (mit hochgeladenen Bildern als ZIP) wieder exportieren.
 
 Das Format beschreibt [`format.md`](.ai/skills/learn-content/references/format.md);
@@ -211,8 +213,8 @@ Was den Skill ausmacht:
   Fehlvorstellungen, Lernendentext ohne KI-Floskeln.
 - **Geprüft wie beim Upload.** Der Agent validiert die Datei mit
   `php artisan lapp:content:validate --file=…`, bis keine Befunde mehr kommen.
-  Die Datei bleibt ein Entwurf; freigeben und veröffentlichen muss eine Person im
-  Adminbereich.
+  Die Datei bleibt nicht sichtbar; freigeben, sichtbar schalten und Gruppen
+  zuweisen muss eine Person im Adminbereich.
 
 Ablauf in Kürze: Rahmen klären (Thema, Zielgruppe, Ziel, Umfang, Quellen) →
 Quellen erfassen → Struktur vorlegen → Inhalt schreiben → validieren → selbst

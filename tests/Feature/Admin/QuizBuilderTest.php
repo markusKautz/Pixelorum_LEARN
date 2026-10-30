@@ -349,13 +349,13 @@ test('a quiz is published and withdrawn straight from the list', function () {
     expect($quiz->refresh()->status)->toBe(PathStatus::Published);
 
     // Die Zeile zeigt den neuen Stand sofort, ohne Neuladen der Seite.
-    $list->assertSee('Veröffentlicht')->assertDontSee('Entwurf');
+    $list->assertSee('Sichtbar')->assertDontSee('Nicht sichtbar');
 
     $list->call('unpublishQuiz', $quiz->id);
 
     expect($quiz->refresh()->status)->toBe(PathStatus::Draft);
 
-    $list->assertSee('Entwurf');
+    $list->assertSee('Nicht sichtbar');
 });
 
 test('the publish dialog warns about a quiz nobody would see', function () {
@@ -365,7 +365,7 @@ test('the publish dialog warns about a quiz nobody would see', function () {
     Livewire::actingAs($this->admin)
         ->test('pages::admin.quizzes.index')
         ->assertSee('Dieses Quiz hat noch keine Fragen.')
-        ->assertSee('Dieses Quiz ist keiner Gruppe ausgegeben. Veröffentlichen allein gibt es noch nicht aus.');
+        ->assertSee('Dieses Quiz ist keiner Gruppe ausgegeben. Sichtbar schalten allein gibt es noch nicht aus.');
 });
 
 test('the publish dialog stays quiet for a filled and handed out quiz', function () {
@@ -376,7 +376,7 @@ test('the publish dialog stays quiet for a filled and handed out quiz', function
     Livewire::actingAs($this->admin)
         ->test('pages::admin.quizzes.index')
         ->assertDontSee('Dieses Quiz hat noch keine Fragen.')
-        ->assertDontSee('Dieses Quiz ist keiner Gruppe ausgegeben. Veröffentlichen allein gibt es noch nicht aus.');
+        ->assertDontSee('Dieses Quiz ist keiner Gruppe ausgegeben. Sichtbar schalten allein gibt es noch nicht aus.');
 });
 
 /*

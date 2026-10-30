@@ -53,7 +53,7 @@ test('the verify button only opens a confirmation modal', function () {
         ->assertDontSeeHtml('wire:click="verify"')
         ->assertSeeHtml('wire:submit="verify"')
         ->assertSeeHtml('data-test="verify-confirm"')
-        ->assertSee('Mit der Freigabe wird er für Lehrlinge sofort sichtbar.');
+        ->assertSee('Mit der Freigabe sehen ihn die zugewiesenen Gruppen sofort.');
 
     expect($path->refresh()->review_status)->toBe(ReviewStatus::Unreviewed);
 });
@@ -219,7 +219,7 @@ test('a question edit also counts as a change since verification', function () {
 });
 
 test('the badge appears in the path list after a change', function () {
-    $path = LearningPath::factory()->published()->verified()->create(['verified_by' => $this->admin->id]);
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['verified_by' => $this->admin->id]);
 
     $this->travel(5)->minutes();
 

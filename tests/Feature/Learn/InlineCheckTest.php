@@ -14,7 +14,7 @@ use Livewire\Livewire;
 
 beforeEach(function () {
     $this->learner = User::factory()->apprentice()->create();
-    $this->path = LearningPath::factory()->published()->verified()->create();
+    $this->path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $this->lesson = Lesson::factory()->for($this->path)->create(['position' => 1]);
 
     LessonBlock::factory()->for($this->lesson)->create([

@@ -208,8 +208,8 @@ class LearningPath extends Model
     /**
      * Get the groups this path is limited to (#9).
      *
-     * Leer heißt „für alle Gruppen“ (E8); erst eine Zuweisung schränkt ein.
-     * Betriebsdaten der Installation, deshalb nicht Teil von Export und
+     * Leer heißt „für keine Gruppe“ (E12): ein Pfad wird erst mit einer
+     * Zuweisung für Lernende sichtbar. Betriebsdaten der Installation, deshalb nicht Teil von Export und
      * Import (E11).
      *
      * @return BelongsToMany<Team, $this>
@@ -238,8 +238,8 @@ class LearningPath extends Model
      * Scope a query to the paths this apprentice may see (#9).
      *
      * Das Grounding-Gate aus {@see self::visibleToLearners()} und dazu die
-     * Gruppenregel (E8): ohne Zuweisung für alle, mit Zuweisung nur für die
-     * zugewiesenen Gruppen. Persönliche Teams sind keine Lehrlingsgruppen und
+     * Gruppenregel (E12): sichtbar nur für die zugewiesenen Gruppen, ohne
+     * Zuweisung für niemanden. Persönliche Teams sind keine Lehrlingsgruppen und
      * taugen nicht als Zugang (wie {@see Quiz::assignedTo()}). Entzieht man
      * eine Zuweisung, bleibt der Fortschritt erhalten, der Pfad ist nur nicht
      * mehr sichtbar (E9).
@@ -250,11 +250,9 @@ class LearningPath extends Model
     protected function visibleTo(Builder $query, User $learner): void
     {
         $query->visibleToLearners()
-            ->where(fn (Builder $paths) => $paths
-                ->whereDoesntHave('teams')
-                ->orWhereHas('teams', fn (Builder $teams) => $teams
-                    ->where('teams.is_personal', false)
-                    ->whereIn('teams.id', $learner->teams()->select('teams.id'))));
+            ->whereHas('teams', fn (Builder $teams) => $teams
+                ->where('teams.is_personal', false)
+                ->whereIn('teams.id', $learner->teams()->select('teams.id')));
     }
 
     /**
@@ -317,10 +315,6 @@ class LearningPath extends Model
     {
         if (! $this->isVisibleToLearners()) {
             return false;
-        }
-
-        if (! $this->teams()->exists()) {
-            return true;
         }
 
         return $this->teams()

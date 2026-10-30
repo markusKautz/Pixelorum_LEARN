@@ -134,8 +134,8 @@ class Team extends Model
     /**
      * Get the learning paths limited to this group (#9).
      *
-     * Nur die Einschränkungen: Pfade ohne jede Zuweisung sieht die Gruppe
-     * ebenfalls (E8).
+     * Genau die Pfade, die die Gruppe sehen kann: ohne Zuweisung sieht ihn
+     * niemand (E12).
      *
      * @return BelongsToMany<LearningPath, $this>
      */

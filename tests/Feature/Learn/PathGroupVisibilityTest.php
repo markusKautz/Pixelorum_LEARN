@@ -43,16 +43,15 @@ function reportedPathTitles(User $learner): array
     );
 }
 
-test('a path without groups is visible to every group', function () {
-    $first = User::factory()->apprentice()->create();
-    $second = User::factory()->apprentice()->create();
-    ['path' => $path] = releasedPath('Allgemein');
+test('a path without groups is visible to no group', function () {
+    $learner = User::factory()->apprentice()->create();
+    ['path' => $path] = releasedPath('Ohne Zuweisung');
 
-    foreach ([$first, $second] as $learner) {
-        $this->actingAs($learner)
-            ->get(learnRoute('learn.paths.show', $learner, ['learningPath' => $path]))
-            ->assertOk();
-    }
+    $this->actingAs($learner)
+        ->get(learnRoute('learn.paths.show', $learner, ['learningPath' => $path]))
+        ->assertForbidden();
+
+    expect(reportedPathTitles($learner))->toBe([]);
 });
 
 test('a path assigned to a group is visible only to that group', function () {
@@ -88,11 +87,13 @@ test('a personal team does not grant access', function () {
 });
 
 test('a hidden path is left out of practice, continuation and progress', function () {
+    $group = Team::factory()->create();
     $otherGroup = Team::factory()->create();
-    $learner = User::factory()->apprentice()->create();
+    $learner = User::factory()->apprentice($group)->create();
     ['path' => $hidden] = releasedPath('Fremder Pfad', position: 1);
-    ['path' => $general] = releasedPath('Allgemeiner Pfad', position: 2);
+    ['path' => $general] = releasedPath('Eigener Pfad', position: 2);
     $hidden->teams()->attach($otherGroup);
+    $general->teams()->attach($group);
 
     $component = Livewire::actingAs($learner)->test('pages::learn.practice.create');
     expect($component->instance()->paths->modelKeys())->toBe([$general->id]);
@@ -100,19 +101,19 @@ test('a hidden path is left out of practice, continuation and progress', functio
     $practice = app(BuildPracticeQuiz::class)->handle($learner, [$hidden->id], 5);
     expect($practice->questions()->count())->toBe(0);
 
-    expect(app(ResolveContinuationPoint::class)->handle($learner)?->title)->toBe('Allgemeiner Pfad')
-        ->and(reportedPathTitles($learner))->toBe(['Allgemeiner Pfad']);
+    expect(app(ResolveContinuationPoint::class)->handle($learner)?->title)->toBe('Eigener Pfad')
+        ->and(reportedPathTitles($learner))->toBe(['Eigener Pfad']);
 });
 
 test('withdrawing and restoring an assignment keeps the progress', function () {
     $group = Team::factory()->create();
-    $otherGroup = Team::factory()->create();
     $learner = User::factory()->apprentice($group)->create();
     ['path' => $path, 'lesson' => $lesson] = releasedPath('Wechselnd');
+    $path->teams()->attach($group);
 
     LessonCompletion::factory()->create(['user_id' => $learner->id, 'lesson_id' => $lesson->id]);
 
-    $path->teams()->attach($otherGroup);
+    $path->teams()->detach($group);
 
     expect(reportedPathTitles($learner))->toBe([]);
     $this->assertDatabaseHas('lesson_completions', ['user_id' => $learner->id, 'lesson_id' => $lesson->id]);

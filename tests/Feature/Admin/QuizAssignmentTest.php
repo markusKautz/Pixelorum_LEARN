@@ -86,7 +86,7 @@ test('an admin hands a free quiz out to a group and withdraws it again', functio
 });
 
 test('the assignment section stays hidden for final and practice quizzes', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $final = Quiz::factory()->pathFinal($path)->published()->create();
 
     Livewire::actingAs($this->admin)
@@ -160,13 +160,13 @@ test('the builder warns when an assigned quiz is still a draft', function () {
     Livewire::actingAs($this->admin)
         ->test('pages::admin.quizzes.edit', ['quiz' => $quiz])
         ->assertOk()
-        ->assertSee('noch ein Entwurf');
+        ->assertSee('noch nicht sichtbar');
 
     $quiz->update(['status' => PathStatus::Published]);
 
     Livewire::actingAs($this->admin)
         ->test('pages::admin.quizzes.edit', ['quiz' => $quiz])
-        ->assertDontSee('noch ein Entwurf');
+        ->assertDontSee('noch nicht sichtbar');
 });
 
 test('an apprentice reaches a quiz handed to their group and no other', function () {
@@ -436,7 +436,7 @@ test('withdrawing a quiz does not erase the attempts already made', function () 
 });
 
 test('a withdrawn learning path takes its attempts out of the evaluation', function () {
-    $path = LearningPath::factory()->published()->verified()->create(['title' => 'Netzwerke']);
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['title' => 'Netzwerke']);
     $final = Quiz::factory()->pathFinal($path)->published()->create(['title' => 'Abschluss Netzwerke']);
 
     $learner = User::factory()->apprentice($this->group)->create();
@@ -463,7 +463,7 @@ test('the group analytics stay within their query budget with handed out quizzes
     }
 
     foreach (range(1, 4) as $index) {
-        $path = LearningPath::factory()->published()->verified()->create(['position' => $index]);
+        $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['position' => $index]);
         Quiz::factory()->pathFinal($path)->published()->create();
     }
 
@@ -574,7 +574,7 @@ test('the practise page stays within its query budget with handed out quizzes', 
     }
 
     foreach (range(1, 4) as $index) {
-        $path = LearningPath::factory()->published()->verified()->create(['position' => $index]);
+        $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['position' => $index]);
         Quiz::factory()->pathFinal($path)->published()->create();
     }
 
@@ -596,7 +596,7 @@ test('the practise page stays within its query budget with handed out quizzes', 
 test('a failed handed out quiz does not move the group reading average', function () {
     $learner = User::factory()->apprentice($this->group)->create();
 
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $lesson = Lesson::factory()->for($path)->create();
     LessonCompletion::factory()->create([
         'user_id' => $learner->id,
@@ -637,7 +637,7 @@ test('a failed handed out quiz does not move the group reading average', functio
 });
 
 test('switching to custom without saving shows a warning instead of the group list', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     Livewire::actingAs($this->admin)

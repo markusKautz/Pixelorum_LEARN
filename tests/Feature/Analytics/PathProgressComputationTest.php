@@ -27,7 +27,7 @@ beforeEach(function () {
  */
 function pathWithProgress(User $learner, int $lessons, int $completed, string $quiz): LearningPath
 {
-    $path = LearningPath::factory()->published()->verified()->create(['position' => 1]);
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['position' => 1]);
 
     $created = Lesson::factory()->for($path)->count($lessons)->sequence(
         ...array_map(fn (int $index): array => ['position' => $index], range(1, max($lessons, 1))),
@@ -103,7 +103,7 @@ test('percent and status follow model A', function (
 })->with('aggregation matrix');
 
 test('a path without lessons stays at zero percent and not started', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
 
     $row = progressRow($this->learner, $path);
 
@@ -113,7 +113,7 @@ test('a path without lessons stays at zero percent and not started', function ()
 });
 
 test('a path without lessons counts as completed once its quiz is passed', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     QuizAttempt::factory()->passed()->create([
@@ -130,7 +130,7 @@ test('a path without lessons counts as completed once its quiz is passed', funct
 test('an unpublished final quiz never blocks completion', function () {
     // Ein Entwurfs-Quiz kann der Lehrling nicht ablegen — es darf ihm den
     // Pfad also nicht offen halten (gleiche Lesart wie das Sprint-4-Badge).
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $lesson = Lesson::factory()->for($path)->create();
     Quiz::factory()->pathFinal($path)->create();
 
@@ -158,7 +158,7 @@ test('the last activity is the later of lesson completion and quiz attempt', fun
     // Sekundenwechsel dazwischen liess den Test sporadisch scheitern.
     $this->freezeSecond();
 
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $lesson = Lesson::factory()->for($path)->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
@@ -182,7 +182,7 @@ test('the last activity is the later of lesson completion and quiz attempt', fun
 test('a running attempt still counts as activity', function () {
     // Wer gerade ein Quiz schreibt, ist nicht inaktiv (Entscheidung 5:
     // max(quiz_attempts.updated_at), nicht completed_at).
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     QuizAttempt::factory()->inProgress()->create([
@@ -198,7 +198,7 @@ test('a running attempt still counts as activity', function () {
 });
 
 test('activity of another apprentice does not change the own row', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $lessons = Lesson::factory()->for($path)->count(2)->sequence(
         ['position' => 1], ['position' => 2],
     )->create();
@@ -227,7 +227,7 @@ test('activity of another apprentice does not change the own row', function () {
 });
 
 test('only published and verified paths appear in the report', function () {
-    $visible = LearningPath::factory()->published()->verified()->create();
+    $visible = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     LearningPath::factory()->published()->create();
     LearningPath::factory()->verified()->create();
     LearningPath::factory()->create();

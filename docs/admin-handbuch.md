@@ -1,23 +1,24 @@
 # Admin-Handbuch
 
 Dieses Handbuch beschreibt die Arbeit im Adminbereich von LEARN. Begriffe in
-Anführungszeichen stehen so auf dem Bildschirm. Die Oberfläche nennt Admins
-„Ausbildner“ und Lernende „Lehrlinge“.
+Anführungszeichen stehen so auf dem Bildschirm. Es gibt zwei Rollen: Admins und
+Lernende.
 
 ## Rollen und Gruppen
 
-- **Ausbildner** (Admins) sehen alle Gruppen und verwalten Inhalte, Gruppen und
+- **Admins** sehen alle Gruppen und verwalten Inhalte, Gruppen und
   Nutzer. Den ersten Admin legst du auf der Kommandozeile an:
   `php artisan lapp:make-admin`. Weitere Admins legst du unter „Nutzer“ an
   (siehe [Nutzer verwalten](#nutzer-verwalten)).
-- **Lehrlinge** gehören genau einer Gruppe an, meist einem Jahrgang. Sie sehen nur
-  veröffentlichte und freigegebene Lernpfade, die für alle Gruppen gelten oder
-  ihrer Gruppe zugewiesen sind, und die Quizze, die ihrer Gruppe ausgegeben sind.
+- **Lernende** gehören genau einer Gruppe an, etwa einem Kurs oder Jahrgang. Sie
+  sehen nur
+  sichtbare und freigegebene Lernpfade, die ihrer Gruppe zugewiesen sind, und die
+  Quizze, die ihrer Gruppe ausgegeben sind.
 
-## Gruppe anlegen und Lehrlinge einladen
+## Gruppe anlegen und Lernende einladen
 
 Unter „Gruppen“ legst du mit „Neue Gruppe“ eine Gruppe an. Auf ihrer Seite
-(„Gruppe verwalten“) lädst du Lehrlinge ein:
+(„Gruppe verwalten“) lädst du Lernende ein:
 
 - **„Lehrling einladen“** lädt eine einzelne E-Mail-Adresse ein.
 - **„Liste importieren“** („Ganzen Jahrgang einladen“) lädt eine Adressliste als
@@ -32,7 +33,7 @@ abgelaufene Einladungen löscht LEARN einmal täglich.
 
 **Ohne Mailserver** lädst du mit **„Aktivierungslinks“** eine CSV-Datei mit allen
 Links der Gruppe herunter und verteilst sie selbst. Die Datei enthält gültige
-Zugangslinks: Behandle sie wie eine Passwortliste, gib jedem nur seinen eigenen
+Zugangslinks: Behandle sie wie eine Passwortliste, gib allen nur ihren eigenen
 Link und lösche Kopien und Ausdrucke, sobald alle aktiviert sind. Die Datei lässt
 sich mit `php artisan lapp:invitations:export` neu schreiben.
 
@@ -42,12 +43,12 @@ zurück.
 ### Gruppe pflegen
 
 - **Inaktivitäts-Schwelle:** Ab wie vielen Tagen ohne Aktivität die Auswertung einen
-  Lehrling als inaktiv meldet. Sie gilt je Gruppe.
+  Lernenden als inaktiv meldet. Sie gilt je Gruppe.
 - **„Jahrgang archivieren“** nimmt eine abgeschlossene Gruppe aus den Kennzahlen des
   Dashboards. Gelöscht wird nichts, die Auswertung bleibt erreichbar, und
   „Jahrgang wieder aufnehmen“ macht es rückgängig.
 - **„Gruppe löschen“** verlangt die Eingabe des Gruppennamens. Die Konten der
-  Lehrlinge bleiben bestehen, außer du setzt ausdrücklich das Häkchen, sie
+  Lernenden bleiben bestehen, außer du setzt ausdrücklich das Häkchen, sie
   mitzulöschen.
 
 ## Lernpfade importieren
@@ -67,27 +68,31 @@ entsteht eine Kopie: Der Slug erhält vier zufällige Zeichen, der Titel den Zus
 „(Kopie)“. Ein bestehender Pfad wird nie überschrieben. Ist die gewünschte Position
 in der Reihenfolge besetzt, landet der Pfad am Ende.
 
-Ein importierter Pfad ist immer ein **Entwurf** und **nicht freigegeben**, auch sein
-Abschluss-Quiz ist ein Entwurf.
+Ein importierter Pfad ist immer **nicht sichtbar**, **nicht freigegeben** und
+**keiner Gruppe zugewiesen**; auch sein Abschluss-Quiz ist nicht sichtbar.
 
-## Prüfen, freigeben, veröffentlichen
+## Prüfen, freigeben, sichtbar schalten
 
-Für Lehrlinge sichtbar ist ein Pfad nur, wenn er **freigegeben und veröffentlicht**
-ist. Das sind zwei getrennte Schritte:
+Lernende sehen einen Pfad nur, wenn er **freigegeben** und **sichtbar** ist und
+**ihrer Gruppe zugewiesen** ist. Das sind drei getrennte Schritte:
 
 1. **Freigabe:** In der Detailansicht des Pfades öffnest du die Freigabeansicht. Sie
    zeigt alle Lektionen und Fragen mit ihren Quellenbelegen (Quelle und Seite,
    Folie oder Abschnitt). Prüfe die Inhalte gegen die Quellen und bestätige mit
    **„Freigabe erteilen“**. Das geht nur, wenn jede Lektion und jede Frage einen
    Beleg hat und alle Quellen der Installation bekannt sind.
-2. **Veröffentlichen:** „Veröffentlichen“ in der Liste oder in der Detailansicht.
-   „Zurückziehen“ nimmt den Pfad wieder weg.
-3. **Abschluss-Quiz veröffentlichen:** Das Abschluss-Quiz hat einen eigenen Status.
-   Veröffentliche es unter „Quizze“, sonst sehen die Lehrlinge den Pfad ohne Quiz.
+2. **Sichtbar schalten:** „Sichtbar schalten“ in der Liste oder in der
+   Detailansicht. „Unsichtbar schalten“ nimmt den Pfad für alle wieder weg.
+3. **Gruppen zuweisen:** in der Detailansicht unter „Gruppen“ (siehe
+   [Lernpfade bearbeiten](#lernpfade-bearbeiten)). Ohne Zuweisung sieht den Pfad
+   niemand, auch wenn er sichtbar ist.
+4. **Abschluss-Quiz sichtbar schalten:** Das Abschluss-Quiz hat einen eigenen
+   Status. Schalte es unter „Quizze“ sichtbar, sonst sehen die Lernenden den Pfad
+   ohne Quiz.
 
 Ändert sich nach der Freigabe der Inhalt eines Pfades, erscheint das Badge **„Seit
 Freigabe geändert“**. Die Freigabe bleibt bestehen; prüfe die Änderung und erteile
-die Freigabe bei Bedarf neu. Reihenfolge, Veröffentlichen und die Freigabe selbst
+die Freigabe bei Bedarf neu. Reihenfolge, Sichtbarkeit und die Freigabe selbst
 zählen nicht als Änderung. „Freigabe zurückziehen“ nimmt die Freigabe weg.
 
 ## Lernpfade bearbeiten
@@ -95,7 +100,7 @@ zählen nicht als Änderung. „Freigabe zurückziehen“ nimmt die Freigabe weg
 In der Detailansicht eines Pfades:
 
 - **Pfad:** Titel, Slug, Kurzbeschreibung, Lernziele, Schwierigkeit, geschätzte
-  Dauer, Bestehensgrenze. Der Slug ist Teil der Links, die Lehrlinge teilen; eine
+  Dauer, Bestehensgrenze. Der Slug ist Teil der Links, die Lernende teilen; eine
   Änderung macht bestehende Links ungültig.
 - **Lektionen:** anlegen, umbenennen, per Ziehen sortieren, löschen. Die
   Zwischen-Checks einer gelöschten Lektion wandern in den Fragen-Pool des Pfades.
@@ -103,14 +108,18 @@ In der Detailansicht eines Pfades:
   zum Aufklappen, Code, Diagramm (Mermaid), Bild oder Video, Glossar,
   Abschnittstrenner. Bilder lädst du im Blockformular hoch.
 - **Quellenbelege** je Lektion und je Frage: Quelle und genau eine Fundstelle.
-- **Gruppen:** Ohne Auswahl sieht jede Gruppe den Pfad. Mit „Zuweisen“ schränkst du
-  ihn auf einzelne Gruppen ein; dann sehen ihn nur noch diese. Die Änderung gilt
-  sofort. Nimmst du eine Gruppe wieder heraus, bleibt der Fortschritt ihrer
-  Lehrlinge erhalten und ist wieder da, sobald du sie erneut zuweist. In der Liste
-  „Lernpfade“ zeigt ein Badge, auf wie viele Gruppen ein Pfad eingeschränkt ist; auf
-  der Seite einer Gruppe stehen die freigegebenen Pfade, die sie sieht. Wird die
-  einzige zugewiesene Gruppe gelöscht, sieht danach wieder jede Gruppe den Pfad.
-  Zuweisungen gehören nicht zum Export.
+- **Gruppen:** Einen sichtbaren Pfad sehen nur die zugewiesenen Gruppen; ohne
+  Zuweisung sieht ihn niemand. Die Liste der Gruppen liegt zugeklappt unter „N von M
+  Gruppen zugewiesen“. Dort weist du einzelne Gruppen mit „Zuweisen“ zu und nimmst
+  sie mit „Entfernen“ wieder heraus; „Allen Gruppen zuweisen“ weist alle laufenden
+  Gruppen auf einmal zu, archivierte nicht. Die Änderung gilt sofort. Nimmst du eine
+  Gruppe heraus, bleibt der Fortschritt ihrer Lernenden erhalten und ist wieder da,
+  sobald du sie erneut zuweist. Ist ein Pfad sichtbar, aber keiner Gruppe
+  zugewiesen, weist ein Hinweis darauf hin. In der Liste „Lernpfade“ zeigt ein
+  Badge, wie vielen Gruppen ein Pfad zugewiesen ist, oder „Keine Gruppe“; auf der
+  Seite einer Gruppe stehen die freigegebenen Pfade, die ihr zugewiesen sind. Neue
+  Gruppen bekommen nichts automatisch. Wird die einzige zugewiesene Gruppe
+  gelöscht, sieht den Pfad niemand mehr. Zuweisungen gehören nicht zum Export.
 
 Oben in der Detailansicht steht dauerhaft, was einen erneuten Upload des exportierten
 Pfades verhindern würde, etwa eine fehlende Quellenangabe.
@@ -118,7 +127,7 @@ Pfades verhindern würde, etwa eine fehlende Quellenangabe.
 Unter „Fragen“ liegt der **Fragen-Pool**. Eine Frage mit Lektion ist ein
 **Zwischen-Check** und erscheint in der Lektion; eine Frage ohne Lektion ist eine
 **Pool-Frage** des Pfades. Fragetypen: eine richtige Antwort, mehrere richtige
-Antworten, Wahr oder Falsch. Jede Frage braucht eine Begründung, die Lehrlinge nach
+Antworten, Wahr oder Falsch. Jede Frage braucht eine Begründung, die Lernende nach
 einer falschen Antwort sehen.
 
 Die Reihenfolge der Pfade änderst du in der Liste „Lernpfade“ per Ziehen.
@@ -129,14 +138,14 @@ Unter „Quizze“ gibt es zwei Arten:
 
 - **Abschluss-Quiz:** gehört zu genau einem Pfad, höchstens eines je Pfad. Es nimmt
   nur **Pool-Fragen des eigenen Pfades** auf, keine Zwischen-Checks und keine Fragen
-  anderer Pfade. Lehrlinge sehen es, wenn Pfad und Quiz veröffentlicht sind.
-- **Freies Quiz:** stellt Fragen aus beliebigen Pfaden zusammen. Du gibst es mit
-  „An Gruppen ausgeben“ bestimmten Gruppen aus; Lehrlinge finden es unter „Üben“.
+  anderer Pfade. Lernende sehen es, wenn sie den Pfad sehen und das Quiz sichtbar ist.
+- **Freies Quiz:** stellt Fragen aus beliebigen Pfaden zusammen. Du schaltest es
+  sichtbar und gibst es mit „An Gruppen ausgeben“ bestimmten Gruppen aus; Lernende finden es unter „Üben“.
 
 Im Quiz-Builder fügst du Fragen aus dem Pool hinzu und ziehst sie in die
 gewünschte Reihenfolge, oder du lässt sie mit „Fragen mischen“ je Versuch mischen.
 
-Daneben stellen sich Lehrlinge unter „Üben“ selbst **Übungsquizze** aus zufälligen
+Daneben stellen sich Lernende unter „Üben“ selbst **Übungsquizze** aus zufälligen
 Fragen freigegebener Pfade zusammen. Die gehören ihnen allein und erscheinen nicht in
 deiner Quizliste; ihre Antworten fließen aber in die Auswertung der Schwachstellen.
 
@@ -149,19 +158,18 @@ deiner Quizliste; ihre Antworten fließen aber in die Auswertung der Schwachstel
 - **Löschen** verschiebt einen Pfad in den Papierkorb („Gelöschte Lernpfade“). Von
   dort holst du ihn mit „Wiederherstellen“ zurück, er landet am Ende der
   Reihenfolge. **„Endgültig löschen“** entfernt ihn samt Lektionen, Fragen, Quiz und
-  den Versuchen und Antworten der Lehrlinge; LEARN zeigt vorher, wie viel daran hängt.
+  den Versuchen und Antworten der Lernenden; LEARN zeigt vorher, wie viel daran hängt.
 
 ## Auswertung
 
-- **Dashboard:** die laufenden Jahrgänge auf einen Blick, mit der Zahl der Lehrlinge,
-  die in den letzten sieben Tagen aktiv waren. Archivierte Jahrgänge zählen nicht mit.
+- **Dashboard:** die laufenden Gruppen auf einen Blick, mit der Zahl der Lernenden,
+  die in den letzten sieben Tagen aktiv waren. Archivierte Gruppen zählen nicht mit.
 - **Auswertung einer Gruppe:** Lesefortschritt je Pfad (nur die Pfade, die die
-  Gruppe sieht), Verteilung der Lehrlinge
-  nach Lesefortschritt, Abschluss-Quizze mit Bestehensquote, ausgegebene freie
-  Quizze und inaktive Lehrlinge. Die Bestehensquote zählt alle Mitglieder der
+  Gruppe sieht), Verteilung der Lernenden nach Lesefortschritt, Abschluss-Quizze mit
+  Bestehensquote, ausgegebene freie Quizze und inaktive Lernende. Die Bestehensquote zählt alle Mitglieder der
   Gruppe, nicht nur die, die angetreten sind.
-- **Auswertung eines Lehrlings:** Fortschritt je Pfad, Quizversuche und
-  Schwachstellen, also die Fragen, die er am häufigsten falsch beantwortet.
+- **Auswertung einzelner Lernender:** Fortschritt je Pfad, Quizversuche und
+  Schwachstellen, also die Fragen, die die Person am häufigsten falsch beantwortet.
 
 Alle Zahlen werden beim Aufruf aus den Lernergebnissen berechnet, ändern sich also
 sofort mit den Inhalten. LEARN speichert nur Lernergebnisse: abgeschlossene
@@ -174,20 +182,20 @@ Unter „Nutzer“ findest du alle Konten mit Gruppe und letzter Aktivität. Ein
 löschst du nach Eingabe des Namens endgültig, samt Fortschritt, Versuchen und
 Passkeys. Inhalte, die die Person angelegt hat, bleiben erhalten. Zwei Konten lassen
 sich hier nicht löschen: dein eigenes (das geht in den Kontoeinstellungen) und das
-des letzten Ausbildners, damit sich niemand aussperrt. Derselbe Schutz gilt in den
-Kontoeinstellungen: Bist du der letzte Ausbildner, siehst du dort statt „Account
+des letzten Admins, damit sich niemand aussperrt. Derselbe Schutz gilt in den
+Kontoeinstellungen: Bist du der letzte Admin, siehst du dort statt „Account
 löschen“ einen Hinweis.
 
-Mehrere Lehrlinge löschst du gemeinsam: Hake sie in der Liste an oder wähle über
-das Kästchen im Tabellenkopf alle Lehrlinge der aktuellen Seite, dann „Ausgewählte
+Mehrere Lernende löschst du gemeinsam: Hake sie in der Liste an oder wähle über
+das Kästchen im Tabellenkopf alle Lernenden der aktuellen Seite, dann „Ausgewählte
 löschen“. Der Dialog nennt bis zu zehn Namen und die Summe der erledigten Lektionen
 und Quizversuche, bestätigt wird mit der Anzahl. Die Auswahl gilt nur für die
 aktuelle Seite; Gruppe und Suche helfen beim Eingrenzen, und ein Filter- oder
-Seitenwechsel leert sie. Ausbildner lassen sich nicht anhaken, sie löschst du
+Seitenwechsel leert sie. Admins lassen sich nicht anhaken, sie löschst du
 einzeln.
 
-Mit „Administrator erstellen“ legst du einen weiteren Ausbildner an: Name, E-Mail
+Mit „Administrator erstellen“ legst du einen weiteren Admin an: Name, E-Mail
 und ein Startpasswort, das du ihm mitteilst. Er meldet sich damit an und ändert es
 in den Einstellungen. Das Formular legt nur neue Konten an; gehört die Adresse
-schon einem Lehrling, lehnt es sie ab. Ein bestehendes Konto zum Ausbildner machen
+schon einer anderen Person, lehnt es sie ab. Ein bestehendes Konto zum Admin machen
 kann nur `php artisan lapp:make-admin` auf der Kommandozeile.

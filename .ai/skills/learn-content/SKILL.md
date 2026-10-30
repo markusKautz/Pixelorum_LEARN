@@ -10,8 +10,8 @@ metadata:
 
 Ergebnis ist **eine** JSON-Datei mit einem vollständigen Lernpfad, die der
 Admin-Upload von LEARN ohne Nacharbeit annimmt. Sichtbar für Lernende wird der
-Pfad erst, nachdem eine Person ihn im Admin-Bereich geprüft und
-veröffentlicht hat. Diese Prüfung ersetzt der Skill nicht, er bereitet sie vor.
+Pfad erst, nachdem eine Person ihn im Admin-Bereich geprüft, sichtbar
+geschaltet und Gruppen zugewiesen hat. Diese Prüfung ersetzt der Skill nicht, er bereitet sie vor.
 
 ## Was nie verhandelbar ist
 
@@ -105,7 +105,8 @@ Dem Nutzer liefern:
 - den Pfad zur Datei und eine Zusammenfassung (Lektionen, Fragen, Minuten)
 - die aktualisierte Lückenliste und was bewusst weggelassen wurde
 - die nächsten Schritte: in LEARN unter „Lernpfad importieren“ hochladen,
-  Belege in der Freigabeansicht prüfen, freigeben, veröffentlichen
+  Belege in der Freigabeansicht prüfen, freigeben, sichtbar schalten, Gruppen
+  zuweisen
 
 ## Referenzen
 

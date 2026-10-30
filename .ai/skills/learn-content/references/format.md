@@ -15,8 +15,8 @@ Zweifel entscheidet `php artisan lapp:content:validate --file=<datei>`.
 - Unbekannte Felder werden abgelehnt, auf jeder Ebene.
 - Alle Positionen, `page` und `slide` sind echte JSON-Ganzzahlen (`3`, nicht
   `"3"`), ab 1, eindeutig innerhalb ihrer Liste.
-- `status` ist überall `"draft"`. Veröffentlichen ist ein Schritt im
-  Admin-Bereich, nicht in der Datei.
+- `status` ist überall `"draft"` (in der Oberfläche „Nicht sichtbar“). Sichtbar
+  schalten und Gruppen zuweisen sind Schritte im Admin-Bereich, nicht in der Datei.
 
 ## Wurzel
 
@@ -136,6 +136,7 @@ Das Quiz enthält ausschließlich Pool-Fragen dieses Pfades, adressiert über ih
 
 Ein Admin lädt die Datei in der Lernpfad-Übersicht über „Lernpfad importieren“
 hoch; „Datei prüfen“ zeigt vorher eine Vorschau. Der
-Pfad entsteht als ungeprüfter Entwurf. Gibt es den `slug` schon, entsteht eine
+Pfad entsteht ungeprüft, nicht sichtbar und ohne Gruppe. Gibt es den `slug` schon, entsteht eine
 Kopie mit Zufallsanhang und „(Kopie)“ im Titel. Sichtbar für Lernende wird der
-Pfad erst nach Freigabe und Veröffentlichung im Admin-Bereich.
+Pfad erst nach Freigabe, Sichtbarschalten und Zuweisung an Gruppen im
+Admin-Bereich.
