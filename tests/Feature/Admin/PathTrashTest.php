@@ -198,7 +198,7 @@ test('the confirmation dialog names the learner data it takes along', function (
     Livewire::actingAs($this->admin)
         ->test('pages::admin.learning-paths.index')
         ->assertSeeHtml('data-test="force-delete-impact"')
-        ->assertSee('1 erledigte Lektionen, 1 Quiz-Versuche und 1 Antworten von Lehrlingen werden mitgelöscht.');
+        ->assertSee('1 erledigte Lektionen, 1 Quiz-Versuche und 1 Antworten von Teilnehmer_innen werden mitgelöscht.');
 });
 
 test('the confirmation dialog stays harmless without any learner data', function () {
@@ -208,7 +208,7 @@ test('the confirmation dialog stays harmless without any learner data', function
 
     Livewire::actingAs($this->admin)
         ->test('pages::admin.learning-paths.index')
-        ->assertSee('Mit diesem Pfad hat noch kein Lehrling gearbeitet.');
+        ->assertSee('Mit diesem Pfad hat noch niemand gearbeitet.');
 });
 
 test('the confirmation dialog warns about other quizzes losing questions', function () {

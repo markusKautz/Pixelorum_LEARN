@@ -16,19 +16,19 @@ mitarbeiten. Das vollständige Schema steht in `database/migrations`, die Modell
 | Freie Frage | `Question` ohne Pfad | Frage, die keinem Pfad gehört und nur in freien Quizzen vorkommt. |
 | Pool-Frage | `Question` mit `learning_path_id`, ohne `lesson_id` | Frage des Pfades für Abschluss-, freie und Übungsquizze. |
 | Quiz | `Quiz` | Geordnete Fragenliste (`quiz_questions`) mit Bestehensgrenze. Arten siehe unten. |
-| Versuch | `QuizAttempt` | Ein Durchgang eines Lernenden durch ein Quiz, mit Punktzahl. |
+| Versuch | `QuizAttempt` | Ein einzelner Durchgang durch ein Quiz, mit Punktzahl. |
 | Antwort | `QuestionResponse` | Gewählte Optionen zu einer Frage innerhalb eines Versuchs. |
-| Lektionsabschluss | `LessonCompletion` | Ein Lernender hat eine Lektion zu Ende gelesen. |
+| Lektionsabschluss | `LessonCompletion` | Ein_e Teilnehmer_in hat eine Lektion zu Ende gelesen. |
 | Quelle | `ContentSource` | Metadaten einer Lernquelle (`pdf`, `slides`, `web`), eindeutig über `source_id`. |
 | Beleg | Spalte `source_reference` | An Lektion und Frage: Liste aus `source_id` und genau einer Fundstelle (`page`, `slide` oder `section`). |
-| Gruppe | `Team` | Meist ein Jahrgang; Lernende gehören genau einer an. Mitgliedschaft über `Membership` (`team_members`). |
+| Gruppe | `Team` | Eine Lerngruppe; Teilnehmer_innen gehören genau einer an. Mitgliedschaft über `Membership` (`team_members`). |
 | Einladung | `TeamInvitation` | Offene Einladung in eine Gruppe, gültig 30 Tage. |
 
 Quizarten (`QuizKind`):
 
 - `path_final`: Abschluss-Quiz eines Pfades.
 - `custom`: freies Quiz, pfadübergreifend, wird Gruppen ausgegeben (`quiz_team`).
-- `practice`: Übungsquiz, persönlicher Behälter genau eines Lernenden.
+- `practice`: Übungsquiz, persönlicher Behälter je Teilnehmer_in.
 
 ## Kerntabellen
 
@@ -68,14 +68,14 @@ Ein Lernpfad hat zwei unabhängige Felder:
 - `review_status` (`ReviewStatus`): `unreviewed` oder `verified`, also ob ein Admin
   die Inhalte gegen die Belege geprüft hat. Dazu `verified_at` und `verified_by`.
 
-Für Lernende sichtbar ist ein Pfad nur mit beidem
+Für Teilnehmer_innen sichtbar ist ein Pfad nur mit beidem
 (`LearningPath::isVisibleToLearners()`, Scope `visibleToLearners`). Dazu kommt die
-Gruppe: Lernende sehen einen Pfad nur, wenn er ihrer Gruppe in
+Gruppe: Teilnehmer_innen sehen einen Pfad nur, wenn er ihrer Gruppe in
 `learning_path_team` zugewiesen ist; ohne Zuweisung sieht ihn niemand. Persönliche
 Teams geben keinen Zugang. Pfade, die vor dem 2026-10-30 angelegt wurden, hat die
 Migration `…_assign_existing_learning_paths_to_all_groups` allen damals
 bestehenden Gruppen zugewiesen.
-Für einen bestimmten Lernenden gilt deshalb `LearningPath::isVisibleTo()` bzw. der
+Für bestimmte Teilnehmer_innen gilt deshalb `LearningPath::isVisibleTo()` bzw. der
 Scope `visibleTo`. Quizze haben einen eigenen `status`.
 
 Wird eine Zuweisung entzogen, bleibt der Fortschritt erhalten; der Pfad ist nur
@@ -98,8 +98,8 @@ nicht, sondern speist nur den Hinweis „Seit Freigabe geändert“.
 | Sichtbar schalten, Sortieren und Freigeben ändern `updated_at` nicht, damit sie nicht als Inhaltsänderung gelten. | `SetPathStatus`, `sortPaths()` in `admin/learning-paths/⚡index`, Freigabeansicht |
 | Wird eine Lektion gelöscht, wandern ihre Zwischen-Checks in den Pool. | `admin/learning-paths/⚡edit`, `deleteLesson()` |
 | Gemischte Quizze und Übungsquizze frieren die Fragenliste je Versuch ein, damit alte Versuche gegen ihre eigenen Fragen gewertet bleiben. | `Quiz::freezesQuestionOrder()`, `quiz_attempts.question_order` |
-| Übungsquizze ziehen nur Fragen aus Pfaden, die der Lernende sieht. | `BuildPracticeQuiz` |
-| Lernende sehen nur Pfade, die ihrer Gruppe zugewiesen sind; das gilt für Pfad, Lektionen, Abschluss-Quiz, Weiterlernen und Fortschritt. | `LearningPath::visibleTo()`, `LearningPathPolicy`, `QuizPolicy` |
+| Übungsquizze ziehen nur Fragen aus Pfaden, die die Teilnehmer_innen sehen. | `BuildPracticeQuiz` |
+| Teilnehmer_innen sehen nur Pfade, die ihrer Gruppe zugewiesen sind; das gilt für Pfad, Lektionen, Abschluss-Quiz, Weiterlernen und Fortschritt. | `LearningPath::visibleTo()`, `LearningPathPolicy`, `QuizPolicy` |
 | Die Gruppenauswertung zählt je Gruppe nur die Pfade, die diese Gruppe sieht. | `GroupProgressReport` |
 | Der Content-Import legt nur an; ein vorhandener Slug ergibt eine Kopie. Status und Freigabe setzt der Import selbst auf nicht sichtbar und ungeprüft, Gruppen weist er keine zu. | `ImportLearningPath::create()` |
 | Reihenfolge-Änderungen an Pfaden laufen unter einem gemeinsamen Lock. | `ImportLearningPath::ORDER_LOCK` |

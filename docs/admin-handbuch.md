@@ -2,7 +2,7 @@
 
 Dieses Handbuch beschreibt die Arbeit im Adminbereich von LEARN. Begriffe in
 Anführungszeichen stehen so auf dem Bildschirm. Es gibt zwei Rollen: Admins und
-Lernende.
+Teilnehmer_innen.
 
 ## Rollen und Gruppen
 
@@ -10,18 +10,17 @@ Lernende.
   Nutzer. Den ersten Admin legst du auf der Kommandozeile an:
   `php artisan lapp:make-admin`. Weitere Admins legst du unter „Nutzer“ an
   (siehe [Nutzer verwalten](#nutzer-verwalten)).
-- **Lernende** gehören genau einer Gruppe an, etwa einem Kurs oder Jahrgang. Sie
-  sehen nur
-  sichtbare und freigegebene Lernpfade, die ihrer Gruppe zugewiesen sind, und die
-  Quizze, die ihrer Gruppe ausgegeben sind.
+- **Teilnehmer_innen** gehören genau einer Gruppe an. Sie sehen nur sichtbare und
+  freigegebene Lernpfade, die ihrer Gruppe zugewiesen sind, und die Quizze, die
+  ihrer Gruppe ausgegeben sind.
 
-## Gruppe anlegen und Lernende einladen
+## Gruppe anlegen und Teilnehmer_innen einladen
 
 Unter „Gruppen“ legst du mit „Neue Gruppe“ eine Gruppe an. Auf ihrer Seite
-(„Gruppe verwalten“) lädst du Lernende ein:
+(„Gruppe verwalten“) lädst du Teilnehmer_innen ein:
 
-- **„Lehrling einladen“** lädt eine einzelne E-Mail-Adresse ein.
-- **„Liste importieren“** („Ganzen Jahrgang einladen“) lädt eine Adressliste als
+- **„Teilnehmer_in einladen“** lädt eine einzelne E-Mail-Adresse ein.
+- **„Liste importieren“** („Mehrere einladen“) lädt eine Adressliste als
   `.csv` oder `.txt`. Gelesen wird die erste Spalte; eine Kopfzeile und weitere
   Spalten, etwa aus Excel, stören nicht. „Liste prüfen“ zeigt zuerst, welche Zeilen
   eingeladen werden und welche nicht (ungültig, doppelt, schon Mitglied, schon
@@ -42,13 +41,13 @@ zurück.
 
 ### Gruppe pflegen
 
-- **Inaktivitäts-Schwelle:** Ab wie vielen Tagen ohne Aktivität die Auswertung einen
-  Lernenden als inaktiv meldet. Sie gilt je Gruppe.
-- **„Jahrgang archivieren“** nimmt eine abgeschlossene Gruppe aus den Kennzahlen des
+- **Inaktivitäts-Schwelle:** Ab wie vielen Tagen ohne Aktivität die Auswertung
+  Teilnehmer_innen als inaktiv meldet. Sie gilt je Gruppe.
+- **„Gruppe archivieren“** nimmt eine abgeschlossene Gruppe aus den Kennzahlen des
   Dashboards. Gelöscht wird nichts, die Auswertung bleibt erreichbar, und
-  „Jahrgang wieder aufnehmen“ macht es rückgängig.
+  „Gruppe wieder aufnehmen“ macht es rückgängig.
 - **„Gruppe löschen“** verlangt die Eingabe des Gruppennamens. Die Konten der
-  Lernenden bleiben bestehen, außer du setzt ausdrücklich das Häkchen, sie
+  Teilnehmer_innen bleiben bestehen, außer du setzt ausdrücklich das Häkchen, sie
   mitzulöschen.
 
 ## Lernpfade importieren
@@ -73,7 +72,7 @@ Ein importierter Pfad ist immer **nicht sichtbar**, **nicht freigegeben** und
 
 ## Prüfen, freigeben, sichtbar schalten
 
-Lernende sehen einen Pfad nur, wenn er **freigegeben** und **sichtbar** ist und
+Teilnehmer_innen sehen einen Pfad nur, wenn er **freigegeben** und **sichtbar** ist und
 **ihrer Gruppe zugewiesen** ist. Das sind drei getrennte Schritte:
 
 1. **Freigabe:** In der Detailansicht des Pfades öffnest du die Freigabeansicht. Sie
@@ -87,7 +86,7 @@ Lernende sehen einen Pfad nur, wenn er **freigegeben** und **sichtbar** ist und
    [Lernpfade bearbeiten](#lernpfade-bearbeiten)). Ohne Zuweisung sieht den Pfad
    niemand, auch wenn er sichtbar ist.
 4. **Abschluss-Quiz sichtbar schalten:** Das Abschluss-Quiz hat einen eigenen
-   Status. Schalte es unter „Quizze“ sichtbar, sonst sehen die Lernenden den Pfad
+   Status. Schalte es unter „Quizze“ sichtbar, sonst sehen die Teilnehmer_innen den Pfad
    ohne Quiz.
 
 Ändert sich nach der Freigabe der Inhalt eines Pfades, erscheint das Badge **„Seit
@@ -100,7 +99,7 @@ zählen nicht als Änderung. „Freigabe zurückziehen“ nimmt die Freigabe weg
 In der Detailansicht eines Pfades:
 
 - **Pfad:** Titel, Slug, Kurzbeschreibung, Lernziele, Schwierigkeit, geschätzte
-  Dauer, Bestehensgrenze. Der Slug ist Teil der Links, die Lernende teilen; eine
+  Dauer, Bestehensgrenze. Der Slug ist Teil der Links, die Teilnehmer_innen teilen; eine
   Änderung macht bestehende Links ungültig.
 - **Lektionen:** anlegen, umbenennen, per Ziehen sortieren, löschen. Die
   Zwischen-Checks einer gelöschten Lektion wandern in den Fragen-Pool des Pfades.
@@ -113,7 +112,7 @@ In der Detailansicht eines Pfades:
   Gruppen zugewiesen“. Dort weist du einzelne Gruppen mit „Zuweisen“ zu und nimmst
   sie mit „Entfernen“ wieder heraus; „Allen Gruppen zuweisen“ weist alle laufenden
   Gruppen auf einmal zu, archivierte nicht. Die Änderung gilt sofort. Nimmst du eine
-  Gruppe heraus, bleibt der Fortschritt ihrer Lernenden erhalten und ist wieder da,
+  Gruppe heraus, bleibt der Fortschritt ihrer Teilnehmer_innen erhalten und ist wieder da,
   sobald du sie erneut zuweist. Ist ein Pfad sichtbar, aber keiner Gruppe
   zugewiesen, weist ein Hinweis darauf hin. In der Liste „Lernpfade“ zeigt ein
   Badge, wie vielen Gruppen ein Pfad zugewiesen ist, oder „Keine Gruppe“; auf der
@@ -127,7 +126,7 @@ Pfades verhindern würde, etwa eine fehlende Quellenangabe.
 Unter „Fragen“ liegt der **Fragen-Pool**. Eine Frage mit Lektion ist ein
 **Zwischen-Check** und erscheint in der Lektion; eine Frage ohne Lektion ist eine
 **Pool-Frage** des Pfades. Fragetypen: eine richtige Antwort, mehrere richtige
-Antworten, Wahr oder Falsch. Jede Frage braucht eine Begründung, die Lernende nach
+Antworten, Wahr oder Falsch. Jede Frage braucht eine Begründung, die Teilnehmer_innen nach
 einer falschen Antwort sehen.
 
 Die Reihenfolge der Pfade änderst du in der Liste „Lernpfade“ per Ziehen.
@@ -138,14 +137,14 @@ Unter „Quizze“ gibt es zwei Arten:
 
 - **Abschluss-Quiz:** gehört zu genau einem Pfad, höchstens eines je Pfad. Es nimmt
   nur **Pool-Fragen des eigenen Pfades** auf, keine Zwischen-Checks und keine Fragen
-  anderer Pfade. Lernende sehen es, wenn sie den Pfad sehen und das Quiz sichtbar ist.
+  anderer Pfade. Teilnehmer_innen sehen es, wenn sie den Pfad sehen und das Quiz sichtbar ist.
 - **Freies Quiz:** stellt Fragen aus beliebigen Pfaden zusammen. Du schaltest es
-  sichtbar und gibst es mit „An Gruppen ausgeben“ bestimmten Gruppen aus; Lernende finden es unter „Üben“.
+  sichtbar und gibst es mit „An Gruppen ausgeben“ bestimmten Gruppen aus; Teilnehmer_innen finden es unter „Üben“.
 
 Im Quiz-Builder fügst du Fragen aus dem Pool hinzu und ziehst sie in die
 gewünschte Reihenfolge, oder du lässt sie mit „Fragen mischen“ je Versuch mischen.
 
-Daneben stellen sich Lernende unter „Üben“ selbst **Übungsquizze** aus zufälligen
+Daneben stellen sich Teilnehmer_innen unter „Üben“ selbst **Übungsquizze** aus zufälligen
 Fragen freigegebener Pfade zusammen. Die gehören ihnen allein und erscheinen nicht in
 deiner Quizliste; ihre Antworten fließen aber in die Auswertung der Schwachstellen.
 
@@ -158,17 +157,17 @@ deiner Quizliste; ihre Antworten fließen aber in die Auswertung der Schwachstel
 - **Löschen** verschiebt einen Pfad in den Papierkorb („Gelöschte Lernpfade“). Von
   dort holst du ihn mit „Wiederherstellen“ zurück, er landet am Ende der
   Reihenfolge. **„Endgültig löschen“** entfernt ihn samt Lektionen, Fragen, Quiz und
-  den Versuchen und Antworten der Lernenden; LEARN zeigt vorher, wie viel daran hängt.
+  den Versuchen und Antworten der Teilnehmer_innen; LEARN zeigt vorher, wie viel daran hängt.
 
 ## Auswertung
 
-- **Dashboard:** die laufenden Gruppen auf einen Blick, mit der Zahl der Lernenden,
+- **Dashboard:** die laufenden Gruppen auf einen Blick, mit der Zahl der Teilnehmer_innen,
   die in den letzten sieben Tagen aktiv waren. Archivierte Gruppen zählen nicht mit.
 - **Auswertung einer Gruppe:** Lesefortschritt je Pfad (nur die Pfade, die die
-  Gruppe sieht), Verteilung der Lernenden nach Lesefortschritt, Abschluss-Quizze mit
-  Bestehensquote, ausgegebene freie Quizze und inaktive Lernende. Die Bestehensquote zählt alle Mitglieder der
+  Gruppe sieht), Verteilung der Teilnehmer_innen nach Lesefortschritt, Abschluss-Quizze mit
+  Bestehensquote, ausgegebene freie Quizze und inaktive Teilnehmer_innen. Die Bestehensquote zählt alle Mitglieder der
   Gruppe, nicht nur die, die angetreten sind.
-- **Auswertung einzelner Lernender:** Fortschritt je Pfad, Quizversuche und
+- **Auswertung einzelner Teilnehmer_innen:** Fortschritt je Pfad, Quizversuche und
   Schwachstellen, also die Fragen, die die Person am häufigsten falsch beantwortet.
 
 Alle Zahlen werden beim Aufruf aus den Lernergebnissen berechnet, ändern sich also
@@ -186,8 +185,8 @@ des letzten Admins, damit sich niemand aussperrt. Derselbe Schutz gilt in den
 Kontoeinstellungen: Bist du der letzte Admin, siehst du dort statt „Account
 löschen“ einen Hinweis.
 
-Mehrere Lernende löschst du gemeinsam: Hake sie in der Liste an oder wähle über
-das Kästchen im Tabellenkopf alle Lernenden der aktuellen Seite, dann „Ausgewählte
+Mehrere Teilnehmer_innen löschst du gemeinsam: Hake sie in der Liste an oder wähle über
+das Kästchen im Tabellenkopf alle Teilnehmer_innen der aktuellen Seite, dann „Ausgewählte
 löschen“. Der Dialog nennt bis zu zehn Namen und die Summe der erledigten Lektionen
 und Quizversuche, bestätigt wird mit der Anzahl. Die Auswahl gilt nur für die
 aktuelle Seite; Gruppe und Suche helfen beim Eingrenzen, und ein Filter- oder

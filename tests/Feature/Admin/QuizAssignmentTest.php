@@ -205,7 +205,7 @@ test('the practise page lists the quizzes handed to the group', function () {
     $this->actingAs($apprentice)
         ->get(learnRoute('learn.practice.create', $apprentice))
         ->assertOk()
-        ->assertSee('Von deinem Ausbildner')
+        ->assertSee('Von deinem Kursadmin')
         ->assertSee('Wiederholung Netzwerke')
         ->assertDontSee('Fremdes Quiz');
 
@@ -224,7 +224,7 @@ test('the practise page section disappears without any handed out quiz', functio
     $this->actingAs($apprentice)
         ->get(learnRoute('learn.practice.create', $apprentice))
         ->assertOk()
-        ->assertDontSee('Von deinem Ausbildner')
+        ->assertDontSee('Von deinem Kursadmin')
         ->assertDontSee('Herrenlos');
 });
 

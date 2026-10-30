@@ -47,7 +47,7 @@ test('the admin dashboard shows no learner grid', function () {
         ->get(route('admin.dashboard'))
         ->assertOk()
         ->assertDontSee('Das sind deine Lernpfade.')
-        ->assertSee('So steht dein Jahrgang da.');
+        ->assertSee('So steht deine Gruppe da.');
 });
 
 test('the cohort overview sums up all groups', function () {

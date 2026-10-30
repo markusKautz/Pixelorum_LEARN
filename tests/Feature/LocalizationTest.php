@@ -19,7 +19,7 @@ test('landing page is german and shows the wordmark', function () {
         ->assertOk()
         ->assertSee('images/logo-learn.svg')
         ->assertSee('alt="LEARN"', escape: false)
-        ->assertSee('Schritt für Schritt zur Lehrabschlussprüfung.');
+        ->assertSee('Schritt für Schritt sicher im Stoff.');
 });
 
 test('landing page tells guests that it is running in test mode', function () {
