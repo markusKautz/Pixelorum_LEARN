@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Stellt einem Lehrling ein Übungsquiz aus zufälligen Fragen der gewählten
+ * Stellt einer Teilnehmer_in ein Übungsquiz aus zufälligen Fragen der gewählten
  * Pfade zusammen (Sprint 5.5, Variante B).
  *
  * **Kern-Idee:** ein echtes `Quiz` materialisieren, statt einen Sonderweg für
@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\DB;
  * entstehen, fließen Übungs-Antworten **automatisch** in die
  * Schwachstellen-Auswertung aus Sprint 5 — genau das gewünschte Tracking.
  *
- * **Variante B:** je Lehrling genau **ein** Übungsquiz, das wiederverwendet
+ * **Variante B:** je Teilnehmer_in genau **ein** Übungsquiz, das wiederverwendet
  * wird. Jede neue Sitzung ersetzt seinen Fragen-Pivot. Das korrumpiert keine
  * vergangenen Versuche, weil die ihre eigene Fragenliste festhalten
  * ({@see Quiz::freezesQuestionOrder()}) — und es erspart einen Aufräum-Job für
@@ -36,7 +36,7 @@ class BuildPracticeQuiz
     public const DEFAULT_QUESTION_COUNT = 10;
 
     /**
-     * Obergrenze, die der Lehrling für eine Übungsrunde wählen kann (DEV-10).
+     * Obergrenze, die die Teilnehmer_in für eine Übungsrunde wählen kann (DEV-10).
      */
     public const MAX_QUESTION_COUNT = 100;
 
@@ -44,7 +44,7 @@ class BuildPracticeQuiz
      * Build (or refill) the personal practice quiz of the given apprentice.
      *
      * @param  array<int, int>  $pathIds  gewünschte Pfade; ungültige oder für
-     *                                    Lehrlinge unsichtbare werden verworfen
+     *                                    Teilnehmer_innen unsichtbare werden verworfen
      * @param  int  $count  gewünschte Fragenzahl, auf das Verfügbare gekappt
      * @param  array<int, int>  $pinnedQuestionIds  diese Fragen werden fest
      *                                              gesetzt und fehlen damit in
@@ -165,7 +165,7 @@ class BuildPracticeQuiz
      *
      * Das Grounding-Gate aus Konzept e) gilt auch beim Üben: gezogen wird
      * ausschließlich aus **freigegebenen** Pfaden — auf ungeprüftem Stoff soll
-     * niemand üben —, und nur aus solchen, die die Gruppe des Lehrlings sieht
+     * niemand üben —, und nur aus solchen, die die Gruppe der Teilnehmer_in sieht
      * (#9). Fragen ohne Optionen fallen heraus, weil sie unbeantwortbar
      * wären und den Versuch blockieren würden.
      *
@@ -186,7 +186,7 @@ class BuildPracticeQuiz
      * Get or create the one practice quiz of this apprentice.
      *
      * `firstOrCreate` statt lesen-dann-schreiben, weil zwischen beiden Schritten
-     * ein Fenster liegt: zwei Tabs desselben Lehrlings könnten beide „keiner
+     * ein Fenster liegt: zwei Tabs derselben Teilnehmer_in könnten beide „keiner
      * vorhanden" lesen und beide anlegen. Die Garantie gibt der partielle
      * Unique-Index auf `quizzes (created_by) WHERE kind = 'practice'`;
      * `firstOrCreate` fängt dessen Verletzung ab und liest den Behälter des

@@ -4,11 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
 /**
- * „Je Lehrling genau ein Übungsquiz" wird zur Datenbank-Regel.
+ * „Je Teilnehmer_in genau ein Übungsquiz" wird zur Datenbank-Regel.
  *
  * Bis hierher war die Invariante eine Absichtserklärung im Anwendungscode:
  * BuildPracticeQuiz las erst („gibt es schon einen Behälter?") und schrieb dann
- * — zwei Anläufe desselben Lehrlings aus zwei Browser-Tabs konnten beide lesen,
+ * — zwei Anläufe derselben Teilnehmer_in aus zwei Browser-Tabs konnten beide lesen,
  * beide nichts finden und beide anlegen. Die umgebende Transaktion verhindert
  * das nicht: beide lesen einen gültigen Zustand und schreiben etwas Erlaubtes.
  *

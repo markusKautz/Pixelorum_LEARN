@@ -9,7 +9,7 @@ use App\Models\Question;
  *
  * Bewusst **eine** Datenform für beide Zielgruppen: der Admin-Drilldown (S5.3)
  * rendert nur `question->prompt`, die Zähler und den Pfad — er diagnostiziert.
- * Die Lehrling-Selbstsicht (S5.4) rendert zusätzlich `correctLabels`,
+ * Die Selbstsicht der Teilnehmer_innen (S5.4) rendert zusätzlich `correctLabels`,
  * `question->explanation` und den Wiederholen-Link über `quizId` — er übt.
  */
 readonly class WeakSpot

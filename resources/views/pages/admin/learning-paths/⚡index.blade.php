@@ -364,7 +364,7 @@ new class extends Component {
                                     </flux:badge>
                                 @endif
                             @elseif ($path->status === PathStatus::Published)
-                                {{-- publiziert, aber ungeprüft: für Lehrlinge unsichtbar (Grounding-Gate) --}}
+                                {{-- publiziert, aber ungeprüft: für Teilnehmer_innen unsichtbar (Grounding-Gate) --}}
                                 <flux:badge size="sm" color="amber" data-test="unreviewed-warning-badge">{{ $path->review_status->label() }}</flux:badge>
                             @else
                                 <flux:badge size="sm" color="zinc">{{ $path->review_status->label() }}</flux:badge>
@@ -379,7 +379,7 @@ new class extends Component {
                             {{-- Veröffentlichen ohne Umweg über die Bearbeiten-Seite.
                                  Der Dialog bleibt, weil er beim Freigeben auf einen
                                  ungeprüften Pfad hinweist und das Zurückziehen den
-                                 Lehrlingen Inhalt wegnimmt. --}}
+                                 Teilnehmer_innen Inhalt wegnimmt. --}}
                             @if ($path->status === PathStatus::Published)
                                 <flux:modal.trigger :name="'unpublish-path-'.$path->id">
                                     <flux:tooltip :content="__('Unpublish')">

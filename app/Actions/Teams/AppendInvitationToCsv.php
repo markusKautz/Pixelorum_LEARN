@@ -12,8 +12,8 @@ use RuntimeException;
  *
  * Die Datei ist ein **Protokoll, kein Datenbank-Spiegel**: bestehende Zeilen
  * werden nie umgeschrieben. Das ist Absicht, denn der tägliche Prune in
- * `routes/console.php` löscht abgelaufene Einladungen, und der Lehrling kann
- * seine eigene ablehnen. Eine angehängte Zeile überlebt beides und bleibt
+ * `routes/console.php` löscht abgelaufene Einladungen, und die Teilnehmer_in kann
+ * ihre eigene ablehnen. Eine angehängte Zeile überlebt beides und bleibt
  * damit der einzige Beleg, wer wann eingeladen wurde. Den aktuellen Zustand
  * beantwortet die App, nicht die Datei.
  */

@@ -46,7 +46,7 @@ new class extends Component {
         return Team::query()
             ->groups()
             ->withCount(['apprentices', 'invitations'])
-            // Archivierte Jahrgänge nach unten, laufende zuerst. Die Sortierung
+            // Archivierte Gruppen nach unten, laufende zuerst. Die Sortierung
             // läuft über einen CASE und nicht über `orderBy('archived_at')`:
             // SQLite sortiert NULL nach vorne, PostgreSQL nach hinten (siehe
             // technical-concept.md, „Datenbank") — die Reihenfolge hinge sonst
@@ -123,8 +123,8 @@ new class extends Component {
                         <div class="flex items-center gap-3">
                             <flux:progress :value="$summary?->averagePercent ?? 0" class="w-24" />
                             {{-- „Pfaden" statt bloß „fertig": die Zahl zählt Pfad-Belegungen
-                                 (Lehrlinge x Pfade), steht hier aber neben der Mitglieder-Spalte
-                                 und wurde deshalb als „x von y Lehrlingen" gelesen (Review M1).
+                                 (Teilnehmer_innen x Pfade), steht hier aber neben der Mitglieder-Spalte
+                                 und wurde deshalb als „x von y Teilnehmer_innen" gelesen (Review M1).
                                  Die Auswertungsseite klärt das über eine Subline; in der
                                  Tabellenzelle ist dafür kein Platz, also trägt das Label die
                                  Einheit selbst. --}}

@@ -13,7 +13,7 @@ use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Database\QueryException;
 
-it('erlaubt nur einen Abschluss je Lektion und Lehrling', function () {
+it('erlaubt nur einen Abschluss je Lektion und Teilnehmer_in', function () {
     $completion = LessonCompletion::factory()->create();
 
     expect(fn () => LessonCompletion::factory()->create([
@@ -22,7 +22,7 @@ it('erlaubt nur einen Abschluss je Lektion und Lehrling', function () {
     ]))->toThrow(QueryException::class);
 });
 
-it('erlaubt nur eine Fortschritts-Zeile je Pfad und Lehrling', function () {
+it('erlaubt nur eine Fortschritts-Zeile je Pfad und Teilnehmer_in', function () {
     $progress = PathProgress::factory()->create();
 
     expect(fn () => PathProgress::factory()->create([
@@ -121,7 +121,7 @@ it('nutzt die Tabelle path_progress ohne Pluralisierungs-Unfall', function () {
     expect((new PathProgress)->getTable())->toBe('path_progress');
 });
 
-it('verbindet den Lehrling mit seinem Fortschritt', function () {
+it('verbindet die Teilnehmer_in mit ihrem Fortschritt', function () {
     $user = User::factory()->create();
     $path = LearningPath::factory()->create();
 

@@ -25,7 +25,7 @@ test('the header row gains a status column when regenerated from the database', 
 });
 
 test('a row carries a link that passes signature validation', function () {
-    $team = Team::factory()->create(['name' => 'Lehrlinge 2026']);
+    $team = Team::factory()->create(['name' => 'Teilnehmer_innen 2026']);
     $inviter = User::factory()->create(['name' => 'Markus']);
 
     $invitation = TeamInvitation::factory()->create([
@@ -37,7 +37,7 @@ test('a row carries a link that passes signature validation', function () {
 
     $row = app(BuildInvitationCsv::class)->row($invitation);
 
-    expect($row[0])->toBe('Lehrlinge 2026')
+    expect($row[0])->toBe('Teilnehmer_innen 2026')
         ->and($row[1])->toBe('anna@example.at')
         ->and($row[6])->toBe('Markus')
         ->and($row[3])->toStartWith(config('app.url'))
@@ -82,7 +82,7 @@ test('the status column distinguishes open, accepted and expired invitations', f
 test('the first invitation creates the file with a BOM and a header row', function () {
     Storage::fake('local');
 
-    $team = Team::factory()->create(['name' => 'Lehrlinge 2026']);
+    $team = Team::factory()->create(['name' => 'Teilnehmer_innen 2026']);
     $invitation = TeamInvitation::factory()->create(['team_id' => $team->id]);
 
     $append = app(AppendInvitationToCsv::class);
@@ -130,12 +130,12 @@ test('a separator inside the group name does not tear the columns apart', functi
 test('renaming the group keeps writing into the same file', function () {
     Storage::fake('local');
 
-    $team = Team::factory()->create(['name' => 'Lehrlinge 2026']);
+    $team = Team::factory()->create(['name' => 'Teilnehmer_innen 2026']);
     $append = app(AppendInvitationToCsv::class);
 
     $append->handle(TeamInvitation::factory()->create(['team_id' => $team->id]));
 
-    $team->update(['name' => 'Lehrlinge 2027']);
+    $team->update(['name' => 'Teilnehmer_innen 2027']);
     $append->handle(TeamInvitation::factory()->create(['team_id' => $team->fresh()->id]));
 
     expect(Storage::disk('local')->files('invitations'))->toHaveCount(1);

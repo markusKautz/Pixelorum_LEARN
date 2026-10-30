@@ -20,8 +20,8 @@ use Livewire\Livewire;
 use function Pest\Laravel\mock;
 
 /**
- * Baut einen Lehrling mit vollem Datenschatten: Fortschritt, Versuche,
- * Antworten, Sitzung, Einladung an seine Adresse.
+ * Baut eine_n Teilnehmer_in mit vollem Datenschatten: Fortschritt, Versuche,
+ * Antworten, Sitzung, Einladung an ihre Adresse.
  *
  * @return array{learner: User, group: Team, quiz: Quiz}
  */
@@ -212,7 +212,7 @@ test('the delete button is hidden for the acting admin', function () {
 
     $component = Livewire::actingAs($admin)->test('pages::admin.users.index');
 
-    // Genau ein Löschen-Knopf: für den Lehrling, nicht für den Admin selbst.
+    // Genau ein Löschen-Knopf: für die Teilnehmer_in, nicht für den Admin selbst.
     expect(substr_count($component->html(), 'data-test="user-delete-button"'))->toBe(1)
         ->and($component->instance()->users->pluck('id')->all())
         ->toContain($learner->id, $admin->id);

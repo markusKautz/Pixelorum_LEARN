@@ -23,7 +23,7 @@ test('landing page is german and shows the wordmark', function () {
 });
 
 test('landing page tells guests that it is running in test mode', function () {
-    // Der Testbetrieb ist eine Zusage an die Lehrlinge: fehlende Inhalte sind
+    // Der Testbetrieb ist eine Zusage an die Teilnehmer_innen: fehlende Inhalte sind
     // gewollt und kein Fehler. Er darf ohne Anmeldung sichtbar bleiben.
     $this->get(route('home'))
         ->assertOk()
@@ -87,7 +87,7 @@ test('invitation mail subject and action are german', function () {
 
 test('teams index page says Gruppe instead of Team', function () {
     $user = User::factory()->admin()->create();
-    $user->currentTeam->update(['name' => 'Lehrlinge 2026']);
+    $user->currentTeam->update(['name' => 'Teilnehmer_innen 2026']);
 
     $this->actingAs($user)
         ->get(route('teams.index'))
@@ -99,7 +99,7 @@ test('teams index page says Gruppe instead of Team', function () {
 test('team edit page says Gruppe instead of Team', function () {
     $user = User::factory()->admin()->create();
     $team = $user->currentTeam;
-    $team->update(['name' => 'Lehrlinge 2026']);
+    $team->update(['name' => 'Teilnehmer_innen 2026']);
 
     $this->actingAs($user)
         ->get(route('teams.edit', $team))

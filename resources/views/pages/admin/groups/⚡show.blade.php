@@ -22,7 +22,7 @@ new class extends Component {
     public string $deleteConfirmation = '';
 
     /**
-     * Ob die Konten der Lehrlinge mitgelöscht werden.
+     * Ob die Konten der Teilnehmer_innen mitgelöscht werden.
      *
      * Standard **aus** (Entscheidung 4): die zerstörungsfreie Variante ist die
      * Vorauswahl. Wer die Konten mitnehmen will, sagt es ausdrücklich.
@@ -56,10 +56,10 @@ new class extends Component {
     }
 
     /**
-     * Die Schwelle, ab der die Gruppen-Auswertung einen Lehrling als inaktiv
+     * Die Schwelle, ab der die Gruppen-Auswertung eine_n Teilnehmer_in als inaktiv
      * markiert (Entscheidung 5). Gesetzt wird sie hier, gelesen von
-     * `admin.groups.analytics` — pro Gruppe, weil ein Jahrgang im
-     * Blockunterricht andere Rhythmen hat als einer ohne.
+     * `admin.groups.analytics` — pro Gruppe, weil eine Gruppe im
+     * Blockunterricht andere Rhythmen hat als eine ohne.
      */
     public function saveThreshold(): void
     {
@@ -75,12 +75,12 @@ new class extends Component {
     }
 
     /**
-     * Einen Jahrgang abschließen bzw. wieder aufnehmen (S5.7.1).
+     * Eine Gruppe abschließen bzw. wieder aufnehmen (S5.7.1).
      *
      * Umkehrbar und ohne Bestätigungsdialog: archivieren löscht nichts, es nimmt
      * die Gruppe nur aus den kohortenweiten Kennzahlen des Dashboards. Die
-     * Gruppe bleibt in der Liste, ihre Auswertung bleibt erreichbar — der
-     * Jahrgang ist Historie, keine Sperrzone.
+     * Gruppe bleibt in der Liste, ihre Auswertung bleibt erreichbar — eine
+     * abgeschlossene Gruppe ist Historie, keine Sperrzone.
      */
     public function toggleArchived(): void
     {
@@ -469,7 +469,7 @@ new class extends Component {
 
             @if ($this->members->isNotEmpty())
                 {{-- Die Zahl steht im Dialog, damit das Häkchen keine abstrakte
-                     Option ist. Ausbildner sind nie betroffen (Entscheidung 4). --}}
+                     Option ist. Admins sind nie betroffen (Entscheidung 4). --}}
                 <flux:checkbox
                     wire:model="deleteApprentices"
                     :label="__('Also delete the :count apprentice accounts for good', ['count' => $this->members->count()])"

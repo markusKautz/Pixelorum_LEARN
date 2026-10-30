@@ -13,7 +13,7 @@ use Livewire\Component;
 
 /*
  * Admins sehen diese Seite nie: `EnsureTeamMembership` verzweigt sie im
- * Lehrling-Bereich auf ihr eigenes Dashboard (Entscheidung 8). Die Regel steht
+ * Teilnehmer_innen-Bereich auf ihr eigenes Dashboard (Entscheidung 8). Die Regel steht
  * dort und nicht hier in `mount()`, weil die Middleware bei einer *fremden*
  * Gruppe schon mit 403 abbrach, bevor die Komponente überhaupt gemountet wurde.
  *
@@ -22,7 +22,7 @@ use Livewire\Component;
  */
 new class extends Component {
     /**
-     * Der Fortschritt des Lehrlings auf allen sichtbaren Pfaden —
+     * Der Fortschritt der Teilnehmer_in auf allen sichtbaren Pfaden —
      * nach Pfad-ID indiziert (F5).
      *
      * Dieselbe Quelle, aus der `/my-progress` und `ResolveContinuationPoint`
@@ -106,7 +106,7 @@ new class extends Component {
     @endif
 
     @if ($this->weakSpots !== [])
-        {{-- Merkmal 7 (individuelles Fördern): der Lehrling sieht selbst, was
+        {{-- Merkmal 7 (individuelles Fördern): die Teilnehmer_in sieht selbst, was
              er als Nächstes üben sollte. Amber statt rot — das ist ein
              Vorschlag, kein Tadel (Merkmal 3). --}}
         <flux:card class="space-y-4" data-test="practice-card">

@@ -22,7 +22,7 @@ it('lässt Admins Lernpfade anlegen und auflisten', function () {
         ->and($this->admin->can('create', LearningPath::class))->toBeTrue();
 });
 
-it('zeigt Lehrlingen nur sichtbare und geprüfte Pfade ihrer Gruppe', function (bool $published, bool $verified, bool $sichtbar) {
+it('zeigt Teilnehmer_innen nur sichtbare und geprüfte Pfade ihrer Gruppe', function (bool $published, bool $verified, bool $sichtbar) {
     $factory = LearningPath::factory()->assignedToAllGroups();
     $factory = $published ? $factory->published() : $factory;
     $factory = $verified ? $factory->verified() : $factory;
@@ -35,7 +35,7 @@ it('zeigt Lehrlingen nur sichtbare und geprüfte Pfade ihrer Gruppe', function (
     'veröffentlicht und geprüft' => [true, true, true],
 ]);
 
-it('lässt Lehrlinge die Pfad-Liste sehen, aber nichts verwalten', function () {
+it('lässt Teilnehmer_innen die Pfad-Liste sehen, aber nichts verwalten', function () {
     $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
 
     expect($this->lehrling->can('viewAny', LearningPath::class))->toBeTrue()
@@ -58,7 +58,7 @@ it('filtert die Pfad-Liste per Scope auf sichtbare Pfade', function () {
 /*
  * Ab Sprint 5.6 ist die Ausgabe an eine Gruppe das Sichtbarkeits-Gate freier
  * Quizze. Vorher war jedes veröffentlichte freie Quiz per Direkt-URL für jeden
- * Lehrling offen — verlinkt war es nirgends, gefunden hat es niemand.
+ * Teilnehmer_in offen — verlinkt war es nirgends, gefunden hat es niemand.
  */
 it('verbirgt ein veröffentlichtes freies Quiz, das keiner Gruppe ausgegeben ist', function () {
     $quiz = Quiz::factory()->published()->create();
@@ -66,7 +66,7 @@ it('verbirgt ein veröffentlichtes freies Quiz, das keiner Gruppe ausgegeben ist
     expect($this->lehrling->can('view', $quiz))->toBeFalse();
 });
 
-it('zeigt Lehrlingen ein freies Quiz, das ihrer Gruppe ausgegeben ist', function () {
+it('zeigt Teilnehmer_innen ein freies Quiz, das ihrer Gruppe ausgegeben ist', function () {
     $quiz = Quiz::factory()->published()->create();
 
     $quiz->teams()->attach($this->lehrling->currentTeam);
@@ -102,13 +102,13 @@ it('taugt ein persönliches Team nicht als Zugang zu einem freien Quiz', functio
     expect($this->lehrling->can('view', $quiz))->toBeFalse();
 });
 
-it('verbirgt ein unveröffentlichtes Quiz vor Lehrlingen', function () {
+it('verbirgt ein unveröffentlichtes Quiz vor Teilnehmer_innen', function () {
     $quiz = Quiz::factory()->create();
 
     expect($this->lehrling->can('view', $quiz))->toBeFalse();
 });
 
-it('verbirgt das Abschluss-Quiz eines ungeprüften Pfades vor Lehrlingen', function () {
+it('verbirgt das Abschluss-Quiz eines ungeprüften Pfades vor Teilnehmer_innen', function () {
     $entwurfsPfad = LearningPath::factory()->create();
     $quiz = Quiz::factory()->pathFinal($entwurfsPfad)->published()->create();
 
@@ -135,14 +135,14 @@ it('verbirgt auch das Quiz eines gelöschten freigegebenen Pfades', function () 
     expect($this->lehrling->can('view', $quiz->fresh()))->toBeFalse();
 });
 
-it('zeigt Lehrlingen das Abschluss-Quiz eines freigegebenen Pfades', function () {
+it('zeigt Teilnehmer_innen das Abschluss-Quiz eines freigegebenen Pfades', function () {
     $pfad = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($pfad)->published()->create();
 
     expect($this->lehrling->can('view', $quiz))->toBeTrue();
 });
 
-it('lässt Admins Quizze verwalten, Lehrlinge nicht', function () {
+it('lässt Admins Quizze verwalten, Teilnehmer_innen nicht', function () {
     $quiz = Quiz::factory()->create();
 
     expect($this->admin->can('view', $quiz))->toBeTrue()

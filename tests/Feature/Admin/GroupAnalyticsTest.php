@@ -142,7 +142,7 @@ test('the group list shows the average column and links to the analytics', funct
         ->assertOk()
         ->assertSee(route('admin.groups.analytics', $this->group), escape: false)
         // Die Einheit steht im Label (Review M1): neben der Spalte „Mitglieder: 2"
-        // las sich „1 von 2 fertig" als „1 von 2 Lehrlingen".
+        // las sich „1 von 2 fertig" als „1 von 2 Teilnehmer_innen".
         ->assertSee('1 von 2 Pfaden fertig')
         ->assertDontSee('1 von 2 fertig');
 });
@@ -249,7 +249,7 @@ test('the group analytics stay within their query budget', function () {
     }
 
     foreach (range(1, 6) as $index) {
-        User::factory()->apprentice($this->group)->create(['name' => "Lehrling {$index}"]);
+        User::factory()->apprentice($this->group)->create(['name' => "Teilnehmer_in {$index}"]);
     }
 
     $this->actingAs($this->admin)->get(route('admin.groups.analytics', $this->group))->assertOk();
@@ -308,9 +308,9 @@ test('everything but the apprentice table is wrapped in the accordion', function
         '//*[@data-test="group-accordion"]//*[@data-test="'.$test.'"]'
     )->length;
 
-    // Beides Aggregierte steckt im Accordion, die Lehrlings-Tabelle bleibt
+    // Beides Aggregierte steckt im Accordion, die Teilnehmer_innen-Tabelle bleibt
     // offen darunter stehen (Sprint-5.6/U4, erweitert beim Retest 2026-07-29).
-    // Gegenstück in der Lehrling-Auswertung: dort bleibt die Pfad-Tabelle offen.
+    // Gegenstück in der Teilnehmer_innen-Auswertung: dort bleibt die Pfad-Tabelle offen.
     expect($insideAccordion('paths-table'))->toBeTrue()
         ->and($insideAccordion('assigned-quizzes-table'))->toBeTrue()
         ->and($insideAccordion('members-table'))->toBeFalse()

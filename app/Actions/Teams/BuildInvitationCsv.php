@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\URL;
  */
 class BuildInvitationCsv
 {
-    /** Das Datumsformat, das der Ausbildner auf Papier und in Excel liest. */
+    /** Das Datumsformat, das der Admin auf Papier und in Excel liest. */
     public const DATE_FORMAT = 'd.m.Y H:i';
 
     /**

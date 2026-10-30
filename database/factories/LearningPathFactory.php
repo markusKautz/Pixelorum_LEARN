@@ -73,7 +73,7 @@ class LearningPathFactory extends Factory
      * like „Allen Gruppen zuweisen“ (#9, E14).
      *
      * Ohne Zuweisung sieht einen Pfad niemand (E12). Gruppen, die erst danach
-     * entstehen, bekommen nichts; die Tests legen ihre Lernenden deshalb vor
+     * entstehen, bekommen nichts; die Tests legen ihre Teilnehmer_innen deshalb vor
      * dem Pfad an.
      */
     public function assignedToAllGroups(): static

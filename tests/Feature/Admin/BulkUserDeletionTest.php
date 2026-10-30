@@ -40,7 +40,7 @@ test('admins and the acting admin are never part of a bulk deletion', function (
     $otherAdmin = User::factory()->admin()->create();
     $learner = User::factory()->apprentice()->create();
 
-    // Der Dialog zählt nur, was tatsächlich gelöscht wird: hier ein Lehrling.
+    // Der Dialog zählt nur, was tatsächlich gelöscht wird: hier ein_e Teilnehmer_in.
     Livewire::actingAs($admin)
         ->test('pages::admin.users.index')
         ->set('selected', [$admin->id, $otherAdmin->id, $learner->id])

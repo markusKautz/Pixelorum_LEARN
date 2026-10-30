@@ -29,8 +29,8 @@ test('a personal team makes its user the owner and becomes the current team', fu
 
 test('a group gets no owner membership and does not switch the creator', function () {
     // Entscheidung 2, jetzt in CreateTeam selbst statt nur im Admin-Weg: eine
-    // Lehrlingsgruppe hat keinen Owner. Hing der Ausbildner drin, zählte ihn
-    // jede Auswertung als Lehrling mit 0 % mit.
+    // Gruppe hat keinen Owner. Hing der Admin drin, zählte ihn
+    // jede Auswertung als Teilnehmer_in mit 0 % mit.
     $admin = User::factory()->admin()->create();
     $currentTeamBefore = $admin->current_team_id;
 
@@ -282,7 +282,7 @@ test('leaving current team switches to alphabetically first remaining team', fun
 });
 
 test('leaving the only team nulls the current team instead of orphaning it', function () {
-    // Lehrlinge haben kein persönliches Team (Konzept c) — ohne den
+    // Teilnehmer_innen haben kein persönliches Team (Konzept c) — ohne den
     // Null-Fallback bliebe eine verwaiste current_team_id zurück.
     $apprentice = User::factory()->apprentice()->create();
     $group = $apprentice->currentTeam;

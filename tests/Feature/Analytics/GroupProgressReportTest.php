@@ -239,7 +239,7 @@ test('the group report stays within its query budget regardless of size', functi
     }
 
     foreach (range(1, 5) as $index) {
-        User::factory()->apprentice($this->group)->create(['name' => "Lehrling {$index}"]);
+        User::factory()->apprentice($this->group)->create(['name' => "Teilnehmer_in {$index}"]);
     }
 
     app(GroupProgressReport::class)->handle($this->group->fresh());
@@ -261,7 +261,7 @@ test('an admin sitting in the group is no apprentice', function () {
     $learner = User::factory()->apprentice($this->group)->create(['name' => 'Anna']);
     completeLessons($learner, $path, 2);
 
-    // Zwei erreichbare Wege, wie ein Ausbildner in einer Gruppe landet: das
+    // Zwei erreichbare Wege, wie ein Admin in einer Gruppe landet: das
     // allgemeine „Team erstellen" hängt ihn als Owner an, eine angenommene
     // Gruppen-Einladung als member. Beide dürfen die Quote nicht verwässern.
     $this->group->members()->attach(
@@ -306,7 +306,7 @@ test('the group summary ignores admins as well', function () {
 
 test('the invitation duplicate check still sees every member', function () {
     // Gegenprobe zur Naht: members() darf nicht mitgewandert sein. Sonst
-    // könnte ein Ausbildner, der schon in der Gruppe sitzt, erneut eingeladen
+    // könnte ein Admin, der schon in der Gruppe sitzt, erneut eingeladen
     // werden.
     $admin = User::factory()->admin()->create();
     $this->group->members()->attach($admin, ['role' => TeamRole::Owner->value]);

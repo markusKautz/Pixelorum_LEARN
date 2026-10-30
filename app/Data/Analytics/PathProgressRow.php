@@ -8,9 +8,9 @@ use App\Models\LearningPath;
 use Illuminate\Support\Carbon;
 
 /**
- * Der Fortschritt **eines** Lehrlings auf **einem** Pfad — das Atom, aus dem
+ * Der Fortschritt **einer** Teilnehmer_in auf **einem** Pfad — das Atom, aus dem
  * jede Auswertung dieses Sprints besteht: die Gruppen-Aggregate mitteln
- * darüber, der Admin-Drilldown und die Lehrling-Selbstsicht zeigen die Zeilen
+ * darüber, der Admin-Drilldown und die Selbstsicht der Teilnehmer_innen zeigen die Zeilen
  * direkt.
  *
  * Berechnet wird sie ausschließlich von

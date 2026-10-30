@@ -152,7 +152,7 @@ test('the analytics link appears only for an apprentice with a group', function 
         escape: false,
     );
 
-    // Weder für den Ausbildner noch für den Lehrling ohne Gruppe gibt es ein
+    // Weder für den Admin noch für die Teilnehmer_in ohne Gruppe gibt es ein
     // Ziel — die Route braucht `{team}/{member}`.
     expect($component->instance()->analyticsGroup($this->admin))->toBeNull()
         ->and($component->instance()->analyticsGroup($orphan))->toBeNull()

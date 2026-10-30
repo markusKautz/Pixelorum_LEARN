@@ -8,10 +8,10 @@ enum QuizKind: string
     case Custom = 'custom';
 
     /**
-     * Der persönliche Übungsbehälter eines Lehrlings (Sprint 5.5): kein
-     * Redaktionsinhalt, sondern die materialisierte Zufallsauswahl seiner
-     * letzten Übungssitzung. Genau einer je Lehrling, `created_by` ist er
-     * selbst — und nur er sieht ihn.
+     * Der persönliche Übungsbehälter einer Teilnehmer_in (Sprint 5.5): kein
+     * Redaktionsinhalt, sondern die materialisierte Zufallsauswahl ihrer
+     * letzten Übungssitzung. Genau einer je Teilnehmer_in, `created_by` ist sie
+     * selbst — und nur sie sieht ihn.
      */
     case Practice = 'practice';
 

@@ -40,7 +40,7 @@ test('deleting a group removes it for good, along with memberships and invitatio
     $this->assertDatabaseMissing('team_invitations', ['id' => $invitation->id]);
     $this->assertDatabaseMissing('quiz_team', ['team_id' => $group->id]);
 
-    // Ohne Häkchen bleibt der Lehrling — gruppenlos, aber vorhanden.
+    // Ohne Häkchen bleibt die Teilnehmer_in — gruppenlos, aber vorhanden.
     $this->assertDatabaseHas('users', ['id' => $learner->id]);
     expect($learner->fresh()->current_team_id)->toBeNull();
 
@@ -82,7 +82,7 @@ test('a trainer inside the group is never deleted with it', function () {
     $group = Team::factory()->create(['name' => 'Lehrjahr 2026']);
     $learner = User::factory()->apprentice($group)->create();
 
-    // Ein Ausbildner, der per Einladung als `member` in der Gruppe steckt —
+    // Ein Admin, der per Einladung als `member` in der Gruppe steckt —
     // genau der Fall, den eine Filterung über die Pivot-Rolle verpassen würde.
     $trainer = User::factory()->admin()->create();
     $group->members()->attach($trainer, ['role' => TeamRole::Member->value]);

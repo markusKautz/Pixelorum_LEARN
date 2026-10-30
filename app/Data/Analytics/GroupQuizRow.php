@@ -45,7 +45,7 @@ readonly class GroupQuizRow
     /**
      * Ob überhaupt jemand angetreten ist — trennt „alle durchgefallen" von
      * „noch niemand hat es angefasst", zwei sehr verschiedene Befunde für den
-     * Ausbildner.
+     * Admin.
      */
     public function wasAttempted(): bool
     {

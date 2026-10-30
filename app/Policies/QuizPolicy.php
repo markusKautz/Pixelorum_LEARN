@@ -8,7 +8,7 @@ use App\Models\Quiz;
 use App\Models\User;
 
 /**
- * Wie die LearningPathPolicy formuliert diese Policy nur die Lehrling-Sicht;
+ * Wie die LearningPathPolicy formuliert diese Policy nur die Teilnehmer_innen-Sicht;
  * Admins passieren den Gate::before-Kurzschluss.
  */
 class QuizPolicy
@@ -32,7 +32,7 @@ class QuizPolicy
     {
         /*
          * Ein Übungsquiz (Sprint 5.5) ist der persönliche Behälter genau eines
-         * Lehrlings und gehört ihm allein — kein Published-Gate (es wird nie
+         * Teilnehmer_in und gehört ihr allein — kein Published-Gate (es wird nie
          * redaktionell veröffentlicht) und kein Pfad-Gate (es hängt an keinem
          * Pfad). Die Erdung sitzt eine Stufe früher: BuildPracticeQuiz zieht
          * ausschließlich Fragen aus sichtbaren Pfaden.
@@ -54,11 +54,11 @@ class QuizPolicy
             /*
              * Freies Quiz: sichtbar nur für Gruppen, denen es ausgegeben wurde
              * (Sprint 5.6). Vor diesem Sprint war jedes veröffentlichte freie
-             * Quiz für jeden Lehrling per Direkt-URL offen — nur verlinkt war
+             * Quiz für jede_n Teilnehmer_in per Direkt-URL offen — nur verlinkt war
              * es nirgends. Die Zuweisung schließt diese Lücke und macht aus
              * „liegt herum" ein „wurde ausgegeben".
              *
-             * Persönliche Teams sind keine Lehrlingsgruppen und taugen
+             * Persönliche Teams sind keine Gruppen und taugen
              * deshalb nicht als Zugang.
              */
             return $quiz->teams()

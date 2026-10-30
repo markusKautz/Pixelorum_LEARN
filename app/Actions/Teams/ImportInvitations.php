@@ -13,10 +13,10 @@ use Illuminate\Support\Facades\DB;
 /**
  * Legt aus den geprüften Zeilen einer Importdatei die Einladungen an.
  *
- * Fehlerhafte Zeilen blockieren die übrigen nicht: bei einem Jahrgang ist
+ * Fehlerhafte Zeilen blockieren die übrigen nicht: bei einer ganzen Gruppe ist
  * meistens genau eine Adresse vertippt, und ein Komplettabbruch zwänge zum
  * erneuten Hochladen. Der Durchgang läuft trotzdem in einer Transaktion, damit
- * ein Datenbankfehler mittendrin keinen halben Jahrgang hinterlässt.
+ * ein Datenbankfehler mittendrin keine halbe Gruppe hinterlässt.
  */
 class ImportInvitations
 {

@@ -29,8 +29,8 @@ test('admins are redirected from the admin entry point to their dashboard', func
 });
 
 /*
- * Der Lehrling-Bereich liegt unter /{gruppe}/… . Ein Admin gehört den Gruppen
- * der Lehrlinge nicht an, lief also bis S5.6 in den 403 von
+ * Der Teilnehmer_innen-Bereich liegt unter /{gruppe}/… . Ein Admin gehört den Gruppen
+ * der Teilnehmer_innen nicht an, lief also bis S5.6 in den 403 von
  * EnsureTeamMembership — die mount()-Redirects der Seiten kamen nie zum Zug,
  * weil die Komponente gar nicht gemountet wurde (F3).
  */
@@ -59,7 +59,7 @@ test('the admin switch does not drag the current team along', function () {
 
 /*
  * Gegenprobe zur Weiche oben (aus O3): sie steht **vor** der
- * Mitgliedsprüfung. Eine negierte Bedingung ließe damit jeden Lehrling in jede
+ * Mitgliedsprüfung. Eine negierte Bedingung ließe damit jede_n Teilnehmer_in in jede
  * fremde Gruppe — dieser Test ist der einzige, der das bemerken würde.
  */
 test('an apprentice on the slug of a foreign group still gets a 403', function () {
@@ -72,7 +72,7 @@ test('an apprentice on the slug of a foreign group still gets a 403', function (
 });
 
 /*
- * Die Weiche gilt nur für den Lehrling-Bereich. `settings/teams/{team}` trägt
+ * Die Weiche gilt nur für den Teilnehmer_innen-Bereich. `settings/teams/{team}` trägt
  * dieselbe Middleware, gehört aber dem Admin — ein pauschaler Kurzschluss
  * hätte ihn von seiner eigenen Gruppenverwaltung weggeleitet.
  */

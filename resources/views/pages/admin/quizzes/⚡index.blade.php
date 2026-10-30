@@ -66,7 +66,7 @@ new class extends Component {
 
     /**
      * Veröffentlichen direkt aus der Liste, wie bei den Lernpfaden. Der Dialog
-     * bleibt, weil beides Folgen für die Lehrlinge hat: freigeben stellt
+     * bleibt, weil beides Folgen für die Teilnehmer_innen hat: freigeben stellt
      * ihnen das Quiz hin, zurückziehen nimmt es ihnen wieder weg.
      */
     public function publishQuiz(int $quizId): void
@@ -121,7 +121,7 @@ new class extends Component {
     public function quizzes(): Collection
     {
         return Quiz::query()
-            // Ohne den Filter flutete je Lehrling eine Übungsquiz-Zeile die
+            // Ohne den Filter flutete je Teilnehmer_in eine Übungsquiz-Zeile die
             // Redaktionsliste (Sprint 5.5).
             ->editorial()
             ->with(['learningPath', 'teams'])
@@ -376,7 +376,7 @@ new class extends Component {
             <flux:input wire:model="title" :label="__('Title')" autofocus data-test="create-quiz-title" />
 
             <flux:select wire:model.live="kind" :label="__('Kind')" data-test="create-quiz-kind">
-                {{-- Übungsquizze entstehen nur durch Lehrlinge (Sprint 5.5) —
+                {{-- Übungsquizze entstehen nur durch Teilnehmer_innen (Sprint 5.5) —
                      der Admin legt keine an. --}}
                 @foreach (QuizKind::editorialCases() as $quizKind)
                     <flux:select.option value="{{ $quizKind->value }}">{{ $quizKind->label() }}</flux:select.option>

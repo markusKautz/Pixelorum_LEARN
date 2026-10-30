@@ -25,7 +25,7 @@ new class extends Component {
 
     /**
      * Steuert, ob die Rollen-Auswahl angeboten wird. Im Gruppen-Kontext (Konzept c)
-     * sind alle Eingeladenen Lehrlinge; die Team-Rollen dienen dort nicht der
+     * sind alle Eingeladenen Teilnehmer_innen; die Team-Rollen dienen dort nicht der
      * Steuerung, deshalb blendet die Gruppenverwaltung die Auswahl aus.
      */
     public bool $roleSelectable = true;

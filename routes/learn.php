@@ -4,9 +4,9 @@ use App\Http\Middleware\EnsureTeamMembership;
 use Illuminate\Support\Facades\Route;
 
 /*
- * Lehrling-Bereich (Konzept g). Anders als der Admin-Bereich liegt er
+ * Teilnehmer_innen-Bereich (Konzept g). Anders als der Admin-Bereich liegt er
  * team-scoped unter /{current_team}: die Inhalte selbst bleiben global
- * (Konzept c), das Präfix partitioniert nur die Lernenden und hält
+ * (Konzept c), das Präfix partitioniert nur die Teilnehmer_innen und hält
  * `current_team` gepflegt — EnsureTeamMembership schaltet bei Bedarf um.
  *
  * Die Gruppe trägt bewusst *kein* ->name('learn.')-Präfix: der Routenname

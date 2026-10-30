@@ -14,7 +14,7 @@ use Throwable;
  * Die erste Instanz läuft lokal ohne Mailserver. Die Einladung ist zu diesem
  * Zeitpunkt bereits gespeichert und die CSV-Zeile geschrieben, der Link also
  * vollständig nutzbar. Ein fehlgeschlagener Transport ist damit eine Randnotiz
- * und kein Grund, dem Ausbildner einen Fehler zu zeigen und ihn den Vorgang
+ * und kein Grund, dem Admin einen Fehler zu zeigen und ihn den Vorgang
  * wiederholen zu lassen.
  */
 class SendInvitationNotification

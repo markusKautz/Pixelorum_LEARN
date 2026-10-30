@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
 /**
- * „Je Lehrling und Quiz höchstens ein **laufender** Versuch" wird zur DB-Regel.
+ * „Je Teilnehmer_in und Quiz höchstens ein **laufender** Versuch" wird zur DB-Regel.
  *
  * Abgeschlossene Versuche bleiben ausdrücklich unbegrenzt — die Auswertung
  * lebt davon (bester Versuch, Anzahl Durchgänge). Eingeschränkt wird nur der
@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
  * Quiz-Seite sucht sich mit `whereNull('completed_at')->latest('started_at')`
  * den laufenden heraus. Das `latest()` ist der Fingerzeig — es beantwortet eine
  * Frage, die es gar nicht geben dürfte. Zwei fast gleichzeitige erste Antworten
- * aus zwei Tabs erzeugten zwei Versuche; von da an schrieb der Lehrling in den
+ * aus zwei Tabs erzeugten zwei Versuche; von da an schrieb die Teilnehmer_in in den
  * einen und sah womöglich den anderen, und beim Abschluss zählte nur einer.
  *
  * Ein Unique-Index allein hätte hier nicht gereicht: mehrere abgeschlossene
@@ -72,7 +72,7 @@ return new class extends Migration
 
         if ($conflicts->isNotEmpty()) {
             throw new RuntimeException(
-                'Mehrere offene Quiz-Versuche desselben Lehrlings — bitte vor dieser '
+                'Mehrere offene Quiz-Versuche derselben Teilnehmer_in — bitte vor dieser '
                 .'Migration bereinigen (abschließen oder löschen): '.$conflicts->implode('; ')
             );
         }

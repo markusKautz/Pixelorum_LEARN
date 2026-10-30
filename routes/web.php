@@ -15,7 +15,7 @@ Route::livewire('about', 'pages::about')
 require __DIR__.'/settings.php';
 require __DIR__.'/admin.php';
 
-// Zuletzt: der Lehrling-Bereich beginnt mit dem Platzhalter {current_team} und
+// Zuletzt: der Teilnehmer_innen-Bereich beginnt mit dem Platzhalter {current_team} und
 // würde sonst auch /admin/… und /settings/… auf sich ziehen (erste passende
 // Route gewinnt). Die konkreten Präfixe müssen deshalb vorher registriert sein.
 require __DIR__.'/learn.php';

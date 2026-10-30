@@ -7,7 +7,7 @@ und E-Mails. Logo: `public/images/logo-learn.svg` (helle Flächen) und `logo-lea
 als `<x-app-logo-icon>` vor.
 
 Ziel: Lernplattform (Laravel/Livewire/Flux) für geerdete Lernpfade mit Lektionen und Quizzen,
-zwei Rollen (globaler Admin über mehrere Gruppen, Lernende je einer Gruppe) mit
+zwei Rollen (globaler Admin über mehrere Gruppen, Teilnehmer_innen je einer Gruppe) mit
 Fortschrittsverfolgung. Lernpfade kommen als Content-JSON über den Admin-Upload; wie sie
 entstehen, beschreibt der Skill `.ai/skills/learn-content`.
 

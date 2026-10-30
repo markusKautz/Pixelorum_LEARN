@@ -16,7 +16,7 @@ use Livewire\Livewire;
 
 /*
  * Sprint 5.5, Feature 2 — das persönliche Übungsquiz (Variante B): genau ein
- * wiederverwendbarer Behälter je Lehrling, dessen Fragen-Pivot jede Sitzung
+ * wiederverwendbarer Behälter je Teilnehmer_in, dessen Fragen-Pivot jede Sitzung
  * neu befüllt. Vergangene Versuche bleiben davon unberührt, weil sie ihre
  * eigene Fragenliste festhalten.
  */
@@ -117,7 +117,7 @@ test('the database refuses a second practice container for the same apprentice',
     /*
      * Der partielle Unique-Index ist die eigentliche Garantie — nicht die
      * Lesen-dann-Schreiben-Disziplin in BuildPracticeQuiz. Zwei Tabs desselben
-     * Lehrlings könnten die umgehen, den Index nicht.
+     * Teilnehmer_in könnten die umgehen, den Index nicht.
      *
      * Der Einsprung in DB::transaction() ist kein Beiwerk: auf PostgreSQL
      * bricht ein gescheitertes Statement die **ganze** umgebende Transaktion

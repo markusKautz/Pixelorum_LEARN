@@ -31,7 +31,7 @@ class DownloadInvitationsController extends Controller
         /*
          * Fehlt die Datei noch, etwa weil die Gruppe vor diesem Feature
          * entstanden ist, wird sie aus der Datenbank erzeugt statt einen 404 zu
-         * zeigen. Ein leerer Download wäre für den Ausbildner nicht von einem
+         * zeigen. Ein leerer Download wäre für den Admin nicht von einem
          * kaputten zu unterscheiden.
          */
         if ($path === null) {

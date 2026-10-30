@@ -54,7 +54,7 @@ class AppServiceProvider extends ServiceProvider
         View::composer('*::app.sidebar', function (ViewContract $view): void {
             $user = Auth::user();
 
-            // Nur Lehrlinge zahlen die Abfrage: der Ausbildner übt nicht, seine
+            // Nur Teilnehmer_innen zahlen die Abfrage: der Admin übt nicht, seine
             // Sidebar zeigt den Eintrag gar nicht (`@cannot('admin')`).
             $view->with('openAssignedQuizCount', $user instanceof User && ! $user->can('admin')
                 ? $user->openAssignedQuizCount()

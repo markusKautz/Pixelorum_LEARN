@@ -18,10 +18,10 @@ use Illuminate\Support\Carbon;
  * bei jedem Aufruf frisch aus `lesson_completions` und `quiz_attempts`
  * ({@see ComputePathProgress}) — Entscheidung 1 des
  * Auftraggebers und damit eine bewusste Abweichung vom technischen Konzept d.
- * Bei einem Jahrgang kostet Live Millisekunden, während eine gespeicherte
+ * Bei einer Gruppe kostet Live Millisekunden, während eine gespeicherte
  * Aggregation Trigger, Backfill und Veraltungs-Logik verlangt hätte. Tabelle
  * und Model bleiben stehen: sie sind die Option, wenn die Plattform je auf
- * mehrere tausend gleichzeitig ausgewertete Lernende wächst.
+ * mehrere tausend gleichzeitig ausgewertete Teilnehmer_innen wächst.
  *
  * @property int $id
  * @property int $user_id

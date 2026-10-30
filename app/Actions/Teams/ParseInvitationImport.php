@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
  * Absenden passieren würde, und ist damit die Grundlage der Vorschau.
  *
  * Ein Namensfeld gibt es bewusst nicht: `team_invitations` hat keine
- * Namensspalte, den Namen setzt der Lehrling beim Aktivieren selbst. Eine
+ * Namensspalte, den Namen setzt die Teilnehmer_in beim Aktivieren selbst. Eine
  * importierte Namensspalte würde nirgends landen und nur Erwartungen wecken,
  * deshalb wird sie stillschweigend ignoriert.
  */

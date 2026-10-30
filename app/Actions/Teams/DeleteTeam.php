@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
  *
  * **Hart**, nicht per Soft Delete: ohne Aufbewahrungsfrist (Entscheidung 1) wäre
  * ein Zeitstempel widersprüchlich — er verspricht Löschung und behält alles. Wer
- * einen Jahrgang nur abschließen will, archiviert ihn (S5.7.1).
+ * eine Gruppe nur abschließen will, archiviert sie (S5.7.1).
  *
  * `forceDelete()` ist nötig, weil `Team` weiterhin `SoftDeletes` nutzt: das
  * Trait bleibt, weil {@see GeneratesUniqueSlugs} auf
@@ -22,8 +22,8 @@ use Illuminate\Support\Facades\DB;
  *
  * Mitgliedschaften, Einladungen und Quiz-Zuweisungen nimmt die Datenbank mit —
  * alle drei Fremdschlüssel auf `teams` stehen auf `cascadeOnDelete`.
- * `users.current_team_id` fällt per `nullOnDelete` auf NULL; ein behaltener
- * Lehrling landet beim nächsten Login über `RedirectsToCurrentTeam` in seinem
+ * `users.current_team_id` fällt per `nullOnDelete` auf NULL; eine behaltene
+ * Teilnehmer_in landet beim nächsten Login über `RedirectsToCurrentTeam` in ihrem
  * persönlichen Team (Entscheidung 8: das bleibt so, die Inhalte sind global).
  */
 class DeleteTeam
@@ -36,16 +36,16 @@ class DeleteTeam
     /**
      * Delete the group; optionally delete its apprentices along with it.
      *
-     * @param  bool  $withApprentices  Konten der Lehrlinge mitlöschen
+     * @param  bool  $withApprentices  Konten der Teilnehmer_innen mitlöschen
      * @return int wie viele Konten mitgelöscht wurden
      */
     public function handle(Team $team, bool $withApprentices = false): int
     {
         return DB::transaction(function () use ($team, $withApprentices): int {
             // **Vor** dem Löschen einsammeln: die Mitgliedschaften, über die man
-            // die Lehrlinge findet, kaskadieren mit der Gruppe weg.
+            // die Teilnehmer_innen findet, kaskadieren mit der Gruppe weg.
             //
-            // `apprentices()` filtert über `users.is_admin` — ein Ausbildner, der
+            // `apprentices()` filtert über `users.is_admin` — ein Admin, der
             // dieser Gruppe angehört, ist damit auch dann nicht betroffen, wenn er
             // per Einladung mit `role = member` darin steckt (Entscheidung 4).
             /** @var Collection<int, User> $apprentices */
