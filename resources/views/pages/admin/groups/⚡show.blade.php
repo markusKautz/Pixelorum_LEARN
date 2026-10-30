@@ -171,20 +171,16 @@ new class extends Component {
     }
 
     /**
-     * Die freigegebenen Pfade, die diese Gruppe sieht (#9): allgemeine und
-     * ihr zugewiesene, nach der Reihenfolge der Pfadliste.
+     * Die freigegebenen Pfade, die diese Gruppe sieht (#9, E12): die ihr
+     * zugewiesenen, nach der Reihenfolge der Pfadliste.
      *
      * @return Collection<int, LearningPath>
      */
     #[Computed]
     public function visiblePaths(): Collection
     {
-        return LearningPath::query()
+        return $this->team->learningPaths()
             ->visibleToLearners()
-            ->where(fn ($paths) => $paths
-                ->whereDoesntHave('teams')
-                ->orWhereHas('teams', fn ($teams) => $teams->whereKey($this->team->id)))
-            ->withCount('teams')
             ->orderBy('position')
             ->get();
     }
@@ -422,18 +418,13 @@ new class extends Component {
     <div class="space-y-4" data-test="group-paths-section">
         <div>
             <flux:heading size="lg">{{ __('Learning paths') }}</flux:heading>
-            <flux:subheading>{{ __('Released paths this group sees. You limit a path to groups on its page.') }}</flux:subheading>
+            <flux:subheading>{{ __('Released paths assigned to this group. You assign a path to groups on its page.') }}</flux:subheading>
         </div>
 
         <div class="space-y-2">
             @forelse ($this->visiblePaths as $path)
                 <div wire:key="group-path-{{ $path->id }}" class="flex items-center justify-between gap-3 rounded-lg border border-zinc-200 px-3 py-2 dark:border-zinc-700" data-test="group-path-row">
                     <a href="{{ route('admin.learning-paths.edit', $path) }}" wire:navigate class="min-w-0 truncate font-medium hover:underline">{{ $path->title }}</a>
-                    @if ($path->teams_count > 0)
-                        <flux:badge size="sm" color="sky" icon="user-group" data-test="group-path-assigned-badge">{{ __('Assigned') }}</flux:badge>
-                    @else
-                        <flux:badge size="sm" color="zinc" data-test="group-path-general-badge">{{ __('All groups') }}</flux:badge>
-                    @endif
                 </div>
             @empty
                 <flux:text class="py-4 text-center text-zinc-500 dark:text-zinc-400">{{ __('No released paths for this group yet.') }}</flux:text>

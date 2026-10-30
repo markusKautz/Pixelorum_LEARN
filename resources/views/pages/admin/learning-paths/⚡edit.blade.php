@@ -320,8 +320,7 @@ new class extends Component {
      * @return Collection<int, Lesson>
      */
     /**
-     * Den Pfad auf eine Gruppe einschränken oder die Einschränkung
-     * zurücknehmen (#9).
+     * Den Pfad einer Gruppe zuweisen oder die Zuweisung zurücknehmen (#9).
      *
      * Sofort wirksam wie „An Gruppen ausgeben“ im Quiz-Editor: die Zuweisung
      * ist keine Eigenschaft des Formulars, ein Validierungsfehler im Titel
@@ -343,7 +342,26 @@ new class extends Component {
     }
 
     /**
-     * Die Gruppen, auf die dieser Pfad eingeschränkt ist.
+     * Den Pfad allen laufenden Gruppen zuweisen (E14).
+     *
+     * Archivierte Gruppen bekommen nichts Neues; bestehende Zuweisungen,
+     * auch an archivierte, bleiben stehen.
+     */
+    public function assignAllGroups(): void
+    {
+        Gate::authorize('update', $this->learningPath);
+
+        $this->learningPath->teams()->syncWithoutDetaching(
+            Team::query()->groups()->active()->pluck('id')->all(),
+        );
+
+        unset($this->assignedTeamIds);
+
+        Flux::toast(variant: 'success', text: __('Assigned to all groups.'));
+    }
+
+    /**
+     * Die Gruppen, denen dieser Pfad zugewiesen ist.
      *
      * @return array<int, int>
      */
@@ -354,7 +372,7 @@ new class extends Component {
     }
 
     /**
-     * Die Lehrlingsgruppen, auf die eingeschränkt werden kann.
+     * Die Lehrlingsgruppen, denen zugewiesen werden kann.
      *
      * @return Collection<int, Team>
      */
@@ -548,55 +566,79 @@ new class extends Component {
 
     <flux:separator />
 
-    {{-- Gruppen (#9): ohne Auswahl sieht jede Gruppe den Pfad (E8). --}}
+    {{-- Gruppen (#9): sichtbar ist der Pfad nur für zugewiesene Gruppen (E12).
+         Die Liste liegt im Akkordeon, weil sie mit jeder Gruppe wächst (E14). --}}
     <div class="space-y-3" data-test="path-groups-section">
-        <div>
-            <flux:heading size="lg">{{ __('Groups') }}</flux:heading>
-            <flux:subheading>
-                {{ $this->assignedTeamIds === []
-                    ? __('Every group sees this path. Pick groups to limit it to them.')
-                    : __('Only the groups picked here see this path. Progress of other groups is kept and returns when you assign them again.') }}
-            </flux:subheading>
+        <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+                <flux:heading size="lg">{{ __('Groups') }}</flux:heading>
+                <flux:subheading>
+                    {{ __('Only the groups assigned here see this path once it is visible. Progress of a removed group is kept and returns when you assign it again.') }}
+                </flux:subheading>
+            </div>
+
+            <flux:button size="sm" icon="user-group" wire:click="assignAllGroups" data-test="path-assign-all-groups">
+                {{ __('Assign to all groups') }}
+            </flux:button>
         </div>
 
-        @forelse ($this->assignableTeams as $team)
-            @php($isAssigned = in_array($team->id, $this->assignedTeamIds, true))
+        @if ($learningPath->status === PathStatus::Published && $this->assignedTeamIds === [])
+            {{-- E17: sichtbar geschaltet, aber ohne Gruppe sieht ihn niemand. --}}
+            <flux:callout color="amber" icon="exclamation-triangle" data-test="path-no-group-hint">
+                <flux:callout.text>
+                    {{ __('This path is visible but not assigned to any group, so nobody sees it.') }}
+                </flux:callout.text>
+            </flux:callout>
+        @endif
 
-            <div
-                wire:key="path-team-{{ $team->id }}"
-                class="flex items-center gap-3 rounded-lg border border-zinc-200 p-3 dark:border-zinc-700"
-                data-test="path-group-row"
-            >
-                <div class="min-w-0 flex-1">
-                    <p class="truncate font-medium">{{ $team->name }}</p>
-                    <div class="mt-1 flex flex-wrap items-center gap-1">
-                        <flux:badge size="sm" color="zinc">
-                            {{ trans_choice('{1} :count apprentice|[2,*] :count apprentices', $team->apprentices_count, ['count' => $team->apprentices_count]) }}
-                        </flux:badge>
-                        @if ($team->isArchived())
-                            <flux:badge size="sm" color="zinc">{{ __('archived') }}</flux:badge>
-                        @endif
-                        @if ($isAssigned)
-                            <flux:badge size="sm" color="green" icon="check">{{ __('Assigned') }}</flux:badge>
-                        @endif
-                    </div>
-                </div>
+        <x-ui.accordion class="rounded-lg border border-zinc-200 px-4 dark:border-zinc-700">
+            <x-ui.accordion.item>
+                <x-ui.accordion.heading data-test="path-groups-toggle">
+                    {{ __(':assigned of :total groups assigned', ['assigned' => count($this->assignedTeamIds), 'total' => $this->assignableTeams->count()]) }}
+                </x-ui.accordion.heading>
 
-                <flux:button
-                    :variant="$isAssigned ? 'ghost' : 'filled'"
-                    size="sm"
-                    :icon="$isAssigned ? 'x-mark' : 'plus'"
-                    wire:click="toggleGroup({{ $team->id }})"
-                    data-test="path-group-toggle"
-                >
-                    {{ $isAssigned ? __('Remove') : __('Assign') }}
-                </flux:button>
-            </div>
-        @empty
-            <flux:text class="py-4 text-center text-zinc-500 dark:text-zinc-400">
-                {{ __('No groups yet.') }}
-            </flux:text>
-        @endforelse
+                <x-ui.accordion.content class="space-y-2">
+                    @forelse ($this->assignableTeams as $team)
+                        @php($isAssigned = in_array($team->id, $this->assignedTeamIds, true))
+
+                        <div
+                            wire:key="path-team-{{ $team->id }}"
+                            class="flex items-center gap-3 rounded-lg border border-zinc-200 p-3 dark:border-zinc-700"
+                            data-test="path-group-row"
+                        >
+                            <div class="min-w-0 flex-1">
+                                <p class="truncate font-medium text-zinc-800 dark:text-white">{{ $team->name }}</p>
+                                <div class="mt-1 flex flex-wrap items-center gap-1">
+                                    <flux:badge size="sm" color="zinc">
+                                        {{ trans_choice('{1} :count apprentice|[2,*] :count apprentices', $team->apprentices_count, ['count' => $team->apprentices_count]) }}
+                                    </flux:badge>
+                                    @if ($team->isArchived())
+                                        <flux:badge size="sm" color="zinc">{{ __('archived') }}</flux:badge>
+                                    @endif
+                                    @if ($isAssigned)
+                                        <flux:badge size="sm" color="green" icon="check">{{ __('Assigned') }}</flux:badge>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <flux:button
+                                :variant="$isAssigned ? 'ghost' : 'filled'"
+                                size="sm"
+                                :icon="$isAssigned ? 'x-mark' : 'plus'"
+                                wire:click="toggleGroup({{ $team->id }})"
+                                data-test="path-group-toggle"
+                            >
+                                {{ $isAssigned ? __('Remove') : __('Assign') }}
+                            </flux:button>
+                        </div>
+                    @empty
+                        <flux:text class="py-4 text-center text-zinc-500 dark:text-zinc-400">
+                            {{ __('No groups yet.') }}
+                        </flux:text>
+                    @endforelse
+                </x-ui.accordion.content>
+            </x-ui.accordion.item>
+        </x-ui.accordion>
     </div>
 
     <flux:separator />

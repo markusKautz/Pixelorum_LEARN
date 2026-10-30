@@ -14,7 +14,7 @@ use Livewire\Livewire;
 
 beforeEach(function () {
     $this->learner = User::factory()->apprentice()->create();
-    $this->path = LearningPath::factory()->published()->verified()->create();
+    $this->path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $this->quiz = Quiz::factory()->pathFinal($this->path)->published()->create([
         'title' => 'Abschlusstest',
         'pass_threshold' => 80,

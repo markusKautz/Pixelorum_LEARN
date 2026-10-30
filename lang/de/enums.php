@@ -27,8 +27,8 @@ return [
     ],
 
     'path_status' => [
-        'draft' => 'Entwurf',
-        'published' => 'Veröffentlicht',
+        'draft' => 'Nicht sichtbar',
+        'published' => 'Sichtbar',
     ],
 
     'review_status' => [

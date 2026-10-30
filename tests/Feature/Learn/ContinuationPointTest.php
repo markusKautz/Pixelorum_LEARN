@@ -26,11 +26,11 @@ test('without visible paths there is no entry point', function () {
 });
 
 test('without any activity the first visible path is offered', function () {
-    LearningPath::factory()->published()->verified()->create([
+    LearningPath::factory()->published()->verified()->assignedToAllGroups()->create([
         'title' => 'Zweiter Pfad', 'position' => 2,
     ]);
 
-    $first = LearningPath::factory()->published()->verified()->create([
+    $first = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create([
         'title' => 'Erster Pfad', 'position' => 1,
     ]);
 
@@ -43,7 +43,7 @@ test('without any activity the first visible path is offered', function () {
 });
 
 test('after a completed lesson the next open one is offered', function () {
-    $path = LearningPath::factory()->published()->verified()->create(['title' => 'Grundlagen']);
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['title' => 'Grundlagen']);
 
     $lessons = Lesson::factory()->for($path)->count(3)->sequence(
         ['title' => 'Lektion 1', 'position' => 1],
@@ -65,7 +65,7 @@ test('after a completed lesson the next open one is offered', function () {
 });
 
 test('with all lessons completed the entry point is the final quiz', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $lesson = Lesson::factory()->for($path)->create(['position' => 1]);
     $quiz = Quiz::factory()->pathFinal($path)->published()->create(['title' => 'Abschlusstest']);
 
@@ -83,7 +83,7 @@ test('with all lessons completed the entry point is the final quiz', function ()
 });
 
 test('with all lessons completed and no visible quiz the practice round is offered', function () {
-    $path = LearningPath::factory()->published()->verified()->create(['title' => 'Grundlagen']);
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['title' => 'Grundlagen']);
     $lesson = Lesson::factory()->for($path)->create(['position' => 1]);
 
     // Unveröffentlichtes Abschluss-Quiz ist für Lehrlinge kein Ziel; der
@@ -102,13 +102,13 @@ test('with all lessons completed and no visible quiz the practice round is offer
 });
 
 test('a passed final quiz moves the entry point to the next open path', function () {
-    $done = LearningPath::factory()->published()->verified()->create([
+    $done = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create([
         'title' => 'Erledigter Pfad', 'position' => 1,
     ]);
     $doneLesson = Lesson::factory()->for($done)->create(['position' => 1]);
     $doneQuiz = Quiz::factory()->pathFinal($done)->published()->create(['title' => 'Abschluss Erledigt']);
 
-    $open = LearningPath::factory()->published()->verified()->create([
+    $open = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create([
         'title' => 'Offener Pfad', 'position' => 2,
     ]);
     Lesson::factory()->for($open)->create(['title' => 'Offene Lektion', 'position' => 1]);
@@ -131,7 +131,7 @@ test('a passed final quiz moves the entry point to the next open path', function
 });
 
 test('when every visible path is completed the entry point is a practice round', function () {
-    $path = LearningPath::factory()->published()->verified()->create(['title' => 'Einziger Pfad']);
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['title' => 'Einziger Pfad']);
     $lesson = Lesson::factory()->for($path)->create(['position' => 1]);
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
@@ -153,7 +153,7 @@ test('when every visible path is completed the entry point is a practice round',
 });
 
 test('an open attempt beats the most recent completion', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $lesson = Lesson::factory()->for($path)->create(['position' => 1]);
     Lesson::factory()->for($path)->create(['title' => 'Offene Lektion', 'position' => 2]);
 
@@ -176,7 +176,7 @@ test('an open attempt beats the most recent completion', function () {
 });
 
 test('a completed attempt is not an entry point', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     QuizAttempt::factory()->passed()->create([
@@ -188,7 +188,7 @@ test('a completed attempt is not an entry point', function () {
 });
 
 test('a revoked release drops the entry point back to the next rule', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     QuizAttempt::factory()->inProgress()->create([
@@ -217,7 +217,7 @@ test('a revoked release drops the entry point back to the next rule', function (
  */
 function zweiAngefangenePfade(User $learner): array
 {
-    $aelter = LearningPath::factory()->published()->verified()->create([
+    $aelter = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create([
         'title' => 'Älterer Pfad', 'position' => 1,
     ]);
 
@@ -226,7 +226,7 @@ function zweiAngefangenePfade(User $learner): array
         ['title' => 'Alt 2', 'position' => 2],
     )->create();
 
-    $juenger = LearningPath::factory()->published()->verified()->create([
+    $juenger = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create([
         'title' => 'Jüngerer Pfad', 'position' => 2,
     ]);
 
@@ -274,7 +274,7 @@ test('a deleted path drops the most recent completion out of the cascade', funct
 });
 
 test('the activity of another apprentice does not change the own entry point', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
 
     Lesson::factory()->for($path)->count(2)->sequence(
         ['title' => 'Lektion 1', 'position' => 1],
@@ -297,7 +297,7 @@ test('the completion of another apprentice does not skip an own open lesson', fu
     // Aktivität). Dieser prüft sie **innerhalb** eines Pfades: die Suche nach
     // der nächsten offenen Lektion fragt eine gemeinsame Tabelle ab und muss
     // sich dort selbst auf den Lehrling eingrenzen.
-    $path = LearningPath::factory()->published()->verified()->create(['title' => 'Grundlagen']);
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['title' => 'Grundlagen']);
 
     $lessons = Lesson::factory()->for($path)->count(2)->sequence(
         ['title' => 'Lektion 1', 'position' => 1],
@@ -324,7 +324,7 @@ test('the completion of another apprentice does not skip an own open lesson', fu
 });
 
 test('the dashboard shows the entry point as a card', function () {
-    $path = LearningPath::factory()->published()->verified()->create(['title' => 'Grundlagen']);
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['title' => 'Grundlagen']);
 
     Lesson::factory()->for($path)->count(2)->sequence(
         ['title' => 'Lektion 1', 'position' => 1],

@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\Analytics\GroupProgressReport;
+use App\Enums\PathStatus;
 use App\Models\LearningPath;
 use App\Models\Lesson;
 use App\Models\Team;
@@ -36,21 +37,57 @@ test('a path cannot be assigned to a personal team', function () {
     expect($path->teams()->exists())->toBeFalse();
 });
 
-test('the path list marks paths limited to groups', function () {
+test('an admin assigns a path to all running groups at once', function () {
     $admin = User::factory()->admin()->create();
-    $limited = LearningPath::factory()->create(['title' => 'Eingeschränkt']);
-    LearningPath::factory()->create(['title' => 'Allgemein']);
-    $limited->teams()->attach(Team::factory()->create());
+    $running = Team::factory()->count(2)->create();
+    $archived = Team::factory()->archived()->create();
+    $path = LearningPath::factory()->create();
+    $path->teams()->attach($running->first());
+
+    Livewire::actingAs($admin)
+        ->test('pages::admin.learning-paths.edit', ['learningPath' => $path])
+        ->call('assignAllGroups')
+        ->assertDispatched('toast-show');
+
+    expect($path->teams()->pluck('teams.id')->sort()->values()->all())->toBe($running->modelKeys())
+        ->and($path->teams()->whereKey($archived->id)->exists())->toBeFalse();
+});
+
+test('the path list shows how many groups see a path, or that none does', function () {
+    $admin = User::factory()->admin()->create();
+    $assigned = LearningPath::factory()->create();
+    LearningPath::factory()->create();
+    $assigned->teams()->attach(Team::factory()->create());
 
     $html = Livewire::actingAs($admin)->test('pages::admin.learning-paths.index')->html();
 
-    expect(substr_count($html, 'data-test="path-limited-badge"'))->toBe(1);
+    expect(substr_count($html, 'data-test="path-groups-badge"'))->toBe(1)
+        ->and(substr_count($html, 'data-test="path-no-group-badge"'))->toBe(1);
 });
+
+test('a visible path without groups shows a hint', function (PathStatus $status, bool $withGroup, bool $hint) {
+    $admin = User::factory()->admin()->create();
+    $path = LearningPath::factory()->create(['status' => $status]);
+
+    if ($withGroup) {
+        $path->teams()->attach(Team::factory()->create());
+    }
+
+    $component = Livewire::actingAs($admin)->test('pages::admin.learning-paths.edit', ['learningPath' => $path]);
+
+    $hint
+        ? $component->assertSeeHtml('data-test="path-no-group-hint"')
+        : $component->assertDontSeeHtml('data-test="path-no-group-hint"');
+})->with([
+    'visible without group' => [PathStatus::Published, false, true],
+    'visible with group' => [PathStatus::Published, true, false],
+    'not visible without group' => [PathStatus::Draft, false, false],
+]);
 
 test('the group page lists the paths this group sees', function () {
     $admin = User::factory()->admin()->create();
     $group = Team::factory()->create();
-    $general = LearningPath::factory()->published()->verified()->create(['title' => 'Für alle']);
+    LearningPath::factory()->published()->verified()->create(['title' => 'Ohne Gruppe']);
     $assigned = LearningPath::factory()->published()->verified()->create(['title' => 'Für diese Gruppe']);
     $foreign = LearningPath::factory()->published()->verified()->create(['title' => 'Für eine andere Gruppe']);
     $assigned->teams()->attach($group);
@@ -58,27 +95,27 @@ test('the group page lists the paths this group sees', function () {
 
     Livewire::actingAs($admin)
         ->test('pages::admin.groups.show', ['team' => $group])
-        ->assertSee('Für alle')
         ->assertSee('Für diese Gruppe')
-        ->assertDontSee('Für eine andere Gruppe')
-        ->assertSeeHtml('data-test="group-path-assigned-badge"');
-
-    expect($general->teams()->exists())->toBeFalse();
+        ->assertDontSee('Ohne Gruppe')
+        ->assertDontSee('Für eine andere Gruppe');
 });
 
 test('group analytics count only the paths this group sees', function () {
     $group = Team::factory()->create();
     $otherGroup = Team::factory()->create();
     User::factory()->apprentice($group)->create();
-    $general = LearningPath::factory()->published()->verified()->create();
+    $own = LearningPath::factory()->published()->verified()->create();
     $foreign = LearningPath::factory()->published()->verified()->create();
-    Lesson::factory()->for($general)->create();
-    Lesson::factory()->for($foreign)->create();
+    $unassigned = LearningPath::factory()->published()->verified()->create();
+    foreach ([$own, $foreign, $unassigned] as $path) {
+        Lesson::factory()->for($path)->create();
+    }
+    $own->teams()->attach($group);
     $foreign->teams()->attach($otherGroup);
 
     $report = app(GroupProgressReport::class)->handle($group);
 
-    expect(array_map(fn ($row) => $row->path->id, $report->paths))->toBe([$general->id])
+    expect(array_map(fn ($row) => $row->path->id, $report->paths))->toBe([$own->id])
         ->and($report->members[0]->totalPaths)->toBe(1);
 
     $summary = app(GroupProgressReport::class)->summarize(Team::query()->whereKey([$group->id, $otherGroup->id])->get());

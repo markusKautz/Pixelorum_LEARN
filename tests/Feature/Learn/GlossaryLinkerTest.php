@@ -130,7 +130,7 @@ test('the linker leaves the html alone without terms', function () {
 
 test('the reader links glossary terms in the lesson text', function () {
     $learner = User::factory()->apprentice()->create();
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $lesson = Lesson::factory()->for($path)->create();
 
     LessonBlock::factory()->for($lesson)->create([
@@ -154,7 +154,7 @@ test('the reader links glossary terms in the lesson text', function () {
 
 test('a term is linked only once per step, across blocks', function () {
     $learner = User::factory()->apprentice()->create();
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $lesson = Lesson::factory()->for($path)->create();
 
     foreach ([1, 2] as $position) {

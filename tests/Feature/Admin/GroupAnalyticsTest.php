@@ -47,7 +47,7 @@ test('a personal team has no analytics page', function () {
 });
 
 test('the per path block shows average, completions and pass rate over all members', function () {
-    $path = LearningPath::factory()->published()->verified()->create(['title' => 'Netzwerke']);
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['title' => 'Netzwerke']);
     $lessons = Lesson::factory()->for($path)->count(2)->sequence(
         ['position' => 1], ['position' => 2],
     )->create();
@@ -81,7 +81,7 @@ test('the per path block shows average, completions and pass rate over all membe
 });
 
 test('the summary card shows the apprentices per reading progress band', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $lessons = Lesson::factory()->for($path)->count(2)->sequence(
         ['position' => 1], ['position' => 2],
     )->create();
@@ -118,7 +118,7 @@ test('the summary card shows the apprentices per reading progress band', functio
 });
 
 test('the group list shows the average column and links to the analytics', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $lesson = Lesson::factory()->for($path)->create();
 
     $learner = User::factory()->apprentice($this->group)->create();
@@ -152,7 +152,7 @@ test('the inactivity flag follows the threshold set on the group', function () {
 
     $this->group->update(['inactivity_threshold_days' => 7]);
 
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $lesson = Lesson::factory()->for($path)->create();
 
     $active = User::factory()->apprentice($this->group)->create(['name' => 'Anna']);
@@ -243,7 +243,7 @@ test('an apprentice cannot save the inactivity threshold', function () {
 
 test('the group analytics stay within their query budget', function () {
     foreach (range(1, 4) as $index) {
-        $path = LearningPath::factory()->published()->verified()->create(['position' => $index]);
+        $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['position' => $index]);
         Lesson::factory()->for($path)->count(3)->create();
         Quiz::factory()->pathFinal($path)->published()->create();
     }
@@ -265,7 +265,7 @@ test('the group analytics stay within their query budget', function () {
 });
 
 test('the group list stays within its query budget regardless of the group count', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     Lesson::factory()->for($path)->count(3)->create();
 
     foreach (range(1, 4) as $index) {
@@ -287,7 +287,7 @@ test('the group list stays within its query budget regardless of the group count
 });
 
 test('everything but the apprentice table is wrapped in the accordion', function () {
-    $path = LearningPath::factory()->published()->verified()->create(['title' => 'Netzwerke']);
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['title' => 'Netzwerke']);
     Lesson::factory()->for($path)->create();
     User::factory()->apprentice($this->group)->create(['name' => 'Anna']);
 

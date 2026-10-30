@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\PathStatus;
 use App\Enums\ReviewStatus;
 use App\Models\LearningPath;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -65,5 +66,20 @@ class LearningPathFactory extends Factory
             'verified_at' => now(),
             'verified_by' => User::factory()->admin(),
         ]);
+    }
+
+    /**
+     * Assign the path to every running group that exists at creation time,
+     * like „Allen Gruppen zuweisen“ (#9, E14).
+     *
+     * Ohne Zuweisung sieht einen Pfad niemand (E12). Gruppen, die erst danach
+     * entstehen, bekommen nichts; die Tests legen ihre Lernenden deshalb vor
+     * dem Pfad an.
+     */
+    public function assignedToAllGroups(): static
+    {
+        return $this->afterCreating(function (LearningPath $path): void {
+            $path->teams()->attach(Team::query()->groups()->active()->pluck('id')->all());
+        });
     }
 }

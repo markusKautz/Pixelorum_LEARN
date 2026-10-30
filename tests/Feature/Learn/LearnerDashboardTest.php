@@ -13,7 +13,7 @@ beforeEach(function () {
 });
 
 test('only published and verified paths appear on the dashboard', function () {
-    $visible = LearningPath::factory()->published()->verified()->create(['title' => 'Sichtbarer Pfad']);
+    $visible = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['title' => 'Sichtbarer Pfad']);
     LearningPath::factory()->published()->create(['title' => 'Ungeprüfter Pfad']);
     LearningPath::factory()->verified()->create(['title' => 'Entwurf trotz Freigabe']);
     LearningPath::factory()->create(['title' => 'Reiner Entwurf']);
@@ -28,7 +28,7 @@ test('only published and verified paths appear on the dashboard', function () {
 });
 
 test('the progress count only counts the apprentices own completions', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $lessons = Lesson::factory()->for($path)->count(3)->sequence(
         ['position' => 1], ['position' => 2], ['position' => 3],
     )->create();
@@ -51,7 +51,7 @@ test('the progress count only counts the apprentices own completions', function 
 });
 
 test('the final quiz badge turns to passed after a passed attempt', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     $this->actingAs($this->learner)
@@ -72,7 +72,7 @@ test('the final quiz badge turns to passed after a passed attempt', function () 
 });
 
 test('a passed attempt of another apprentice does not mark the quiz passed', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $quiz = Quiz::factory()->pathFinal($path)->published()->create();
 
     QuizAttempt::factory()->passed()->create([
@@ -87,7 +87,7 @@ test('a passed attempt of another apprentice does not mark the quiz passed', fun
 });
 
 test('an unpublished final quiz is shown as no final quiz', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     Quiz::factory()->pathFinal($path)->create();
 
     $this->actingAs($this->learner)
@@ -104,7 +104,7 @@ test('the dashboard shows an empty state without visible paths', function () {
 });
 
 test('a completed path without a quiz shows review again and a completed badge', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $lesson = Lesson::factory()->for($path)->create(['position' => 1]);
 
     LessonCompletion::factory()->create([
@@ -131,7 +131,7 @@ test('a completed path without a quiz shows review again and a completed badge',
 });
 
 test('a path with all lessons read but an open quiz still shows resume', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $lessons = Lesson::factory()->for($path)->count(2)->sequence(
         ['position' => 1], ['position' => 2],
     )->create();
@@ -155,7 +155,7 @@ test('a path with all lessons read but an open quiz still shows resume', functio
 });
 
 test('a path with all lessons read but a failed quiz still shows resume', function () {
-    $path = LearningPath::factory()->published()->verified()->create();
+    $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $lessons = Lesson::factory()->for($path)->count(2)->sequence(
         ['position' => 1], ['position' => 2],
     )->create();
@@ -188,7 +188,7 @@ test('the dashboard stays within its query budget regardless of the path count',
     // gefilterten Sub-Count, die Quiz-Ergebnisse über eine aggregierte
     // Abfrage — die Zahl der Abfragen darf also nicht mit den Pfaden wachsen.
     foreach (range(1, 3) as $index) {
-        $path = LearningPath::factory()->published()->verified()->create(['position' => $index]);
+        $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['position' => $index]);
         Lesson::factory()->for($path)->count(5)->create();
         Quiz::factory()->pathFinal($path)->published()->create();
     }

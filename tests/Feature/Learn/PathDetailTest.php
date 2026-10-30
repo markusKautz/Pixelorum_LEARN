@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 beforeEach(function () {
     $this->learner = User::factory()->apprentice()->create();
-    $this->path = LearningPath::factory()->published()->verified()->create([
+    $this->path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create([
         'title' => 'Grundlagen der Programmierung',
         'objectives' => ['Variablen erklären können', 'Schleifen anwenden können'],
     ]);
