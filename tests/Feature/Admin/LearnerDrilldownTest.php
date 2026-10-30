@@ -74,7 +74,7 @@ test('an admin sees the drilldown of a group member', function () {
 });
 
 test('an apprentice of another group yields a 404', function () {
-    // scopeBindings: der Lehrling muss Mitglied *dieser* Gruppe sein.
+    // scopeBindings: die Teilnehmer_in muss Mitglied *dieser* Gruppe sein.
     $otherGroup = Team::factory()->create();
     $stranger = User::factory()->apprentice($otherGroup)->create();
 
@@ -221,7 +221,7 @@ test('a withdrawn path takes its weak spots out of the evaluation', function () 
 
     // Derselbe Grundsatz wie bei den Versuchen: zurückgezogen heißt „nicht in
     // der Wertung" — sonst zeigte die Auswertung Lücken zu Stoff, den der
-    // Lehrling gerade gar nicht bearbeiten soll.
+    // Teilnehmer_in gerade gar nicht bearbeiten soll.
     $path->update(['status' => PathStatus::Draft]);
 
     expect($report()->weakSpots)->toBeEmpty();
@@ -312,7 +312,7 @@ test('the weak spots stop at the top ten, without an expander', function () {
         ->assertSee('Frage Nummer 10?')
         ->assertDontSee('Frage Nummer 11?')
         // Kein Aufklappen mehr: der Schwanz hinter den größten Baustellen ist
-        // weder für den Ausbildner noch für den Lehrling handlungsleitend.
+        // weder für den Admin noch für die Teilnehmer_in handlungsleitend.
         ->assertDontSee('weitere anzeigen');
 
     // Und schon die Abfrage holt nur zehn — nicht erst die Ansicht schneidet ab.
@@ -547,7 +547,7 @@ test('the rows are ordered by the latest attempt, not by the best one', function
         ->attemptsByQuiz();
 
     // Sortiert nach dem besten Versuch stünde B oben — zuletzt gearbeitet hat
-    // der Lehrling aber an A.
+    // die Teilnehmer_in aber an A.
     expect($rows[0]->quiz->id)->toBe($quizA->id)
         ->and($rows[0]->bestAttempt->score)->toBe(9)
         ->and($rows[1]->quiz->id)->toBe($quizB->id);
@@ -602,7 +602,7 @@ test('everything but the path table is wrapped in the accordion', function () {
         '//*[@data-test="learner-accordion"]//*[@data-test="'.$test.'"]'
     )->length;
 
-    // Gegenstück zur Gruppen-Auswertung: dort bleibt die Lehrlings-Tabelle
+    // Gegenstück zur Gruppen-Auswertung: dort bleibt die Teilnehmer_innen-Tabelle
     // offen, hier die Pfad-Tabelle (Retest 2026-07-29).
     expect($insideAccordion('learner-attempts-table'))->toBeTrue()
         ->and($insideAccordion('learner-weak-spots-table'))->toBeTrue()

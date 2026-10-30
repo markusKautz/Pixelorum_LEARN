@@ -191,7 +191,7 @@ class ResolveContinuationPoint
      * globalen Scopes des Ziels mit, ein soft-gelöschter Pfad fällt also
      * genauso heraus wie ein unveröffentlichter — nur eben in SQL statt als
      * `$path === null`. Zurück kommt die eine Zeile, die entscheidet, statt
-     * der ganzen Lernhistorie des Lehrlings.
+     * der ganzen Lernhistorie der Teilnehmer_in.
      *
      * Die Lektion kann ihre Erledigung nicht überleben (cascadeOnDelete),
      * `lesson` ist hier also immer besetzt; `learningPath` garantiert das

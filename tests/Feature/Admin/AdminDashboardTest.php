@@ -112,7 +112,7 @@ test('an archived year drops out of the cohort figures', function () {
     User::factory()->apprentice($running)->create();
     $alumnus = User::factory()->apprentice($finished)->create();
 
-    // Gestern noch aktiv — zählt trotzdem nicht, der Jahrgang ist abgeschlossen.
+    // Gestern noch aktiv — zählt trotzdem nicht, die Gruppe ist abgeschlossen.
     LessonCompletion::factory()->create([
         'user_id' => $alumnus->id,
         'lesson_id' => $lesson->id,

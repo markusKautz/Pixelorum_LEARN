@@ -128,7 +128,7 @@ test('a path without lessons counts as completed once its quiz is passed', funct
 });
 
 test('an unpublished final quiz never blocks completion', function () {
-    // Ein Entwurfs-Quiz kann der Lehrling nicht ablegen — es darf ihm den
+    // Ein Entwurfs-Quiz kann die Teilnehmer_in nicht ablegen — es darf ihr den
     // Pfad also nicht offen halten (gleiche Lesart wie das Sprint-4-Badge).
     $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create();
     $lesson = Lesson::factory()->for($path)->create();

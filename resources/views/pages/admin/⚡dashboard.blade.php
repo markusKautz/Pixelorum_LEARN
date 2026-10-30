@@ -16,11 +16,11 @@ new class extends Component {
     }
 
     /**
-     * Der Überblick über die Gruppen der **laufenden** Jahrgänge aus einer
+     * Der Überblick über die **laufenden** Gruppen aus einer
      * Sammelabfrage (Entscheidung 9) — je Gruppe einzeln zu rechnen wäre N+1.
      *
-     * `active()` ist hier nicht Kosmetik (S5.7.2): ein abgeschlossener Jahrgang
-     * bleibt für immer in der Datenbank und verfälschte jede kohortenweite
+     * `active()` ist hier nicht Kosmetik (S5.7.2): eine abgeschlossene Gruppe
+     * bleibt für immer in der Datenbank und verfälschte jede gruppenübergreifende
      * Zahl. Die Auswertung *einer* Gruppe zeigt archivierte weiterhin.
      *
      * @return Collection<int, GroupSummary>
@@ -34,11 +34,11 @@ new class extends Component {
     }
 
     /**
-     * Wie viele Lehrlinge in den letzten
+     * Wie viele Teilnehmer_innen in den letzten
      * {@see GroupProgressReport::ACTIVE_WINDOW_DAYS} Tagen etwas getan haben.
      *
      * Eine **Flussgröße** und damit die einzige Form, die über mehrere
-     * Jahrgänge trägt: ein fertiger Jahrgang trägt null bei statt 100 % (Ø) oder
+     * Gruppen trägt: eine fertige Gruppe trägt null bei statt 100 % (Ø) oder
      * lauter Karteileichen (Inaktive) und fällt von selbst heraus. Fällt die
      * Zahl deutlich, ist etwas los — Ferien, Prüfungswoche, kaputter Login.
      */
@@ -49,7 +49,7 @@ new class extends Component {
     }
 
     /**
-     * Der Anteil der aktiven Lehrlinge, damit die Karte ohne Kopfrechnen
+     * Der Anteil der aktiven Teilnehmer_innen, damit die Karte ohne Kopfrechnen
      * lesbar ist.
      */
     #[Computed]
@@ -80,7 +80,7 @@ new class extends Component {
         <flux:subheading>{{ __('This is where your cohort stands.') }}</flux:subheading>
     </div>
 
-    {{-- Drei Karten, alle über die laufenden Jahrgänge (S5.7.2). Ø-Lesefortschritt
+    {{-- Drei Karten, alle über die laufenden Gruppen (S5.7.2). Ø-Lesefortschritt
          und Inaktive stehen weiterhin in der Gruppen-Auswertung — dort beziehen
          sie sich auf *eine* Gruppe samt ihrer eigenen Schwelle und bedeuten
          etwas; kohortenweit summiert taten sie das nicht. --}}

@@ -46,7 +46,7 @@ test('an archived group stays listed and reachable, sorted last', function () {
 
     $component = Livewire::actingAs($this->admin)->test('pages::admin.groups.index');
 
-    // Trotz alphabetischem Vorrang steht der abgeschlossene Jahrgang hinten.
+    // Trotz alphabetischem Vorrang steht die abgeschlossene Gruppe hinten.
     expect($component->instance()->groups->pluck('id')->all())
         ->toBe([$running->id, $archived->id]);
 
@@ -240,12 +240,12 @@ test('an admin inside a group is counted nowhere as an apprentice', function () 
     User::factory()->apprentice($group)->create(['name' => 'Anna Auer']);
     $group->members()->attach($this->admin, ['role' => TeamRole::Owner->value]);
 
-    // Gruppenliste: die Mitglieder-Spalte zählt Lehrlinge, nicht Mitgliedschaften.
+    // Gruppenliste: die Mitglieder-Spalte zählt Teilnehmer_innen, nicht Mitgliedschaften.
     $list = Livewire::actingAs($this->admin)->test('pages::admin.groups.index');
 
     expect($list->instance()->groups->firstWhere('id', $group->id)->apprentices_count)->toBe(1);
 
-    // Gruppenseite: der Ausbildner steht nicht in der Mitgliederliste …
+    // Gruppenseite: der Admin steht nicht in der Mitgliederliste …
     $show = Livewire::actingAs($this->admin)
         ->test('pages::admin.groups.show', ['team' => $group])
         ->assertSee('Anna Auer');

@@ -11,7 +11,7 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      *
-     * Nur lokal: Dev-Zugänge (ein Admin, eine Gruppe, zwei Lehrlinge), ohne die
+     * Nur lokal: Dev-Zugänge (ein Admin, eine Gruppe, zwei Teilnehmer_innen), ohne die
      * kein Login möglich wäre, und die Beispielinhalte des DemoContentSeeders.
      * Echte Lernpfade kommen über den Admin-Upload. Außerhalb von `local`
      * legt der Seeder nichts an.

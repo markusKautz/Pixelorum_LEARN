@@ -14,7 +14,7 @@ new class extends Component {
     public User $member;
 
     /**
-     * Die Route ist über `scopeBindings` verschachtelt: ein Lehrling einer
+     * Die Route ist über `scopeBindings` verschachtelt: ein_e Teilnehmer_in einer
      * fremden Gruppe ergibt bereits 404, bevor `mount()` läuft. Die
      * Gate-Prüfung deckt den Livewire-Endpunkt selbst ab.
      */
@@ -150,8 +150,8 @@ new class extends Component {
     <flux:separator variant="subtle" />
 
     {{-- Gegenstück zur Gruppen-Auswertung (Retest 2026-07-29): dort bleibt die
-         Lehrlings-Tabelle offen, hier die Pfad-Tabelle — das ist die Frage, mit
-         der der Ausbildner auf diese Seite kommt. Versuche und Schwachstellen
+         Teilnehmer_innen-Tabelle offen, hier die Pfad-Tabelle — das ist die Frage, mit
+         der der Admin auf diese Seite kommt. Versuche und Schwachstellen
          sind die Nachschau danach und klappen zu. --}}
     <x-ui.accordion data-test="learner-accordion">
         <x-ui.accordion.item data-test="attempts-accordion-item">
@@ -212,9 +212,9 @@ new class extends Component {
             </x-ui.accordion.heading>
 
             <x-ui.accordion.content class="space-y-4">
-                {{-- Bewusst schlank: der Ausbildner diagnostiziert und arbeitet
+                {{-- Bewusst schlank: der Admin diagnostiziert und arbeitet
                      gezielt nach; die richtige Antwort samt Erklärung steht in der
-                     Lehrling-Sicht (Entscheidung 6/7). --}}
+                     Teilnehmer_innen-Sicht (Entscheidung 6/7). --}}
                 <flux:subheading>
                     {{ __('The :count questions with the highest error rate: the recurring patterns, not every single slip.', ['count' => App\Actions\Analytics\LearnerProgressReport::TOP_WEAK_SPOTS]) }}
                 </flux:subheading>

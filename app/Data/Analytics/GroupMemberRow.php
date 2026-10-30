@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Carbon;
 
 /**
- * Ein Lehrling in der Gruppen-Auswertung (Block „Lehrlinge").
+ * Ein_e Teilnehmer_in in der Gruppen-Auswertung (Block „Teilnehmer_innen").
  */
 readonly class GroupMemberRow
 {

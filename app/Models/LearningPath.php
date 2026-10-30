@@ -79,7 +79,7 @@ class LearningPath extends Model
     /**
      * Attribute des Pfades, die den **Ablauf** steuern und nicht den Inhalt.
      *
-     * Wer eines davon ändert, ändert nichts an dem, was der Lehrling liest.
+     * Wer eines davon ändert, ändert nichts an dem, was die Teilnehmer_in liest.
      * `changedSinceVerification()` vergleicht aber das `updated_at` des Pfades
      * gegen `verified_at`, also würde schon das Veröffentlichen eines gerade
      * freigegebenen Pfades als „seit Freigabe geändert" erscheinen. Die
@@ -109,7 +109,7 @@ class LearningPath extends Model
      * Bootstrap the model and its traits.
      *
      * Anders als bei Team wird der Slug **nicht** bei Titeländerungen
-     * erneuert: er ist der Route-Key der Lehrlinge (geteilte Links sollen
+     * erneuert: er ist der Route-Key der Teilnehmer_innen (geteilte Links sollen
      * gültig bleiben) und hält Export und Upload derselben Datei
      * zusammen. Wer den Slug ändern will, setzt ihn explizit (er ist
      * fillable).
@@ -209,7 +209,7 @@ class LearningPath extends Model
      * Get the groups this path is limited to (#9).
      *
      * Leer heißt „für keine Gruppe“ (E12): ein Pfad wird erst mit einer
-     * Zuweisung für Lernende sichtbar. Betriebsdaten der Installation, deshalb nicht Teil von Export und
+     * Zuweisung für Teilnehmer_innen sichtbar. Betriebsdaten der Installation, deshalb nicht Teil von Export und
      * Import (E11).
      *
      * @return BelongsToMany<Team, $this>
@@ -239,7 +239,7 @@ class LearningPath extends Model
      *
      * Das Grounding-Gate aus {@see self::visibleToLearners()} und dazu die
      * Gruppenregel (E12): sichtbar nur für die zugewiesenen Gruppen, ohne
-     * Zuweisung für niemanden. Persönliche Teams sind keine Lehrlingsgruppen und
+     * Zuweisung für niemanden. Persönliche Teams sind keine Gruppen und
      * taugen nicht als Zugang (wie {@see Quiz::assignedTo()}). Entzieht man
      * eine Zuweisung, bleibt der Fortschritt erhalten, der Pfad ist nur nicht
      * mehr sichtbar (E9).
@@ -261,7 +261,7 @@ class LearningPath extends Model
      *
      * Ein gefilterter Sub-Count statt einer Zählung je Pfad — je Karte oder
      * Zeile einzeln zu zählen wäre der N+1-Klassiker. Der steht hier am
-     * Modell, weil ihn zwei Stellen brauchen (Lehrling-Report und
+     * Modell, weil ihn zwei Stellen brauchen (Teilnehmer_innen-Report und
      * Lern-Dashboard) und die verschachtelten Closures beim Abschreiben leicht
      * verrutschen; der Gruppen-Report zählt bewusst anders und nimmt nur
      * `withCount('lessons')`.

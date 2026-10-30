@@ -56,8 +56,8 @@ class FinalizeAttempt
      * Die Fragen, gegen die dieser Versuch gewertet wird.
      *
      * Bei eingefrorener Liste wird sie gegen den Fragen-Pool gefiltert: eine
-     * zwischenzeitlich gelöschte Frage kann der Lehrling nicht beantwortet
-     * haben und darf ihm deshalb auch nicht als Fehler angerechnet werden.
+     * zwischenzeitlich gelöschte Frage kann die Teilnehmer_in nicht beantwortet
+     * haben und darf ihr deshalb auch nicht als Fehler angerechnet werden.
      *
      * @return Collection<int, int>
      */

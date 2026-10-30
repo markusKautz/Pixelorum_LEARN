@@ -98,8 +98,9 @@ class User extends Authenticatable implements PasskeyUser
      * - **Nicht sich selbst.** Wer sich löscht, bricht mitten in der Aktion die
      *   eigene Sitzung ab; die Selbstlöschung hat ihren Platz in den
      *   Kontoeinstellungen, wo sie ausloggt und umleitet.
-     * - **Nicht den letzten Ausbildner.** Sonst sperrt sich das Projekt aus:
-     *   neue Admins entstehen nur über `lapp:make-admin` auf der Kommandozeile.
+     * - **Nicht den letzten Admin.** Sonst sperrt sich das Projekt aus: neue
+     *   Admins legt nur ein Admin an, sonst bleibt `lapp:make-admin` auf der
+     *   Kommandozeile.
      *   Hier die Vorprüfung für Knopf und Aufruf; verbindlich und gegen
      *   gleichzeitige Löschungen gesperrt prüft `DeleteUser`.
      */
@@ -109,7 +110,7 @@ class User extends Authenticatable implements PasskeyUser
     }
 
     /**
-     * Ist dies der einzige verbliebene Ausbildner?
+     * Ist dies der einzige verbliebene Admin?
      */
     public function isLastAdmin(): bool
     {
@@ -208,7 +209,7 @@ class User extends Authenticatable implements PasskeyUser
      * Count the handed out quizzes this apprentice has not finished yet
      * (Sprint 5.6) — der Zähler am Sidebar-Eintrag „Üben".
      *
-     * Ohne ihn erführe ein Lehrling von einer Ausgabe nur, wenn er von sich aus
+     * Ohne ihn erführe ein_e Teilnehmer_in von einer Ausgabe nur, wenn sie von sich aus
      * auf „Üben" klickt; eine gelenkte Aufgabe, die niemand sieht, lenkt nicht.
      * Eine einzige COUNT-Abfrage, weil die Sidebar auf jeder Seite rendert.
      */

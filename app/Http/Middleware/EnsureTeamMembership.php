@@ -15,7 +15,7 @@ class EnsureTeamMembership
      * Die Seiten, die einen *eigenen* Lernstand zeigen.
      *
      * Sie sind es, die Entscheidung 8 dem Admin verwehrt — nicht der
-     * Lehrling-Bereich als ganzer: `learn.paths.show`, `learn.lessons.show`
+     * Teilnehmer_innen-Bereich als ganzer: `learn.paths.show`, `learn.lessons.show`
      * und `learn.quizzes.show` zeigen globale Inhalte und dienen ihm
      * ausdrücklich als Entwurfs-Vorschau (siehe `mount()` in
      * `pages/learn/paths/⚡show.blade.php`).
@@ -31,9 +31,9 @@ class EnsureTeamMembership
     /**
      * Handle an incoming request.
      *
-     * Der Admin agiert global und hat auf den Lehrling-Seiten oben nichts
+     * Der Admin agiert global und hat auf den Teilnehmer_innen-Seiten oben nichts
      * verloren (Entscheidung 8). Die Weiche steht **vor** der
-     * Mitgliedsprüfung, weil er den Gruppen der Lehrlinge gerade nicht
+     * Mitgliedsprüfung, weil er den Gruppen der Teilnehmer_innen gerade nicht
      * angehört — sonst bräche der Wächter mit 403 ab, bevor eine Seite den
      * Sprung anbieten könnte. Genau das war F3.
      *
@@ -63,7 +63,7 @@ class EnsureTeamMembership
      *
      * Am Routennamen und nicht am Präfix `{current_team}`: die Middleware
      * hängt auch an `settings/teams/{team}` — der Gruppen-Detailseite, die dem
-     * Admin gehört —, und innerhalb des Lehrling-Bereichs sind die
+     * Admin gehört —, und innerhalb des Teilnehmer_innen-Bereichs sind die
      * Inhaltsseiten seine Entwurfs-Vorschau. Beides darf die Weiche nicht
      * greifen.
      */

@@ -19,7 +19,7 @@ new class extends Component {
     {
         Gate::authorize('admin');
 
-        // Persönliche Teams sind keine Lehrlingsgruppen.
+        // Persönliche Teams sind keine Gruppen.
         abort_if($team->is_personal, 404);
 
         $this->team = $team;
@@ -88,7 +88,7 @@ new class extends Component {
         {{-- Verteilung statt Summe (DEV-11): Die frühere Karte zählte
              Pfad-Belegungen (Mitglieder × Pfade), deren Nenner mit jedem neuen
              Pfad wächst. Grundlage hier ist derselbe Ø-Wert wie in der Spalte
-             „Ø gelesen" der Lehrlings-Tabelle. --}}
+             „Ø gelesen" der Teilnehmer_innen-Tabelle. --}}
         <flux:card class="space-y-2" data-test="summary-distribution">
             <flux:text class="text-sm">{{ __('Apprentices by reading progress') }}</flux:text>
             <dl class="space-y-1 text-sm">
@@ -117,8 +117,8 @@ new class extends Component {
 
     <flux:separator variant="subtle" />
 
-    {{-- Ein Accordion für alles Aggregierte, die Lehrlings-Tabelle bleibt darunter
-         offen stehen (Retest 2026-07-29): der Ausbildner öffnet diese Seite, um zu
+    {{-- Ein Accordion für alles Aggregierte, die Teilnehmer_innen-Tabelle bleibt darunter
+         offen stehen (Retest 2026-07-29): der Admin öffnet diese Seite, um zu
          sehen, wer Hilfe braucht — die Zahlen je Pfad und je Quiz holt er dazu. --}}
     <x-ui.accordion data-test="group-accordion">
         <x-ui.accordion.item data-test="paths-accordion-item">
@@ -295,7 +295,7 @@ new class extends Component {
                                 </span>
 
                                 {{-- Amber statt rot: die Markierung ist ein Hinweis für
-                                     den Ausbildner, kein Verstoß (Merkmal 3). --}}
+                                     den Admin, kein Verstoß (Merkmal 3). --}}
                                 @if ($row->isInactive)
                                     <flux:badge size="sm" color="amber" data-test="member-inactive-badge">
                                         {{ __('Inactive') }}

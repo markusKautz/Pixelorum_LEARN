@@ -192,7 +192,7 @@ new class extends Component {
         Gate::authorize('update', $this->quiz);
 
         // Nur freie Quizze werden ausgegeben: das Abschluss-Quiz erbt seine
-        // Zielgruppe vom Pfad, das Übungsquiz gehört einem Lehrling.
+        // Zielgruppe vom Pfad, das Übungsquiz gehört einer Teilnehmer_in.
         abort_unless($this->quiz->kind === QuizKind::Custom, 403);
 
         $team = Team::query()
@@ -218,7 +218,7 @@ new class extends Component {
     }
 
     /**
-     * Die Lehrlingsgruppen, an die ausgegeben werden kann.
+     * Die Gruppen, an die ausgegeben werden kann.
      *
      * @return Collection<int, Team>
      */
@@ -650,7 +650,7 @@ new class extends Component {
                         @if ($quiz->status !== PathStatus::Published && $this->assignedTeamIds !== [])
                             {{-- Beide Stufen sind nötig: zugewiesen, aber Entwurf =
                                  immer noch unsichtbar. Ohne den Hinweis sucht der
-                                 Ausbildner den Fehler bei der Zuweisung. --}}
+                                 Admin den Fehler bei der Zuweisung. --}}
                             <flux:callout color="amber" icon="exclamation-triangle" data-test="quiz-unpublished-hint">
                                 <flux:callout.text>
                                     {{ __('This quiz is still a draft. Apprentices will only see it once it is published.') }}

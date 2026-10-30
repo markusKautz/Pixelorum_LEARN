@@ -22,7 +22,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Die Auswertung einer Gruppe — je Pfad die Aggregate, je Lehrling die Zeile,
+ * Die Auswertung einer Gruppe — je Pfad die Aggregate, je Teilnehmer_in die Zeile,
  * dazu der Ein-Zeilen-Überblick für Gruppen-Liste und Admin-Dashboard.
  *
  * Wie {@see LearnerProgressReport} **live** gerechnet (Entscheidung 1) und wie
@@ -249,7 +249,7 @@ class GroupProgressReport
 
         // Der Join ersetzt hier Team::apprentices(): die Sammelabfrage geht
         // bewusst an Eloquent vorbei (eine Abfrage für alle Gruppen), muss aber
-        // dieselbe Menge liefern — Ausbildner in einer Gruppe zählen nicht mit.
+        // dieselbe Menge liefern — Admins in einer Gruppe zählen nicht mit.
         // `= false` statt `= 0`: PostgreSQL kennt keinen Integer-Vergleich auf
         // boolean (siehe technical-concept.md, Abschnitt „Datenbank").
         $memberships = DB::table('team_members')
@@ -292,7 +292,7 @@ class GroupProgressReport
     }
 
     /**
-     * Die für Lehrlinge freigegebenen Pfade samt Lektionszahl.
+     * Die für Teilnehmer_innen freigegebenen Pfade samt Lektionszahl.
      *
      * Nur sichtbare Pfade fließen in Quoten ein — ein Entwurf darf die Gruppe
      * nicht künstlich schlecht aussehen lassen. Ein unveröffentlichtes
@@ -337,7 +337,7 @@ class GroupProgressReport
      *
      * Zwei `GROUP BY`-Abfragen über *alle* Nutzer und *alle* Pfade, danach
      * reine PHP-Verrechnung — der Aufwand wächst weder mit der Zahl der
-     * Lehrlinge noch mit der der Pfade.
+     * Teilnehmer_innen noch mit der der Pfade.
      *
      * @param  array<int, int>  $userIds
      * @param  EloquentCollection<int, LearningPath>  $paths

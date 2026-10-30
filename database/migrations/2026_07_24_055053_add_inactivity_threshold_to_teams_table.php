@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Ab wie vielen Tagen ohne Aktivität ein Lehrling in der Auswertung als
-     * „inaktiv" markiert wird (Sprint-5-Entscheidung 5). Pro Gruppe, weil ein
-     * Jahrgang im Blockunterricht andere Rhythmen hat als einer ohne — der
+     * Ab wie vielen Tagen ohne Aktivität ein_e Teilnehmer_in in der Auswertung als
+     * „inaktiv" markiert wird (Sprint-5-Entscheidung 5). Pro Gruppe, weil eine
+     * Gruppe im Blockunterricht andere Rhythmen hat als eine ohne — der
      * Default 14 ist die Vorgabe des Auftraggebers.
      */
     public function up(): void

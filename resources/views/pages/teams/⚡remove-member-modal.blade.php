@@ -48,7 +48,7 @@ new class extends Component {
             ->delete();
 
         if ($user->isCurrentTeam($this->team)) {
-            // Lehrlinge haben kein persönliches Team (Konzept c): bleibt kein
+            // Teilnehmer_innen haben kein persönliches Team (Konzept c): bleibt kein
             // Team übrig, wird die Zuordnung genullt statt zu crashen.
             $fallbackTeam = $user->fallbackTeam($this->team);
 

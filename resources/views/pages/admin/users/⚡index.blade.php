@@ -141,7 +141,7 @@ new class extends Component {
     /**
      * Die Gruppe, deren Auswertung der Zeilen-Link öffnet.
      *
-     * Ein Lehrling gehört laut Konzept genau einer Gruppe an; steckt er entgegen
+     * Ein_e Teilnehmer_in gehört laut Konzept genau einer Gruppe an; steckt sie entgegen
      * dem Konzept in mehreren, gewinnt die zuletzt beigetretene (die Relation
      * ist danach sortiert). Eine Auswahl an dieser Stelle wäre Bedienlast für
      * einen Datenfehler.
@@ -247,7 +247,7 @@ new class extends Component {
     }
 
     /**
-     * Die Lehrlinge, die die Mehrfachlöschung träfe: die Auswahl ohne Admins
+     * Die Teilnehmer_innen, die die Mehrfachlöschung träfe: die Auswahl ohne Admins
      * und ohne den Handelnden, so wie {@see DeleteUsers} sie löscht.
      *
      * @return Collection<int, User>
@@ -327,7 +327,7 @@ new class extends Component {
     }
 
     /**
-     * Die ausgewählten Lehrlinge endgültig löschen (#6).
+     * Die ausgewählten Teilnehmer_innen endgültig löschen (#6).
      *
      * Bestätigt wird mit der Anzahl, nicht mit Namen (E6): zwölf Namen
      * einzutippen ist nicht praktikabel, die Zahl zwingt trotzdem zum Hinsehen.
@@ -528,8 +528,8 @@ new class extends Component {
                     <flux:table.cell align="end">
                         <div class="flex items-center justify-end gap-1">
                             {{-- Nur wo es ein Ziel gibt: die Auswertung hängt unter der
-                                 Gruppe (`{team}/learners/{member}`), ein Ausbildner oder
-                                 ein Lehrling ohne Gruppe hat keine. Ein abgeschalteter
+                                 Gruppe (`{team}/learners/{member}`), ein Admin oder
+                                 ein_e Teilnehmer_in ohne Gruppe hat keine. Ein abgeschalteter
                                  Knopf würde eine Funktion vorspiegeln, die es hier
                                  nicht gibt. --}}
                             @if ($analyticsGroup !== null)

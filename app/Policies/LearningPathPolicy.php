@@ -8,7 +8,7 @@ use App\Models\User;
 /**
  * Inhalte werden ausschließlich von globalen Admins verwaltet (Konzept c).
  * Diese passieren den Gate::before-Kurzschluss, weshalb hier nur die
- * Lehrling-Sicht formuliert wird (Muster TeamPolicy).
+ * Teilnehmer_innen-Sicht formuliert wird (Muster TeamPolicy).
  */
 class LearningPathPolicy
 {
@@ -67,7 +67,7 @@ class LearningPathPolicy
     /**
      * Determine whether the user can permanently delete the model.
      *
-     * Nimmt Lektionen, Fragen, Quizze und die daran hängenden Lernendendaten
+     * Nimmt Lektionen, Fragen, Quizze und die daran hängenden Teilnehmer_innen-Daten
      * mit (S6.4, E3) und ist nur über den Papierkorb erreichbar.
      */
     public function forceDelete(User $user, LearningPath $learningPath): bool

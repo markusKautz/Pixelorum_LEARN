@@ -21,7 +21,7 @@ class TeamName implements ValidationRule
         // Nicht der eingegebene Name kollidiert mit einer ersten Routen-Ebene,
         // sondern der daraus erzeugte Slug (Team::getRouteKeyName() = 'slug').
         // „Admin!" passiert die reine Namensprüfung, Str::slug('Admin!') ist
-        // aber 'admin' — der Slug würde dann die Lehrling-Routen der Gruppe
+        // aber 'admin' — der Slug würde dann die Teilnehmer_innen-Routen der Gruppe
         // überdecken. Deshalb zusätzlich die Slug-Form prüfen.
         $reserved = $this->reservedNames();
 

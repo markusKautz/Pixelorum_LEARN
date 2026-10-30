@@ -81,8 +81,8 @@ class Team extends Model
     /**
      * Get all members of this team.
      *
-     * **Achtung:** „alle" heißt wirklich alle — auch ein Ausbildner, der in
-     * dieser Gruppe steckt. Für Auswertungen und Lehrlings-Zählungen ist
+     * **Achtung:** „alle" heißt wirklich alle — auch ein Admin, der in
+     * dieser Gruppe steckt. Für Auswertungen und Teilnehmer_innen-Zählungen ist
      * {@see self::apprentices()} gemeint; diese Relation trägt die
      * Mitgliedschaft an sich (Einladungs-Dubletten, Rollenverwaltung,
      * Owner-Suche).
@@ -100,9 +100,9 @@ class Team extends Model
     /**
      * Get the apprentices of this group — the members the reports are about.
      *
-     * Die eine Stelle, die „wer ist hier Lehrling" beantwortet. Vorher stand
-     * dafür überall `members()`, und das zählte einen Ausbildner, der in der
-     * Gruppe steckt, als Lehrling mit 0 % mit — sowohl im Ø-Fortschritt als
+     * Die eine Stelle, die „wer ist hier Teilnehmer_in" beantwortet. Vorher stand
+     * dafür überall `members()`, und das zählte einen Admin, der in der
+     * Gruppe steckt, als Teilnehmer_in mit 0 % mit — sowohl im Ø-Fortschritt als
      * auch in der Mitgliederliste. Erreichbar ist das heute auf zwei Wegen:
      * über das allgemeine „Team erstellen" (hängt den Anleger als Owner an,
      * anders als `admin.groups`) und über eine angenommene Gruppen-Einladung.
@@ -111,7 +111,7 @@ class Team extends Model
      * Autorität in diesem Projekt kommt aus `Gate::before`/`is_admin`, die
      * Team-Rolle wird dafür ausdrücklich **nicht** benutzt. Beide Filter
      * liefern heute auf jeder erreichbaren Zeile dasselbe Ergebnis, bis auf
-     * eine — ein Ausbildner, der eine Gruppeneinladung annimmt, trägt
+     * eine — ein Admin, der eine Gruppeneinladung annimmt, trägt
      * `role = member` und wäre über die Pivot-Rolle nicht auszuschließen.
      *
      * @return BelongsToMany<User, $this, Membership, 'pivot'>
@@ -165,7 +165,7 @@ class Team extends Model
     }
 
     /**
-     * Determine if this group is an archived year (Sprint 5.7).
+     * Determine if this group is archived (Sprint 5.7).
      */
     public function isArchived(): bool
     {
@@ -173,17 +173,17 @@ class Team extends Model
     }
 
     /**
-     * Scope a query to the groups of a running year.
+     * Scope a query to the running groups.
      *
-     * Die Grundmenge jeder **kohortenweiten** Kennzahl: ein abgeschlossener
-     * Jahrgang bleibt für immer in der Datenbank, und jedes Aggregat über
-     * Gruppen in verschiedenen Lebensphasen driftet dadurch monoton. Beim
-     * Ø-Lesefortschritt stieg mit jedem fertigen Jahrgang der Boden (zwei
+     * Die Grundmenge jeder **gruppenübergreifenden** Kennzahl: eine
+     * abgeschlossene Gruppe bleibt für immer in der Datenbank, und jedes
+     * Aggregat über Gruppen in verschiedenen Lebensphasen driftet dadurch
+     * monoton. Beim Ø-Lesefortschritt stieg mit jeder fertigen Gruppe der Boden (zwei
      * Gruppen → 50–100 %, drei → 66–100 %), bei den Inaktiven sammelten sich
      * Karteileichen.
      *
      * Bewusst **nicht** in einem Global Scope: die Gruppen-Liste und die
-     * Auswertung eines abgeschlossenen Jahrgangs sollen ihn weiterhin finden
+     * Auswertung einer abgeschlossenen Gruppe sollen sie weiterhin finden
      * (archivieren ist kein Verstecken). Nur wer über Gruppen *hinweg*
      * aggregiert, filtert hier durch.
      *

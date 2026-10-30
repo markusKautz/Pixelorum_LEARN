@@ -54,7 +54,7 @@ function something()
  * Build the URL of a team-scoped apprentice route for the given user.
  *
  * Nötig, weil User::switchTeam() die URL-Defaults global setzt: legt ein Test
- * nach dem Lehrling noch einen weiteren Nutzer an (etwa den freigebenden
+ * nach der Teilnehmer_in noch einen weiteren Nutzer an (etwa den freigebenden
  * Admin einer LearningPath-Factory), bestimmt dessen Gruppe den Präfix und
  * die Anfrage liefe in den 403 von EnsureTeamMembership.
  *

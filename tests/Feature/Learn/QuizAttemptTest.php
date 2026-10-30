@@ -366,7 +366,7 @@ test('the database refuses a second running attempt on the same quiz', function 
     QuizAttempt::factory()->inProgress()->for($this->learner)->for($this->quiz)->create();
 
     // Der partielle Index ist die eigentliche Garantie — nicht die Disziplin in
-    // RecordAnswer. Zwei Tabs desselben Lehrlings könnten die umgehen, ihn nicht.
+    // RecordAnswer. Zwei Tabs derselben Teilnehmer_in könnten die umgehen, ihn nicht.
     expect(fn () => QuizAttempt::factory()->inProgress()->for($this->learner)->for($this->quiz)->create())
         ->toThrow(UniqueConstraintViolationException::class);
 });

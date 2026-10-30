@@ -25,6 +25,17 @@ it('legt die Demo-Inhalte an', function () {
         ->and($pfad->lessons)->toHaveCount(3);
 });
 
+it('weist den sichtbaren Demo-Pfad den laufenden Gruppen zu', function () {
+    $gruppe = Team::factory()->create();
+    $teilnehmerin = User::factory()->apprentice($gruppe)->create();
+
+    $this->seed(DemoContentSeeder::class);
+
+    $pfad = LearningPath::where('slug', 'grundlagen-der-programmierung')->firstOrFail();
+
+    expect($pfad->isVisibleTo($teilnehmerin))->toBeTrue();
+});
+
 it('gibt jeder Demo-Lektion Blöcke und einen Zwischen-Check', function () {
     $this->seed(DemoContentSeeder::class);
 
@@ -73,7 +84,7 @@ it('ordnet den Demo-Content einem einzigen Admin zu', function () {
         ->and(Quiz::pluck('created_by')->unique()->all())->toBe([$pfad->verified_by]);
 });
 
-it('legt einen für Lehrlinge unsichtbaren Entwurfs-Pfad an', function () {
+it('legt einen für Teilnehmer_innen unsichtbaren Entwurfs-Pfad an', function () {
     $this->seed(DemoContentSeeder::class);
 
     expect(LearningPath::count())->toBe(2)

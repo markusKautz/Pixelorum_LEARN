@@ -24,7 +24,7 @@ new class extends Component {
             ->delete();
 
         if ($leavesCurrentTeam) {
-            // Lehrlinge haben kein persönliches Team (Konzept c): bleibt kein
+            // Teilnehmer_innen haben kein persönliches Team (Konzept c): bleibt kein
             // Team übrig, wird die Zuordnung genullt statt zu verwaisen —
             // gleiche Behandlung wie im remove-member-modal.
             $fallbackTeam = $user->fallbackTeam($team);

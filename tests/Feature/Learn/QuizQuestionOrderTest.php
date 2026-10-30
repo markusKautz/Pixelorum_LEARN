@@ -214,7 +214,7 @@ test('a question deleted mid-attempt drops out of the frozen list', function () 
     $attempt = QuizAttempt::sole();
 
     // max_score zählt nur noch die Fragen, die es gibt: eine gelöschte Frage
-    // darf dem Lehrling nicht als Fehler angerechnet werden.
+    // darf der Teilnehmer_in nicht als Fehler angerechnet werden.
     expect($attempt->max_score)->toBe(2)
         ->and($attempt->score)->toBe(2);
 });

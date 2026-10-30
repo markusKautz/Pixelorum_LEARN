@@ -192,7 +192,7 @@ class ImportLearningPath
             );
         }
 
-        // An einem Block hängen keine Lernendendaten, er darf ohne Rückfrage weg.
+        // An einem Block hängen keine Teilnehmer_innen-Daten, er darf ohne Rückfrage weg.
         $lektion->blocks()
             ->whereNotIn('position', $this->positionen($daten['blocks'] ?? []))
             ->delete();
@@ -237,7 +237,7 @@ class ImportLearningPath
             if (QuestionResponse::where('question_id', $frage->id)->exists()) {
                 $this->melde(
                     "Frage {$frage->position} im {$herkunft} steht nicht mehr in der Inhaltsdatei, "
-                    .'hat aber Antworten von Lernenden und bleibt deshalb stehen.'
+                    .'hat aber Antworten von Teilnehmer_innen und bleibt deshalb stehen.'
                 );
 
                 continue;

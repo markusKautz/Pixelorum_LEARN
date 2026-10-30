@@ -86,7 +86,7 @@ test('with all lessons completed and no visible quiz the practice round is offer
     $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['title' => 'Grundlagen']);
     $lesson = Lesson::factory()->for($path)->create(['position' => 1]);
 
-    // Unveröffentlichtes Abschluss-Quiz ist für Lehrlinge kein Ziel; der
+    // Unveröffentlichtes Abschluss-Quiz ist für Teilnehmer_innen kein Ziel; der
     // Pfad gilt damit als abgeschlossen (F5).
     Quiz::factory()->pathFinal($path)->create();
 
@@ -296,7 +296,7 @@ test('the completion of another apprentice does not skip an own open lesson', fu
     // Der Test darüber prüft die Abgrenzung für Regel 3 (Einstieg ohne eigene
     // Aktivität). Dieser prüft sie **innerhalb** eines Pfades: die Suche nach
     // der nächsten offenen Lektion fragt eine gemeinsame Tabelle ab und muss
-    // sich dort selbst auf den Lehrling eingrenzen.
+    // sich dort selbst auf die Teilnehmer_in eingrenzen.
     $path = LearningPath::factory()->published()->verified()->assignedToAllGroups()->create(['title' => 'Grundlagen']);
 
     $lessons = Lesson::factory()->for($path)->count(2)->sequence(

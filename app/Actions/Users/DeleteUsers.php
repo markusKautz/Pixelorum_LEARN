@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Mehrere Lehrlinge auf einmal endgültig löschen (#6).
+ * Mehrere Teilnehmer_innen auf einmal endgültig löschen (#6).
  *
- * Nur Lehrlinge (E5): Admins werden einzeln gelöscht, damit der Wächter für
+ * Nur Teilnehmer_innen (E5): Admins werden einzeln gelöscht, damit der Wächter für
  * den letzten Admin aus der Mehrfachlöschung herausbleibt. Admins und der
  * Handelnde in der Auswahl werden verworfen, nicht gelöscht.
  */

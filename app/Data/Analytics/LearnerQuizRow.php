@@ -6,8 +6,8 @@ use App\Models\Quiz;
 use App\Models\QuizAttempt;
 
 /**
- * Ein Quiz im Lehrling-Drilldown, zusammengefasst über alle abgeschlossenen
- * Versuche des Lehrlings.
+ * Ein Quiz im Teilnehmer_innen-Drilldown, zusammengefasst über alle abgeschlossenen
+ * Versuche der Teilnehmer_in.
  */
 readonly class LearnerQuizRow
 {

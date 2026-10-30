@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Der Abschluss-Zeitpunkt eines Jahrgangs (Sprint 5.7).
+ * Der Abschluss-Zeitpunkt einer Gruppe (Sprint 5.7).
  *
  * Bewusst **nicht** über das vorhandene `deleted_at`: der Soft-Delete-Scope
  * versteckt Zeilen global, eine archivierte Gruppe soll aber sichtbar bleiben —

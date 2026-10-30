@@ -24,7 +24,7 @@
                     {{ __('Dashboard') }}
                 </flux:sidebar.item>
 
-                {{-- Nur für Lehrlinge: der Admin wertet über die Gruppen aus
+                {{-- Nur für Teilnehmer_innen: der Admin wertet über die Gruppen aus
                      (Sprint-5-Entscheidung 2), nicht über eine Selbstsicht. --}}
                 @cannot('admin')
                     <flux:sidebar.item icon="chart-bar" :href="route('learn.progress')" :current="request()->routeIs('learn.progress')" wire:navigate>
@@ -32,7 +32,7 @@
                     </flux:sidebar.item>
 
                     {{-- Selbstgesteuertes Üben (Sprint 5.5) — ebenfalls nur
-                         für Lehrlinge; der Ausbildner übt nicht.
+                         für Teilnehmer_innen; der Admin übt nicht.
 
                          Der Zähler meldet ausgegebene Quizze, die noch
                          offen sind (Sprint 5.6): das Dashboard bleibt bei
@@ -57,7 +57,7 @@
 
                 @can('admin')
                     {{-- Die Verwaltung ist in zwei Gruppen getrennt: die
-                         Lerninhalte, an denen der Ausbildner täglich baut, und
+                         Lerninhalte, an denen der Admin täglich baut, und
                          die Nutzerverwaltung, die er selten anfasst. --}}
                     <flux:sidebar.group :heading="__('Content')" class="grid">
                         <flux:sidebar.item icon="academic-cap" :href="route('admin.learning-paths.index')" :current="request()->routeIs('admin.learning-paths.*') || request()->routeIs('admin.lessons.*')" wire:navigate>

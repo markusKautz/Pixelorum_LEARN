@@ -9,7 +9,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 /**
- * Die vollständige Auswertung **eines** Lehrlings, gelesen vom
+ * Die vollständige Auswertung **einer** Teilnehmer_in, gelesen vom
  * Admin-Drilldown (S5.3) und von „Mein Fortschritt" (S5.4).
  */
 readonly class LearnerReport

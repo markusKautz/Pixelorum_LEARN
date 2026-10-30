@@ -41,7 +41,7 @@ class RecordAnswer
      *
      * Die beiden Indizes dahinter: `(quiz_attempt_id, question_id)` aus
      * Sprint 2 und `(user_id, quiz_id) WHERE completed_at IS NULL` — je
-     * Lehrling und Quiz höchstens **ein** laufender Versuch, abgeschlossene
+     * Teilnehmer_in und Quiz höchstens **ein** laufender Versuch, abgeschlossene
      * beliebig viele.
      *
      * @param  array<int, int>  $selectedOptionIds  bereits gegen die Frage geprüft

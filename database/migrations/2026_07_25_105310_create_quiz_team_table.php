@@ -10,12 +10,12 @@ return new class extends Migration
      * Welche Gruppe welches freie Quiz bekommen hat (Sprint 5.6).
      *
      * Die Zuweisung ist zugleich das Sichtbarkeits-Gate: ein freies Quiz ohne
-     * Zeile hier sieht kein Lehrling. „Veröffentlicht" heißt damit „fertig",
+     * Zeile hier sieht kein_e Teilnehmer_in. „Veröffentlicht" heißt damit „fertig",
      * „zugewiesen" heißt „ausgegeben" — dieselbe Zweistufigkeit wie
      * Entwurf/Veröffentlicht bei Pfaden.
      *
      * Abschluss-Quizze beziehen ihre Zielgruppe aus ihrem Pfad und
-     * Übungsquizze gehören einem einzelnen Lehrling; beide tauchen hier
+     * Übungsquizze gehören einer einzelnen Teilnehmer_in; beide tauchen hier
      * bewusst nie auf.
      */
     public function up(): void

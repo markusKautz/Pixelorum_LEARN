@@ -130,7 +130,7 @@ class Quiz extends Model
     /**
      * Scope a query to the quizzes an admin curates.
      *
-     * Übungsquizze sind persönliche Behälter der Lehrlinge (Sprint 5.5): sie
+     * Übungsquizze sind persönliche Behälter der Teilnehmer_innen (Sprint 5.5): sie
      * gehören weder in Redaktionslisten noch in Verwendungs-Zähler („diese
      * Frage steckt in N Quizzen"), sonst zählte jede Übungssitzung mit.
      *
@@ -148,9 +148,9 @@ class Quiz extends Model
     /**
      * Scope a query to the free quizzes handed out to this apprentice's groups.
      *
-     * Die Regel „welche freien Quizze gehören diesem Lehrling" steht damit an
+     * Die Regel „welche freien Quizze gehören dieser Teilnehmer_in" steht damit an
      * **einer** Stelle: die Üben-Seite listet sie, die Sidebar zählt die noch
-     * offenen. Persönliche Teams sind keine Lehrlingsgruppen und taugen
+     * offenen. Persönliche Teams sind keine Gruppen und taugen
      * deshalb nicht als Zugang.
      *
      * @param  Builder<Quiz>  $query
@@ -218,7 +218,7 @@ class Quiz extends Model
      * Get the groups this quiz has been handed out to (Sprint 5.6).
      *
      * Nur für freie Quizze belegt: das Abschluss-Quiz erbt seine Zielgruppe
-     * vom Pfad, das Übungsquiz gehört einem einzelnen Lehrling. Die Zuweisung
+     * vom Pfad, das Übungsquiz gehört einer einzelnen Teilnehmer_in. Die Zuweisung
      * ist zugleich das Sichtbarkeits-Gate ({@see QuizPolicy}).
      *
      * @return BelongsToMany<Team, $this>

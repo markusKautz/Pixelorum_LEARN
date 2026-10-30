@@ -341,7 +341,7 @@ new class extends Component {
     $isPractice = $quiz->kind === App\Enums\QuizKind::Practice;
 
     // Aus einem Übungsquiz führt der Weg zurück zum Builder — dort zieht der
-    // Lehrling die nächste Auswahl.
+    // Teilnehmer_in die nächste Auswahl.
     $backRoute = match (true) {
         $isPractice => route('learn.practice.create'),
         $quiz->learningPath !== null => route('learn.paths.show', $quiz->learningPath),

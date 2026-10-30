@@ -7,6 +7,7 @@ use App\Models\Lesson;
 use App\Models\LessonBlock;
 use App\Models\Question;
 use App\Models\Quiz;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -35,7 +36,7 @@ class DemoContentSeeder extends Seeder
 
         $this->seedFreigegebenenPfad($admin);
 
-        // Für Lehrlinge unsichtbar — macht den visibleToLearners-Scope im UI
+        // Für Teilnehmer_innen unsichtbar — macht den visibleToLearners-Scope im UI
         // demonstrierbar.
         LearningPath::factory()
             ->has(Lesson::factory()->count(2)->has(LessonBlock::factory()->count(2), 'blocks'))
@@ -68,6 +69,11 @@ class DemoContentSeeder extends Seeder
             'difficulty' => 'einsteiger',
             'estimated_minutes' => 60,
         ]);
+
+        // Ohne Zuweisung sieht den Pfad niemand (#9, E12): wie „Allen Gruppen
+        // zuweisen“ an die laufenden Gruppen, also an die Dev-Gruppe des
+        // DatabaseSeeders.
+        $pfad->teams()->attach(Team::query()->groups()->active()->pluck('id')->all());
 
         collect([
             [

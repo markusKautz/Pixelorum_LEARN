@@ -19,7 +19,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Die Auswertung eines einzelnen Lehrlings — Pfad-Status, Quiz-Historie und
+ * Die Auswertung einer einzelnen Teilnehmer_in — Pfad-Status, Quiz-Historie und
  * Schwachstellen, **live** aus `lesson_completions`, `quiz_attempts` und
  * `question_responses` gerechnet (Sprint-5-Entscheidung 1: kein Schreiben in
  * `path_progress`).
@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\DB;
  * Bewusst **eine** Klasse für zwei Zielgruppen: Der Admin-Drilldown (S5.3)
  * zeigt davon die schlanke Diagnose-Sicht, „Mein Fortschritt" (S5.4) die
  * volle Übe-Sicht. Zwei Reports würden früher oder später zwei Wahrheiten
- * über denselben Lehrling erzeugen.
+ * über dieselbe Teilnehmer_in erzeugen.
  *
  * Der Abfrage-Aufwand ist konstant: alles läuft über wenige `GROUP BY`s, deren
  * Ergebnisse nach ID indiziert und in PHP verrechnet werden — nichts wächst
@@ -41,7 +41,7 @@ class LearnerProgressReport
      * Ein harter Deckel, kein Aufklappen: die Liste ist nach Fehlerquote
      * sortiert, die Plätze dahinter sind der lange Schwanz. Eine handhabbare
      * nächste Aufgabe fördert (Merkmal 7), eine Wand aus Fehlern liest sich
-     * als Urteil (Merkmal 3) — für den Lehrling wie für den Ausbildner, der
+     * als Urteil (Merkmal 3) — für die Teilnehmer_in wie für den Admin, der
      * vor einem Gespräch die wiederkehrenden Muster braucht, nicht jede
      * einzelne Fehlantwort.
      */
@@ -85,11 +85,11 @@ class LearnerProgressReport
     }
 
     /**
-     * Der Fortschritt des Lehrlings auf allen für ihn sichtbaren Pfaden,
+     * Der Fortschritt der Teilnehmer_in auf allen für sie sichtbaren Pfaden,
      * **nach Pfad-ID indiziert**.
      *
      * Öffentlich, weil außer `handle()` inzwischen zwei weitere Verbraucher
-     * dieselben Zeilen brauchen: die Karten des Lehrling-Dashboards und
+     * dieselben Zeilen brauchen: die Karten des Teilnehmer_innen-Dashboards und
      * `ResolveContinuationPoint` (F5). Vorher beantwortete das Dashboard „ist
      * dieser Pfad fertig?" mit eigenen Mitteln und kam zu einer anderen
      * Antwort als `/my-progress` — die Beanstandung „steht immer noch
@@ -124,12 +124,12 @@ class LearnerProgressReport
     }
 
     /**
-     * Die für Lehrlinge freigegebenen Pfade samt eigenem Lektions-Zähler.
+     * Die für Teilnehmer_innen freigegebenen Pfade samt eigenem Lektions-Zähler.
      *
      * Der gefilterte Sub-Count hält beides bei **einer** Abfrage — je Pfad
      * einzeln zu zählen wäre der N+1-Klassiker. Ein unveröffentlichtes
-     * Abschluss-Quiz wird wie „kein Quiz" behandelt: der Lehrling kann es
-     * nicht ablegen, es darf ihm den Pfad also nicht offen halten.
+     * Abschluss-Quiz wird wie „kein Quiz" behandelt: die Teilnehmer_in kann es
+     * nicht ablegen, es darf ihr den Pfad also nicht offen halten.
      *
      * @return EloquentCollection<int, LearningPath>
      */
@@ -233,7 +233,7 @@ class LearnerProgressReport
      *
      * **Freie Quizze werden bewusst *nicht* über die aktuelle Zuweisung
      * gefiltert.** Diese Liste ist eine Leistungshistorie, keine Aufgabenliste:
-     * zieht der Ausbildner ein Quiz von der Gruppe zurück, bleiben die bereits
+     * zieht der Admin ein Quiz von der Gruppe zurück, bleiben die bereits
      * abgelegten Versuche sichtbar — sonst löschte ein Klick optisch geleistete
      * Arbeit. Wer sehen will, was *aktuell* ausgegeben ist, liest den Block
      * „Ausgegebene Quizze" der Gruppen-Auswertung; der filtert weiterhin über
@@ -278,7 +278,7 @@ class LearnerProgressReport
      * Die wiederholt falsch beantworteten Fragen, absteigend nach
      * gewichteter Fehlerquote.
      *
-     * Gezählt wird über **abgeschlossene** Versuche des Lehrlings — ein
+     * Gezählt wird über **abgeschlossene** Versuche der Teilnehmer_in — ein
      * laufender Versuch soll nicht schon während des Quiz als Schwachstelle
      * erscheinen. Übungs-Versuche zählen ausdrücklich mit (Sprint-5.5-E3):
      * mehr Daten ergeben die bessere Diagnose.
@@ -315,7 +315,7 @@ class LearnerProgressReport
              * Ein zurückgezogener Pfad ist nicht mehr in der Wertung
              * (Auftraggeber, 2026-07-25) — samt der Schwachstellen, die aus
              * seinen Fragen stammen. Sonst zeigte die Auswertung Lücken zu
-             * Stoff, den der Lehrling gerade gar nicht bearbeiten soll, und
+             * Stoff, den die Teilnehmer_in gerade gar nicht bearbeiten soll, und
              * der Wiederholen-Knopf liefe in einen 403.
              *
              * Fragen **ohne** Herkunftspfad bleiben drin: `learning_path_id`

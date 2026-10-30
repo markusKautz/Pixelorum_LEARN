@@ -20,7 +20,7 @@ use Livewire\Livewire;
 /*
  * Sprint 5.6 — freie Quizze werden gruppenweise ausgegeben. Die Ausgabe ist
  * zugleich das Sichtbarkeits-Gate: „veröffentlicht" heißt „fertig",
- * „ausgegeben" heißt „an diesen Jahrgang gegeben".
+ * „ausgegeben" heißt „an diese Gruppe gegeben".
  */
 
 beforeEach(function () {
@@ -34,7 +34,7 @@ beforeEach(function () {
  * Volt-Seiten liefern keine View-Response, `assertViewHas` greift dort also
  * nicht. Dass der Composer im echten Seitenaufbau **feuert**, halten die
  * übrigen Seitentests fest: ohne ihn wäre `$openAssignedQuizCount` undefiniert
- * und jede Lehrlings-Seite liefe auf 500.
+ * und jede Teilnehmer_innen-Seite liefe auf 500.
  *
  * @return array<string, mixed>
  */
@@ -107,7 +107,7 @@ test('a personal team cannot be handed a quiz', function () {
     $quiz = assignableQuiz();
     $personal = Team::factory()->personal()->create();
 
-    // Persönliche Teams sind keine Lehrlingsgruppen — sie stehen gar nicht
+    // Persönliche Teams sind keine Gruppen — sie stehen gar nicht
     // erst zur Auswahl …
     Livewire::actingAs($this->admin)
         ->test('pages::admin.quizzes.edit', ['quiz' => $quiz])
@@ -144,7 +144,7 @@ test('the quiz list flags a published free quiz that nobody received', function 
     $this->actingAs($this->admin)
         ->get(route('admin.quizzes.index'))
         ->assertOk()
-        // Ohne den Hinweis wirkt „veröffentlicht" wie „die Lehrlinge haben es".
+        // Ohne den Hinweis wirkt „veröffentlicht" wie „die Teilnehmer_innen haben es".
         ->assertSee('Nicht ausgegeben')
         ->assertSee('Lehrjahr 2026');
 
@@ -336,7 +336,7 @@ test('the practise page shows the best attempt row-wise when max score varies', 
     $quiz = assignableQuiz();
     $quiz->teams()->attach($this->group);
 
-    // Dieselbe Konstellation wie im Gruppenreport, hier aus der Lehrlings-Sicht:
+    // Dieselbe Konstellation wie im Gruppenreport, hier aus der Teilnehmer_innen-Sicht:
     // Zähler und Nenner der Badge müssen aus demselben Versuch stammen.
     QuizAttempt::factory()->create([
         'user_id' => $apprentice->id, 'quiz_id' => $quiz->id,
@@ -409,7 +409,7 @@ test('withdrawing a quiz does not erase the attempts already made', function () 
 
     QuizAttempt::factory()->passed()->create(['user_id' => $learner->id, 'quiz_id' => $quiz->id]);
 
-    // Der Ausbildner nimmt die Ausgabe zurück — das Quiz ist damit nicht mehr
+    // Der Admin nimmt die Ausgabe zurück — das Quiz ist damit nicht mehr
     // zu bearbeiten, die geleistete Arbeit bleibt aber bestehen.
     $quiz->teams()->detach();
 
@@ -418,7 +418,7 @@ test('withdrawing a quiz does not erase the attempts already made', function () 
         ->assertOk()
         ->assertSee('Wiederholung Netzwerke');
 
-    // Auch der Lehrling behält seine Historie …
+    // Auch die Teilnehmer_in behält ihre Historie …
     $this->actingAs($learner)
         ->get(learnRoute('learn.progress', $learner))
         ->assertOk()
@@ -524,7 +524,7 @@ test('the view composer binds the open quiz count to the sidebar layout', functi
 
     expect(composedSidebarData()['openAssignedQuizCount'])->toBe(2);
 
-    // Der Ausbildner sieht den „Üben"-Eintrag gar nicht (`@cannot('admin')`) —
+    // Der Admin sieht den „Üben"-Eintrag gar nicht (`@cannot('admin')`) —
     // für ihn darf der Composer die Abfrage also gar nicht erst stellen.
     $this->actingAs($this->admin);
 
@@ -613,7 +613,7 @@ test('a failed handed out quiz does not move the group reading average', functio
         ->summary
         ->averagePercent;
 
-    // Der Lehrling fällt durch das ausgegebene Quiz.
+    // Die Teilnehmer_in fällt durch das ausgegebene Quiz.
     QuizAttempt::factory()->create([
         'user_id' => $learner->id,
         'quiz_id' => $quiz->id,

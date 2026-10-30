@@ -9,7 +9,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * Die **einzige** Stelle, die „Fortschritt" definiert (Sprint-5-Entscheidung 3,
- * „Modell A"). Gruppen-Aggregat, Admin-Drilldown und Lehrling-Selbstsicht
+ * „Modell A"). Gruppen-Aggregat, Admin-Drilldown und Selbstsicht der Teilnehmer_innen
  * lesen alle hierdurch — sonst stünden auf zwei Seiten zwei Zahlen für
  * dieselbe Sache.
  *
@@ -27,7 +27,7 @@ use Illuminate\Support\Carbon;
  *
  * Bewusste Folge: der Balken kann 100 % zeigen, während der Pfad noch
  * `in_progress` ist, weil das Abschluss-Quiz offen ist. Genau so zeigt es
- * schon die Lehrling-Oberfläche aus Sprint 4 (Balken + eigenes Quiz-Badge).
+ * schon die Teilnehmer_innen-Oberfläche aus Sprint 4 (Balken + eigenes Quiz-Badge).
  *
  * Reine Rechnung ohne Query: die Zähler kommen aus den `GROUP BY`-Abfragen
  * der Report-Klassen herein.

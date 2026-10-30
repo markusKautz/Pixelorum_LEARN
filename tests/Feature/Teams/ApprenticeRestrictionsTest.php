@@ -28,8 +28,8 @@ test('team edit page is forbidden for non-admin members', function () {
  * Die drei folgenden Tests hielten früher fest, *wer* über die
  * Team-Einstellungen und den Gruppen-Umschalter Gruppen anlegen darf. Diesen
  * zweiten Anlegeweg gibt es nicht mehr: er hängte den Anleger als Owner an
- * (anders als `admin.groups`, siehe Entscheidung 2) und machte den Ausbildner
- * damit zum Phantom-Lehrling in seiner eigenen Auswertung. Sie prüfen jetzt,
+ * (anders als `admin.groups`, siehe Entscheidung 2) und machte den Admin
+ * damit zur Phantom-Teilnehmer_in in ihrer eigenen Auswertung. Sie prüfen jetzt,
  * dass der Weg **verschwunden** ist — die Aussage ist stärker als vorher,
  * denn sie gilt für alle Rollen.
  */
@@ -64,11 +64,11 @@ test('groups are created under admin groups, and without a membership', function
     $this->actingAs($admin);
 
     Livewire::test('pages::admin.groups.index')
-        ->set('name', 'Lehrlinge 2026')
+        ->set('name', 'Teilnehmer_innen 2026')
         ->call('createGroup')
         ->assertHasNoErrors();
 
-    $group = Team::where('name', 'Lehrlinge 2026')->sole();
+    $group = Team::where('name', 'Teilnehmer_innen 2026')->sole();
 
     expect($group->is_personal)->toBeFalse()
         ->and($group->memberships()->count())->toBe(0);

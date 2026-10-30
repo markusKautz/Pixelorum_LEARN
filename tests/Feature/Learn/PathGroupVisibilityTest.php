@@ -31,7 +31,7 @@ function releasedPath(string $title, int $position = 1): array
 }
 
 /**
- * Die Titel der Pfade im Fortschritts-Report des Lehrlings.
+ * Die Titel der Pfade im Fortschritts-Report der Teilnehmer_in.
  *
  * @return array<int, string>
  */

@@ -81,7 +81,7 @@ new #[Layout('layouts::auth')] class extends Component {
             $this->lockInvitation();
 
             // Die zugestellte, signierte Einladung belegt den Mailbox-Besitz;
-            // Lehrlinge erhalten bewusst keine persönliche Gruppe (Konzept c).
+            // Teilnehmer_innen erhalten bewusst keine persönliche Gruppe (Konzept c).
             $user = $createUser->handle($this->name, $this->invitation->email, $this->password, verified: true);
 
             $this->invitation->team->memberships()->firstOrCreate(
@@ -152,7 +152,7 @@ new #[Layout('layouts::auth')] class extends Component {
             ]);
         }
 
-        // Lehrlinge gehören genau einer Gruppe (Konzept c); nur globale
+        // Teilnehmer_innen gehören genau einer Gruppe (Konzept c); nur globale
         // Admins dürfen weiteren Gruppen beitreten.
         if (! $user->is_admin && $user->teams()
             ->where('is_personal', false)

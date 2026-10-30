@@ -13,10 +13,10 @@ class CreateTeam
      * Create a new team; only a personal one makes its user a member.
      *
      * **Entscheidung 2 gilt hier genauso wie in `admin.groups`:** eine
-     * Lehrlingsgruppe bekommt keine Owner-Mitgliedschaft. Die Autorität des
-     * Ausbildners kommt aus `Gate::before`/`is_admin`, nicht aus einer
+     * Gruppe bekommt keine Owner-Mitgliedschaft. Die Autorität des
+     * Admins kommt aus `Gate::before`/`is_admin`, nicht aus einer
      * Team-Rolle — er muss der Gruppe also nicht angehören, um sie zu
-     * verwalten. Hing er doch drin, zählte ihn jede Auswertung als Lehrling
+     * verwalten. Hing er doch drin, zählte ihn jede Auswertung als Teilnehmer_in
      * mit 0 % mit; genau dieser Fall war über das allgemeine „Team erstellen"
      * erreichbar, während der Weg über `admin.groups` es schon immer richtig
      * machte. Zwei Pfade, dieselbe Sache, unterschiedliches Ergebnis — das ist

@@ -69,7 +69,7 @@ it('erlaubt, den Slug ausdrücklich zu ändern', function () {
     expect($path->fresh()->slug)->toBe('wunsch-slug');
 });
 
-it('markiert einen verifizierten Pfad als sichtbar für Lehrlinge', function () {
+it('markiert einen verifizierten Pfad als sichtbar für Teilnehmer_innen', function () {
     expect(LearningPath::factory()->published()->verified()->create()->isVisibleToLearners())->toBeTrue()
         ->and(LearningPath::factory()->published()->create()->isVisibleToLearners())->toBeFalse()
         ->and(LearningPath::factory()->verified()->create()->isVisibleToLearners())->toBeFalse()

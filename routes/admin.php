@@ -18,9 +18,9 @@ Route::prefix('admin')
         // statt mitten in die Inhaltsverwaltung (Review N4).
         Route::redirect('/', '/admin/dashboard');
 
-        // Der Routenname `dashboard` bleibt dem Lehrling-Dashboard (Login,
+        // Der Routenname `dashboard` bleibt dem Teilnehmer_innen-Dashboard (Login,
         // Sidebar und Team-Switcher hängen daran); Admins bekommen ihr eigenes
-        // Ziel, auf das die Lehrling-Seite sie weiterleitet (Entscheidung 8).
+        // Ziel, auf das die Teilnehmer_innen-Seite sie weiterleitet (Entscheidung 8).
         Route::livewire('dashboard', 'pages::admin.dashboard')
             ->name('dashboard');
 
@@ -61,7 +61,7 @@ Route::prefix('admin')
 
         /*
          * Die Nutzerliste (S5.7.3) liegt bewusst **neben** den Gruppen und nicht
-         * darunter: sie ist der einzige Weg zu einem Lehrling, der keiner Gruppe
+         * darunter: sie ist der einzige Weg zu einer Teilnehmer_in, der keiner Gruppe
          * angehört — genau der Zustand, den eine Gruppenlöschung hinterlässt.
          */
         Route::livewire('users', 'pages::admin.users.index')
@@ -72,12 +72,12 @@ Route::prefix('admin')
 
         /*
          * Die Auswertung hängt unter der Gruppe statt in einem eigenen
-         * Sidebar-Bereich (Sprint-5-Entscheidung 2): der Ausbildner denkt in
+         * Sidebar-Bereich (Sprint-5-Entscheidung 2): der Admin denkt in
          * Gruppen, nicht in „Analytics".
          *
          * Der Drilldown-Parameter heißt `{member}`, obwohl das URL-Segment
          * „learners" lautet: scopeBindings leitet den Relationsnamen aus dem
-         * Parameter ab (`member` → `Team::members()`), und ein Lehrling einer
+         * Parameter ab (`member` → `Team::members()`), und ein_e Teilnehmer_in einer
          * fremden Gruppe ergibt damit 404 statt einer Seite mit
          * widersprüchlichem Kopf.
          */

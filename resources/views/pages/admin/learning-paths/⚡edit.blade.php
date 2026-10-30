@@ -372,7 +372,7 @@ new class extends Component {
     }
 
     /**
-     * Die Lehrlingsgruppen, denen zugewiesen werden kann.
+     * Die Gruppen, denen zugewiesen werden kann.
      *
      * @return Collection<int, Team>
      */

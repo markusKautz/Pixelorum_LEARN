@@ -96,7 +96,7 @@ new class extends Component {
         return Question::query()
             ->with(['learningPath', 'lesson'])
             // Nur redaktionelle Quizze: „steckt in N Quizzen" soll dem
-            // Ausbildner die Wiederverwendung zeigen, nicht mitzählen, wie oft
+            // Admin die Wiederverwendung zeigen, nicht mitzählen, wie oft
             // die Frage in einer Übungssitzung gezogen wurde (Sprint 5.5).
             ->withCount(['quizzes' => fn (Builder $query) => $query->editorial()])
             ->forPath(filled($this->pathFilter) ? (int) $this->pathFilter : null)

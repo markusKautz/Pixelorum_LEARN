@@ -30,7 +30,7 @@ readonly class GroupPathRow
      *
      * Nenner sind **alle** Mitglieder (Entscheidung 4), nicht nur die mit
      * einem Versuch: „5 von 12 haben bestanden" ist die Zahl, die der
-     * Ausbildner braucht — „5 von 5 Antretenden" verdeckt genau die sieben,
+     * Admin braucht — „5 von 5 Antretenden" verdeckt genau die sieben,
      * die noch gar nicht angetreten sind.
      */
     public function passRate(): int

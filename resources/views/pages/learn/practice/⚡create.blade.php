@@ -15,7 +15,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 /**
- * Der Lehrling stellt sich selbst ein Übungsquiz zusammen (Sprint 5.5).
+ * Die Teilnehmer_in stellt sich selbst ein Übungsquiz zusammen (Sprint 5.5).
  *
  * Wie „Mein Fortschritt" (Sprint-5-Entscheidung 7) ohne {user}-Parameter: die
  * Seite baut ausschließlich für Auth::user(), es gibt also nichts zu
@@ -39,7 +39,7 @@ new class extends Component {
      * freigegebene IDs fallen still heraus.
      *
      * Admins kommen hier nicht an: `EnsureTeamMembership` verzweigt sie im
-     * ganzen Lehrling-Bereich auf ihr eigenes Dashboard (Entscheidung 8). Ein
+     * ganzen Teilnehmer_innen-Bereich auf ihr eigenes Dashboard (Entscheidung 8). Ein
      * Übungsbehälter unter dem Namen eines Admins entsteht damit nie.
      */
     public function mount(): void
@@ -55,11 +55,11 @@ new class extends Component {
     }
 
     /**
-     * Die freien Quizze, die einer Gruppe dieses Lehrlings ausgegeben wurden
+     * Die freien Quizze, die einer Gruppe dieser Teilnehmer_in ausgegeben wurden
      * (Sprint 5.6).
      *
      * Sie stehen hier und nicht mehr auf dem Dashboard: das Dashboard zeigt
-     * Lernpfade, diese Seite alles zum Üben — vom Ausbildner ausgegeben oder
+     * Lernpfade, diese Seite alles zum Üben — vom Admin ausgegeben oder
      * selbst zusammengestellt.
      *
      * @return Collection<int, Quiz>
@@ -113,15 +113,15 @@ new class extends Component {
     }
 
     /**
-     * Wie viel dieser Lehrling schon geübt hat.
+     * Wie viel diese_r Teilnehmer_in schon geübt hat.
      *
      * Bewusst eine **Kennzahl statt einer Liste**: jede Runde zieht eine andere
      * Zufallsauswahl, „6 von 8" und „7 von 10" sagen also nichts übereinander —
      * und alle Zeilen hießen „Übungsquiz". Sichtbare Lernzeit motiviert
      * (Merkmal 2), eine Tabelle unvergleichbarer Zeilen nicht.
      *
-     * Der Filter auf `user_id` genügt: ein Lehrling kommt nur an seinen eigenen
-     * Übungsbehälter (QuizPolicy), fremde Practice-Versuche kann er gar nicht
+     * Der Filter auf `user_id` genügt: ein_e Teilnehmer_in kommt nur an ihre eigenen
+     * Übungsbehälter (QuizPolicy), fremde Practice-Versuche kann sie gar nicht
      * haben.
      *
      * @return array{rounds: int, lastAt: ?Carbon}
@@ -147,7 +147,7 @@ new class extends Component {
 
     /**
      * Die zur Auswahl stehenden Pfade — nur freigegebene (Konzept e), die die
-     * Gruppe des Lehrlings sieht (#9).
+     * Gruppe der Teilnehmer_in sieht (#9).
      *
      * @return Collection<int, LearningPath>
      */
@@ -227,7 +227,7 @@ new class extends Component {
      * Abgeleitet aus `paths` und nicht aus den Schlüsseln von
      * `availableCounts`: die Zähler kommen aus einem `GROUP BY` und stehen
      * damit in der Reihenfolge der Datenbank. So folgt die Auswahl der
-     * Reihenfolge, die der Lehrling auf dem Bildschirm sieht.
+     * Reihenfolge, die die Teilnehmer_in auf dem Bildschirm sieht.
      *
      * @return array<int, int>
      */
@@ -302,7 +302,7 @@ new class extends Component {
         <flux:subheading>{{ __('What your trainer handed out, and anything you want to drill yourself.') }}</flux:subheading>
     </div>
 
-    {{-- Zuerst das, was der Ausbildner ausgegeben hat: es ist verbindlicher
+    {{-- Zuerst das, was der Admin ausgegeben hat: es ist verbindlicher
          als die freiwillige Eigenübung und steht deshalb oben. --}}
     @if ($this->assignedQuizzes->isNotEmpty())
         <div class="space-y-4" data-test="assigned-quizzes-section">
