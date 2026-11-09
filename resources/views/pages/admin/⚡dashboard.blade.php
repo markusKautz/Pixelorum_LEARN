@@ -5,7 +5,6 @@ use App\Data\Analytics\GroupSummary;
 use App\Models\Team;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -75,7 +74,7 @@ new class extends Component {
 <section class="w-full max-w-5xl space-y-8">
     <div>
         <flux:heading size="xl">
-            {{ __('Hi :name!', ['name' => Str::before(auth()->user()->name, ' ')]) }}
+            {{ __('Hi :name!', ['name' => auth()->user()->name]) }}
         </flux:heading>
         <flux:subheading>{{ __('This is where your cohort stands.') }}</flux:subheading>
     </div>

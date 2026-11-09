@@ -64,6 +64,14 @@ new class extends Component {
 
     public string $newAdminPassword = '';
 
+    /** Wessen Name gerade bearbeitet wird; ein Dialog für die ganze Seite (#23). */
+    public ?int $editingNameId = null;
+
+    public string $editingName = '';
+
+    /** Die Checkbox „Name von Teilnehmer_in änderbar“, das Gegenteil von `name_locked`. */
+    public bool $nameChangeable = true;
+
     /**
      * Anders als die Geschwister-Listen autorisiert diese Seite schon beim
      * Laden: ihr Inhalt *ist* personenbezogen (Namen und E-Mail-Adressen aller
@@ -399,6 +407,65 @@ new class extends Component {
         Flux::toast(variant: 'success', text: __('Administrator created.'));
     }
 
+    /**
+     * Den Namensdialog mit dem aktuellen Stand des Kontos aufziehen (#23).
+     */
+    public function editName(int $userId): void
+    {
+        Gate::authorize('admin');
+
+        $user = User::query()->findOrFail($userId);
+
+        $this->editingNameId = $user->id;
+        $this->editingName = $user->name;
+        $this->nameChangeable = ! $user->name_locked;
+
+        $this->resetErrorBag();
+
+        $this->modal('edit-user-name')->show();
+    }
+
+    #[Computed]
+    public function editingNameUser(): ?User
+    {
+        return $this->editingNameId === null ? null : User::find($this->editingNameId);
+    }
+
+    /**
+     * Den Namen speichern und die Sperre nach der Checkbox setzen (#23).
+     *
+     * Die Sperre folgt allein der Checkbox, nie der Namensänderung. Bei
+     * Admin-Konten bleibt sie unberührt, sie wirkt dort ohnehin nicht.
+     */
+    public function updateName(): void
+    {
+        Gate::authorize('admin');
+
+        $user = $this->editingNameUser;
+
+        abort_if($user === null, 404);
+
+        $this->editingName = trim($this->editingName);
+
+        $validated = $this->validate(
+            ['editingName' => $this->nameRules()],
+            attributes: ['editingName' => __('Name')],
+        );
+
+        $user->forceFill([
+            'name' => $validated['editingName'],
+            'name_locked' => $user->is_admin ? $user->name_locked : ! $this->nameChangeable,
+        ])->save();
+
+        $this->reset('editingNameId', 'editingName', 'nameChangeable');
+
+        unset($this->users, $this->lastActivity, $this->editingNameUser);
+
+        $this->modal('edit-user-name')->close();
+
+        Flux::toast(variant: 'success', text: __('Name updated.'));
+    }
+
     private function closeDeleteModal(): void
     {
         $this->deletingId = null;
@@ -545,6 +612,16 @@ new class extends Component {
                                 </flux:tooltip>
                             @endif
 
+                            <flux:tooltip :content="__('Edit name')">
+                                <flux:button
+                                    variant="ghost"
+                                    size="sm"
+                                    icon="pencil-square"
+                                    wire:click="editName({{ $user->id }})"
+                                    data-test="user-edit-name-button"
+                                />
+                            </flux:tooltip>
+
                             @if ($user->isDeletableBy(auth()->user()))
                                 <flux:tooltip :content="__('Delete')">
                                     <flux:button
@@ -588,6 +665,35 @@ new class extends Component {
                 </flux:modal.close>
                 <flux:button variant="primary" type="submit" data-test="create-admin-submit">
                     {{ __('Create') }}
+                </flux:button>
+            </div>
+        </form>
+    </flux:modal>
+
+    <flux:modal name="edit-user-name" class="max-w-lg" data-test="edit-user-name-modal">
+        <form wire:submit="updateName" class="space-y-6">
+            <div>
+                <flux:heading size="lg">{{ __('Edit name') }}</flux:heading>
+                <flux:subheading>{{ $this->editingNameUser?->email }}</flux:subheading>
+            </div>
+
+            <flux:input wire:model="editingName" :label="__('Name')" required autocomplete="off" data-test="edit-user-name-input" />
+
+            {{-- Admins betrifft die Sperre nicht, die Checkbox versprüche etwas anderes. --}}
+            @if ($this->editingNameUser !== null && ! $this->editingNameUser->is_admin)
+                <flux:checkbox
+                    wire:model="nameChangeable"
+                    :label="__('Name can be changed by the participant')"
+                    data-test="edit-user-name-changeable"
+                />
+            @endif
+
+            <div class="flex justify-end space-x-2 rtl:space-x-reverse">
+                <flux:modal.close>
+                    <flux:button variant="filled">{{ __('Cancel') }}</flux:button>
+                </flux:modal.close>
+                <flux:button variant="primary" type="submit" data-test="edit-user-name-submit">
+                    {{ __('Save') }}
                 </flux:button>
             </div>
         </form>

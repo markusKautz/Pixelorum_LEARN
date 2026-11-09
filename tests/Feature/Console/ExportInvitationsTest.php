@@ -48,8 +48,8 @@ test('the status column tells the three states apart', function () {
 
     $rows = readCsvRows(app(AppendInvitationToCsv::class)->pathFor($team));
 
-    expect($rows[0])->toHaveCount(8)
-        ->and(collect($rows)->skip(1)->pluck(7)->sort()->values()->all())
+    expect($rows[0])->toHaveCount(9)
+        ->and(collect($rows)->skip(1)->pluck(8)->sort()->values()->all())
         ->toBe(collect([__('Open'), __('Accepted'), __('Expired')])->sort()->values()->all());
 });
 

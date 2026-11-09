@@ -43,10 +43,67 @@ test('blank lines, stray spaces and capitals are normalised away', function () {
         ->and($rows->first()['email'])->toBe('anna@example.at');
 });
 
-test('only the first column of a semicolon line is read', function () {
-    $rows = parseImport($this->group, 'ben@example.at;Ben Mayr;Lehrjahr 1');
+test('the second column is the name and further columns are ignored', function () {
+    $rows = parseImport($this->group, 'ben@example.at; Ben Mayr ;Lehrjahr 1');
 
-    expect($rows->first()['email'])->toBe('ben@example.at');
+    expect($rows->first()['email'])->toBe('ben@example.at')
+        ->and($rows->first()['name'])->toBe('Ben Mayr');
+});
+
+test('an empty or missing second column means no name', function () {
+    $rows = parseImport($this->group, "anna@example.at;\nben@example.at");
+
+    expect($rows->pluck('name')->all())->toBe([null, null])
+        ->and($rows->pluck('status')->unique()->all())->toBe([InvitationImportStatus::Valid]);
+});
+
+test('an overlong name is marked as invalid', function () {
+    $rows = parseImport($this->group, 'anna@example.at;'.str_repeat('a', 256));
+
+    expect($rows->first()['status'])->toBe(InvitationImportStatus::InvalidName);
+});
+
+test('a malformed address keeps its finding even with an overlong name', function () {
+    $rows = parseImport($this->group, 'david.punkt;'.str_repeat('a', 256));
+
+    expect($rows->first()['status'])->toBe(InvitationImportStatus::InvalidEmail);
+});
+
+test('a byte order mark does not hide the header or break the first address', function () {
+    expect(parseImport($this->group, "\u{FEFF}E-Mail;Name\nanna@example.at;Anna"))->toHaveCount(1);
+
+    expect(parseImport($this->group, "\u{FEFF}anna@example.at;Anna")->first()['status'])
+        ->toBe(InvitationImportStatus::Valid);
+});
+
+test('an umlaut from a windows-1252 export arrives as utf-8', function () {
+    $rows = parseImport($this->group, "anna@example.at;Anna M\xFCller");
+
+    expect($rows->first()['name'])->toBe('Anna Müller');
+});
+
+test('the preview shows the name and the import stores it', function () {
+    $component = Livewire::actingAs($this->admin)
+        ->test('pages::admin.groups.import-invitations-modal', ['team' => $this->group])
+        ->set('file', UploadedFile::fake()->createWithContent('liste.csv', "anna@example.at;Anna Muster\nben@example.at"))
+        ->call('previewFile')
+        ->assertSee('Anna Muster');
+
+    $component->call('import')->assertHasNoErrors();
+
+    $this->assertDatabaseHas('team_invitations', ['email' => 'anna@example.at', 'name' => 'Anna Muster']);
+    $this->assertDatabaseHas('team_invitations', ['email' => 'ben@example.at', 'name' => null]);
+});
+
+test('a line with an invalid name is skipped without blocking the valid ones', function () {
+    Livewire::actingAs($this->admin)
+        ->test('pages::admin.groups.import-invitations-modal', ['team' => $this->group])
+        ->set('file', UploadedFile::fake()->createWithContent('liste.csv', "anna@example.at;Anna\nben@example.at;".str_repeat('a', 256)))
+        ->call('previewFile')
+        ->call('import')
+        ->assertHasNoErrors();
+
+    expect(TeamInvitation::pluck('email')->all())->toBe(['anna@example.at']);
 });
 
 test('a duplicate inside the file shows up once and is marked', function () {

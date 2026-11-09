@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 /*
@@ -17,6 +18,9 @@ use Tests\TestCase;
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
+    // Einladen hängt an die Gruppendatei an, Kontolöschung schreibt sie um: ohne
+    // Fake träfe beides die echten Dateien unter storage/app/private/invitations.
+    ->beforeEach(fn () => Storage::fake('local'))
     ->in('Feature');
 
 /*

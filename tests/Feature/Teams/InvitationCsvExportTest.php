@@ -9,19 +9,30 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 
-test('the header row names all seven columns', function () {
+test('the header row names all eight columns', function () {
     $header = app(BuildInvitationCsv::class)->header();
 
-    expect($header)->toHaveCount(7)
+    expect($header)->toHaveCount(8)
         ->and($header[1])->toBe(__('Email'))
-        ->and($header[3])->toBe(__('Activation link'));
+        ->and($header[2])->toBe(__('Name'))
+        ->and($header[4])->toBe(__('Activation link'));
+});
+
+test('a row carries the preset name and stays empty without one', function () {
+    $build = app(BuildInvitationCsv::class);
+
+    $named = TeamInvitation::factory()->create(['name' => 'Anna Muster']);
+    $unnamed = TeamInvitation::factory()->create();
+
+    expect($build->row($named)[2])->toBe('Anna Muster')
+        ->and($build->row($unnamed)[2])->toBe('');
 });
 
 test('the header row gains a status column when regenerated from the database', function () {
     $header = app(BuildInvitationCsv::class)->header(withStatus: true);
 
-    expect($header)->toHaveCount(8)
-        ->and($header[7])->toBe(__('Status'));
+    expect($header)->toHaveCount(9)
+        ->and($header[8])->toBe(__('Status'));
 });
 
 test('a row carries a link that passes signature validation', function () {
@@ -39,11 +50,11 @@ test('a row carries a link that passes signature validation', function () {
 
     expect($row[0])->toBe('Teilnehmer_innen 2026')
         ->and($row[1])->toBe('anna@example.at')
-        ->and($row[6])->toBe('Markus')
-        ->and($row[3])->toStartWith(config('app.url'))
-        ->and($row[3])->toContain($invitation->code);
+        ->and($row[7])->toBe('Markus')
+        ->and($row[4])->toStartWith(config('app.url'))
+        ->and($row[4])->toContain($invitation->code);
 
-    $request = Request::create($row[3]);
+    $request = Request::create($row[4]);
 
     expect(URL::hasValidSignature($request))->toBeTrue();
 });
@@ -57,14 +68,14 @@ test('dates use the format the group leader reads on paper', function () {
 
     $row = app(BuildInvitationCsv::class)->row($invitation->fresh());
 
-    expect($row[4])->toBe('18.08.2026 09:14')
-        ->and($row[5])->toBe('17.09.2026 09:14');
+    expect($row[5])->toBe('18.08.2026 09:14')
+        ->and($row[6])->toBe('17.09.2026 09:14');
 });
 
 test('an invitation without an expiry leaves the column empty instead of failing', function () {
     $invitation = TeamInvitation::factory()->create(['expires_at' => null]);
 
-    expect(app(BuildInvitationCsv::class)->row($invitation)[5])->toBe('');
+    expect(app(BuildInvitationCsv::class)->row($invitation)[6])->toBe('');
 });
 
 test('the status column distinguishes open, accepted and expired invitations', function () {
@@ -74,9 +85,9 @@ test('the status column distinguishes open, accepted and expired invitations', f
     $accepted = TeamInvitation::factory()->accepted()->create();
     $expired = TeamInvitation::factory()->expired()->create();
 
-    expect($build->row($open, withStatus: true)[7])->toBe(__('Open'))
-        ->and($build->row($accepted, withStatus: true)[7])->toBe(__('Accepted'))
-        ->and($build->row($expired, withStatus: true)[7])->toBe(__('Expired'));
+    expect($build->row($open, withStatus: true)[8])->toBe(__('Open'))
+        ->and($build->row($accepted, withStatus: true)[8])->toBe(__('Accepted'))
+        ->and($build->row($expired, withStatus: true)[8])->toBe(__('Expired'));
 });
 
 test('the first invitation creates the file with a BOM and a header row', function () {
@@ -124,7 +135,7 @@ test('a separator inside the group name does not tear the columns apart', functi
     fclose($handle);
 
     expect($row[0])->toBe('HTL; Abend "2026"')
-        ->and($row)->toHaveCount(7);
+        ->and($row)->toHaveCount(8);
 });
 
 test('renaming the group keeps writing into the same file', function () {

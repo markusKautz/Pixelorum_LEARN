@@ -6,6 +6,7 @@ use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -30,6 +31,13 @@ new class extends Component {
     public function updateProfileInformation(): void
     {
         $user = Auth::user();
+
+        // Das gesperrte Feld im Markup ist keine Zugriffskontrolle (#23).
+        if (! $user->canChangeOwnName() && $this->name !== $user->name) {
+            throw ValidationException::withMessages([
+                'name' => [__('Your name was set by your course admin. Contact them if it needs changing.')],
+            ]);
+        }
 
         // Vor der Validierung normalisieren, damit Rule::unique gegen die
         // durchgängig kleingeschriebenen E-Mails exakt vergleicht.
@@ -67,6 +75,12 @@ new class extends Component {
     }
 
     #[Computed]
+    public function canChangeName(): bool
+    {
+        return Auth::user()->canChangeOwnName();
+    }
+
+    #[Computed]
     public function hasUnverifiedEmail(): bool
     {
         return Auth::user() instanceof MustVerifyEmail && ! Auth::user()->hasVerifiedEmail();
@@ -101,7 +115,18 @@ new class extends Component {
 
     <x-pages::settings.layout :heading="__('Profile')" :subheading="__('Update your name and email address')">
         <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
-            <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name" />
+            @if ($this->canChangeName)
+                <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name" />
+            @else
+                <flux:input
+                    wire:model="name"
+                    :label="__('Name')"
+                    :description="__('Your name was set by your course admin. Contact them if it needs changing.')"
+                    type="text"
+                    disabled
+                    data-test="profile-name-locked"
+                />
+            @endif
 
             <div>
                 <flux:input wire:model="email" :label="__('Email')" type="email" required autocomplete="email" />

@@ -102,6 +102,16 @@ class UserFactory extends Factory
     }
 
     /**
+     * Indicate that the model's name was set by an admin and is locked.
+     */
+    public function nameLocked(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'name_locked' => true,
+        ]);
+    }
+
+    /**
      * Indicate that the model has two-factor authentication configured.
      */
     public function withTwoFactor(): static

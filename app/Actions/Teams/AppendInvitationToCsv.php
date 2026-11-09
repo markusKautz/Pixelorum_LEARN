@@ -16,6 +16,9 @@ use RuntimeException;
  * ihre eigene ablehnen. Eine angehängte Zeile überlebt beides und bleibt
  * damit der einzige Beleg, wer wann eingeladen wurde. Den aktuellen Zustand
  * beantwortet die App, nicht die Datei.
+ *
+ * Einzige Ausnahme ist die Kontolöschung: {@see RemoveUserFromInvitationCsv}
+ * entfernt die personenbezogenen Angaben des gelöschten Kontos (#23).
  */
 class AppendInvitationToCsv
 {
@@ -85,8 +88,8 @@ class AppendInvitationToCsv
      * Neu-Erzeugen in `lapp:invitations:export` denselben Dialekt schreibt und
      * Trennzeichen, Quoting und Zeilenende nicht an zwei Stellen leben.
      *
-     * `escape: ''` schaltet die PHP-eigene Backslash-Sonderbehandlung ab, die
-     * mit RFC 4180 nichts zu tun hat und in Excel als Fremdkörper ankäme.
+     * Die Sperre verhindert, dass eine Zeile zwischen Lesen und Zurückschreiben
+     * der Kontolöschung verloren geht.
      *
      * @param  array<int, string>  $row
      */
@@ -98,8 +101,24 @@ class AppendInvitationToCsv
             throw new RuntimeException("Die Einladungsdatei {$absolutePath} lässt sich nicht schreiben.");
         }
 
-        fputcsv($handle, $row, separator: self::SEPARATOR, escape: '', eol: "\r\n");
+        flock($handle, LOCK_EX);
+
+        $this->writeRow($handle, $row);
 
         fclose($handle);
+    }
+
+    /**
+     * Eine Zeile im Excel-Dialekt auf einen bereits offenen Handle schreiben.
+     *
+     * `escape: ''` schaltet die PHP-eigene Backslash-Sonderbehandlung ab, die
+     * mit RFC 4180 nichts zu tun hat und in Excel als Fremdkörper ankäme.
+     *
+     * @param  resource  $handle
+     * @param  array<int, string|null>  $row
+     */
+    public function writeRow($handle, array $row): void
+    {
+        fputcsv($handle, $row, separator: self::SEPARATOR, escape: '', eol: "\r\n");
     }
 }

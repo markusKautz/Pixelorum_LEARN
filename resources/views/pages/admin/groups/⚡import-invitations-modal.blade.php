@@ -27,7 +27,7 @@ new class extends Component {
      * Zeilen ist es der Unterschied zwischen „eine Adresse vertippt" und
      * „zwanzig Fehleinträge, die ich jetzt einzeln zurückziehe".
      *
-     * @var array<int, array{email: string, status: string}>
+     * @var array<int, array{email: string, name: string|null, status: string}>
      */
     public array $preview = [];
 
@@ -50,6 +50,7 @@ new class extends Component {
         $this->preview = $parse->handle($this->team, $this->file->get())
             ->map(fn (array $row): array => [
                 'email' => $row['email'],
+                'name' => $row['name'],
                 'status' => $row['status']->value,
             ])
             ->all();
@@ -96,12 +97,13 @@ new class extends Component {
      * Livewire hält öffentliche Eigenschaften als einfache Arrays, der Enum
      * überlebt den Roundtrip zum Browser also nicht.
      *
-     * @return Collection<int, array{email: string, status: InvitationImportStatus}>
+     * @return Collection<int, array{email: string, name: string|null, status: InvitationImportStatus}>
      */
     protected function parsedPreview(): Collection
     {
         return collect($this->preview)->map(fn (array $row): array => [
             'email' => $row['email'],
+            'name' => $row['name'],
             'status' => InvitationImportStatus::from($row['status']),
         ]);
     }
@@ -122,7 +124,7 @@ new class extends Component {
         <div>
             <flux:heading size="lg">{{ __('Invite a whole year') }}</flux:heading>
             <flux:subheading>
-                {{ __('One email address per line, as .csv or .txt. A header line is skipped, further columns are ignored.') }}
+                {{ __('One email address per line, as .csv or .txt. The optional second column holds the name (email;name). A header line is skipped, further columns are ignored.') }}
             </flux:subheading>
         </div>
 
@@ -147,9 +149,14 @@ new class extends Component {
                 @foreach ($preview as $row)
                     @php($status = App\Enums\InvitationImportStatus::from($row['status']))
 
-                    <div class="flex items-center justify-between rounded-lg border border-zinc-200 px-4 py-2 dark:border-zinc-700" data-test="import-preview-row">
-                        <span class="text-sm">{{ $row['email'] }}</span>
-                        <flux:badge size="sm" :color="$status->color()">{{ $status->label() }}</flux:badge>
+                    <div class="flex items-center justify-between gap-3 rounded-lg border border-zinc-200 px-4 py-2 dark:border-zinc-700" data-test="import-preview-row">
+                        <div class="min-w-0 text-sm">
+                            <div class="truncate">{{ $row['email'] }}</div>
+                            @if ($row['name'] !== null)
+                                <div class="truncate text-zinc-500 dark:text-zinc-400" data-test="import-preview-name">{{ $row['name'] }}</div>
+                            @endif
+                        </div>
+                        <flux:badge size="sm" class="shrink-0" :color="$status->color()">{{ $status->label() }}</flux:badge>
                     </div>
                 @endforeach
             </div>

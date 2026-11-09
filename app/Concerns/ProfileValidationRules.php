@@ -32,6 +32,18 @@ trait ProfileValidationRules
     }
 
     /**
+     * Get the validation rules for a name that may be left out (#23).
+     *
+     * Aus {@see nameRules()} abgeleitet, damit die Länge an einer Stelle bleibt.
+     *
+     * @return array<int, ValidationRule|array<mixed>|string>
+     */
+    protected function optionalNameRules(): array
+    {
+        return ['nullable', ...array_filter($this->nameRules(), fn (mixed $rule): bool => $rule !== 'required')];
+    }
+
+    /**
      * Get the validation rules used to validate user emails.
      *
      * @return array<int, ValidationRule|array<mixed>|string>

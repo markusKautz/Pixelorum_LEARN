@@ -2,6 +2,7 @@
 
 use App\Actions\Teams\AppendInvitationToCsv;
 use App\Actions\Teams\SendInvitationNotification;
+use App\Concerns\ProfileValidationRules;
 use App\Enums\TeamRole;
 use App\Models\Team;
 use App\Models\TeamInvitation;
@@ -14,9 +15,13 @@ use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 new class extends Component {
+    use ProfileValidationRules;
+
     public Team $team;
 
     public string $inviteEmail = '';
+
+    public string $inviteName = '';
 
     public string $inviteRole = 'member';
 
@@ -43,10 +48,16 @@ new class extends Component {
     ): void {
         Gate::authorize('inviteMember', $this->team);
 
-        $validated = $this->validate([
-            'inviteEmail' => ['required', 'string', 'email', 'max:255', new UniqueTeamInvitation($this->team)],
-            'inviteRole' => ['required', 'string', Rule::enum(TeamRole::class)],
-        ]);
+        $this->inviteName = trim($this->inviteName);
+
+        $validated = $this->validate(
+            [
+                'inviteEmail' => ['required', 'string', 'email', 'max:255', new UniqueTeamInvitation($this->team)],
+                'inviteName' => $this->optionalNameRules(),
+                'inviteRole' => ['required', 'string', Rule::enum(TeamRole::class)],
+            ],
+            attributes: ['inviteName' => __('Name')],
+        );
 
         $role = $this->roleSelectable
             ? TeamRole::from($validated['inviteRole'])
@@ -54,6 +65,7 @@ new class extends Component {
 
         $invitation = $this->team->invitations()->create([
             'email' => $validated['inviteEmail'],
+            'name' => filled($validated['inviteName']) ? $validated['inviteName'] : null,
             'role' => $role,
             'invited_by' => Auth::id(),
             'expires_at' => now()->addDays(TeamInvitation::EXPIRY_DAYS),
@@ -69,7 +81,7 @@ new class extends Component {
 
         $sendNotification->handle($invitation);
 
-        $this->reset('inviteEmail', 'inviteRole');
+        $this->reset('inviteEmail', 'inviteName', 'inviteRole');
         $this->modal('invite-member')->close();
 
         Flux::toast(variant: 'success', text: __('Invitation sent.'));
@@ -93,6 +105,14 @@ new class extends Component {
 
         <div class="space-y-4">
             <flux:input wire:model="inviteEmail" type="email" :label="__('Email address')" required data-test="invite-email" />
+
+            <flux:input
+                wire:model="inviteName"
+                :label="__('Name')"
+                :description="__('Optional. With a name, the participant only chooses a password.')"
+                autocomplete="off"
+                data-test="invite-name"
+            />
 
             @if ($roleSelectable)
                 <flux:select wire:model="inviteRole" :label="__('Role')" data-test="invite-role">
