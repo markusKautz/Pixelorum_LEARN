@@ -72,7 +72,7 @@ new class extends Component {
 
     <div>
         <flux:heading size="xl">
-            {{ __('Hi :name!', ['name' => Str::before(auth()->user()->name, ' ')]) }}
+            {{ __('Hi :name!', ['name' => auth()->user()->name]) }}
         </flux:heading>
         <flux:subheading>{{ __('These are your learning paths.') }}</flux:subheading>
     </div>

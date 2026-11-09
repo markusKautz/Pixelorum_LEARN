@@ -2,6 +2,7 @@
 
 namespace App\Actions\Teams;
 
+use App\Concerns\ProfileValidationRules;
 use App\Enums\InvitationImportStatus;
 use App\Models\Team;
 use App\Rules\UniqueTeamInvitation;
@@ -15,54 +16,85 @@ use Illuminate\Support\Str;
  * Die Action **schreibt nichts**. Sie beantwortet nur die Frage, was beim
  * Absenden passieren würde, und ist damit die Grundlage der Vorschau.
  *
- * Ein Namensfeld gibt es bewusst nicht: `team_invitations` hat keine
- * Namensspalte, den Namen setzt die Teilnehmer_in beim Aktivieren selbst. Eine
- * importierte Namensspalte würde nirgends landen und nur Erwartungen wecken,
- * deshalb wird sie stillschweigend ignoriert.
+ * Die zweite Spalte ist der Name (#23): `E-Mail;Name`. Leer heißt, die
+ * Teilnehmer_in gibt ihn beim Aktivieren selbst ein.
  */
 class ParseInvitationImport
 {
+    use ProfileValidationRules;
+
     /**
-     * @return Collection<int, array{email: string, status: InvitationImportStatus}>
+     * @return Collection<int, array{email: string, name: string|null, status: InvitationImportStatus}>
      */
     public function handle(Team $team, string $contents): Collection
     {
         $rule = new UniqueTeamInvitation($team);
         $seen = [];
 
-        return collect($this->emails($contents))
-            ->map(function (string $email) use ($rule, &$seen): array {
-                $status = $this->status($email, $rule, $seen);
+        return collect($this->entries($this->normalizeEncoding($contents)))
+            ->map(function (array $entry) use ($rule, &$seen): array {
+                $status = $this->status($entry['email'], $entry['name'], $rule, $seen);
 
-                $seen[] = $email;
+                $seen[] = $entry['email'];
 
-                return ['email' => $email, 'status' => $status];
+                return [...$entry, 'status' => $status];
             })
             ->values();
     }
 
     /**
-     * Die Rohzeilen auf normalisierte Adressen herunterbrechen.
+     * BOM entfernen und die Datei nach UTF-8 bringen.
      *
-     * Gelesen wird immer die **erste Spalte**, damit auch eine aus Excel
+     * Excel speichert „CSV UTF-8" mit BOM, die gewöhnliche „CSV
+     * (Trennzeichen-getrennt)" im deutschsprachigen Windows dagegen in
+     * Windows-1252. Ein Umlaut daraus ist kein gültiges UTF-8 und ließe sich
+     * nicht in die Vorschau übertragen.
+     */
+    protected function normalizeEncoding(string $contents): string
+    {
+        $contents = Str::chopStart($contents, "\u{FEFF}");
+
+        return mb_check_encoding($contents, 'UTF-8')
+            ? $contents
+            : mb_convert_encoding($contents, 'UTF-8', 'Windows-1252');
+    }
+
+    /**
+     * Die Rohzeilen auf normalisierte Adressen und Namen herunterbrechen.
+     *
+     * Gelesen werden die **ersten beiden Spalten**, damit auch eine aus Excel
      * exportierte Datei mit Zusatzspalten funktioniert.
      *
-     * @return list<string>
+     * @return list<array{email: string, name: string|null}>
      */
-    protected function emails(string $contents): array
+    protected function entries(string $contents): array
     {
-        $lines = Str::of($contents)
+        $entries = Str::of($contents)
             ->replace("\r\n", "\n")
             ->explode("\n")
-            ->map(fn (string $line): string => Str::lower(trim(trim(explode(';', $line)[0]), '"')))
-            ->filter(fn (string $line): bool => $line !== '')
+            ->map(fn (string $line): array => str_getcsv($line, ';', '"', ''))
+            ->map(fn (array $columns): array => [
+                'email' => Str::lower(trim(trim((string) ($columns[0] ?? '')), '"')),
+                'name' => $this->cleanName($columns[1] ?? null),
+            ])
+            ->filter(fn (array $entry): bool => $entry['email'] !== '')
             // values() vorher, damit „erste Zeile" die erste *befüllte* Zeile
             // meint und eine führende Leerzeile die Kopfzeile nicht versteckt.
             ->values()
-            ->reject(fn (string $line, int $index): bool => $index === 0 && $this->isHeader($line))
+            ->reject(fn (array $entry, int $index): bool => $index === 0 && $this->isHeader($entry['email']))
             ->all();
 
-        return array_values($lines);
+        return array_values($entries);
+    }
+
+    /**
+     * Eine leere Namensspalte heißt: kein Name.
+     */
+    protected function cleanName(?string $name): ?string
+    {
+        $name = trim((string) $name);
+
+        return $name === '' ? null : $name;
     }
 
     /**
@@ -79,11 +111,12 @@ class ParseInvitationImport
      * Für „schon Mitglied" und „schon eingeladen" wird bewusst dieselbe
      * `UniqueTeamInvitation`-Regel benutzt wie im Einzelmodal, statt die
      * Abfragen zu duplizieren. Ändert sich die Regel, ändert sie sich für
-     * beide Wege.
+     * beide Wege. Der Name wird zuletzt geprüft: Zeilen, die ohnehin nicht
+     * eingeladen würden, behalten ihre bisherige Meldung.
      *
      * @param  array<int, string>  $seen
      */
-    protected function status(string $email, UniqueTeamInvitation $rule, array $seen): InvitationImportStatus
+    protected function status(string $email, ?string $name, UniqueTeamInvitation $rule, array $seen): InvitationImportStatus
     {
         if (in_array($email, $seen, strict: true)) {
             return InvitationImportStatus::DuplicateInFile;
@@ -98,9 +131,14 @@ class ParseInvitationImport
             ->first('email');
 
         return match ($message) {
-            '' => InvitationImportStatus::Valid,
+            '' => $this->isValidName($name) ? InvitationImportStatus::Valid : InvitationImportStatus::InvalidName,
             __('This user is already a member of the team.') => InvitationImportStatus::AlreadyMember,
             default => InvitationImportStatus::AlreadyInvited,
         };
+    }
+
+    protected function isValidName(?string $name): bool
+    {
+        return Validator::make(['name' => $name], ['name' => $this->optionalNameRules()])->passes();
     }
 }

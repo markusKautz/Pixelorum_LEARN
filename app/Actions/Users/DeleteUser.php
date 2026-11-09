@@ -2,6 +2,7 @@
 
 namespace App\Actions\Users;
 
+use App\Actions\Teams\RemoveUserFromInvitationCsv;
 use App\Exceptions\LastAdminException;
 use App\Models\Team;
 use App\Models\TeamInvitation;
@@ -23,11 +24,13 @@ use Illuminate\Support\Facades\Password;
  * stehen auf `nullOnDelete` — erstellte Inhalte bleiben also erhalten und
  * verlieren nur ihren Urheber-Verweis.
  *
- * Vier Dinge kaskadieren **nicht**, weil kein Fremdschlüssel auf sie zeigt.
+ * Fünf Dinge kaskadieren **nicht**, weil kein Fremdschlüssel auf sie zeigt.
  * Genau sie wären die Reste, die ein Löschbegehren unerfüllt lassen:
  */
 class DeleteUser
 {
+    public function __construct(protected RemoveUserFromInvitationCsv $removeFromInvitationCsv) {}
+
     /**
      * Delete the given account and everything personal attached to it.
      *
@@ -84,6 +87,11 @@ class DeleteUser
                 $team->memberships()->delete();
                 $team->forceDelete();
             });
+
+            // 5. Die Einladungsdateien mit Adresse und Klarname. Als letzter
+            //    Schritt in der Transaktion: scheitert die Datei, bleibt das
+            //    Konto bestehen und die Löschung lässt sich wiederholen.
+            $this->removeFromInvitationCsv->handle($user);
         });
     }
 }

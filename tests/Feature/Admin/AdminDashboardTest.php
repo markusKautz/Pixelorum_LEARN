@@ -27,6 +27,24 @@ test('an apprentice keeps the learner dashboard', function () {
         ->assertSee('Das sind deine Lernpfade.');
 });
 
+test('the learner dashboard greets by the full name', function () {
+    $learner = User::factory()->apprentice()->create(['name' => 'Muster Anna']);
+
+    $this->actingAs($learner)
+        ->get(learnRoute('dashboard', $learner))
+        ->assertOk()
+        ->assertSee('Hallo Muster Anna!');
+});
+
+test('the admin dashboard greets by the full name', function () {
+    $this->admin->update(['name' => 'Muster Anna']);
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.dashboard'))
+        ->assertOk()
+        ->assertSee('Hallo Muster Anna!');
+});
+
 test('an apprentice is forbidden on the admin dashboard', function () {
     $learner = User::factory()->apprentice()->create();
 

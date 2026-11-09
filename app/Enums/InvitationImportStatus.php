@@ -15,6 +15,7 @@ enum InvitationImportStatus: string
     case AlreadyMember = 'already_member';
     case AlreadyInvited = 'already_invited';
     case InvalidEmail = 'invalid_email';
+    case InvalidName = 'invalid_name';
     case DuplicateInFile = 'duplicate_in_file';
 
     /**
@@ -27,6 +28,7 @@ enum InvitationImportStatus: string
             self::AlreadyMember => __('Already a member'),
             self::AlreadyInvited => __('Already invited'),
             self::InvalidEmail => __('Not a valid email address'),
+            self::InvalidName => __('Not a valid name'),
             self::DuplicateInFile => __('Listed twice in the file'),
         };
     }
@@ -38,7 +40,7 @@ enum InvitationImportStatus: string
     {
         return match ($this) {
             self::Valid => 'green',
-            self::InvalidEmail => 'red',
+            self::InvalidEmail, self::InvalidName => 'red',
             default => 'zinc',
         };
     }

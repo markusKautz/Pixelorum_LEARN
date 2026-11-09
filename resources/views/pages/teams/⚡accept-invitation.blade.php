@@ -72,17 +72,28 @@ new #[Layout('layouts::auth')] class extends Component {
             return;
         }
 
-        $this->validate([
-            'name' => $this->nameRules(),
-            'password' => $this->passwordRules(),
-        ]);
+        $rules = ['password' => $this->passwordRules()];
+
+        if ($this->invitation->name === null) {
+            $rules['name'] = $this->nameRules();
+        }
+
+        $this->validate($rules);
 
         $user = DB::transaction(function () use ($createUser): User {
             $this->lockInvitation();
 
+            // Maßgeblich ist die Einladung, nicht die Eigenschaft `$name`: die
+            // lässt sich aus dem Browser setzen (#23).
+            $presetName = $this->invitation->name;
+
             // Die zugestellte, signierte Einladung belegt den Mailbox-Besitz;
             // Teilnehmer_innen erhalten bewusst keine persönliche Gruppe (Konzept c).
-            $user = $createUser->handle($this->name, $this->invitation->email, $this->password, verified: true);
+            $user = $createUser->handle($presetName ?? $this->name, $this->invitation->email, $this->password, verified: true);
+
+            if ($presetName !== null) {
+                $user->forceFill(['name_locked' => true])->save();
+            }
 
             $this->invitation->team->memberships()->firstOrCreate(
                 ['user_id' => $user->id],
@@ -229,16 +240,25 @@ new #[Layout('layouts::auth')] class extends Component {
             <flux:callout icon="x-circle" variant="danger" :heading="$message" />
         @enderror
 
+        @if ($invitation->name !== null)
+            <flux:text data-test="invitation-preset-name">
+                {{ __('You are activating the account for :name.', ['name' => $invitation->name]) }}
+            </flux:text>
+        @endif
+
         <form wire:submit="register" class="flex flex-col gap-6">
-            <!-- Name -->
-            <flux:input
-                wire:model="name"
-                :label="__('Name')"
-                type="text"
-                autofocus
-                autocomplete="name"
-                :placeholder="__('Full name')"
-            />
+            @if ($invitation->name === null)
+                <!-- Name -->
+                <flux:input
+                    wire:model="name"
+                    :label="__('Name')"
+                    type="text"
+                    autofocus
+                    autocomplete="name"
+                    :placeholder="__('Full name')"
+                    data-test="invitation-name-input"
+                />
+            @endif
 
             <!-- Email Address (aus der Einladung, nicht änderbar) -->
             <flux:input
@@ -253,6 +273,7 @@ new #[Layout('layouts::auth')] class extends Component {
                 wire:model="password"
                 :label="__('Password')"
                 type="password"
+                :autofocus="$invitation->name !== null"
                 autocomplete="new-password"
                 :placeholder="__('Password')"
                 passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"

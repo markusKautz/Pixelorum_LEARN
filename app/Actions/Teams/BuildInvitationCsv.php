@@ -19,6 +19,12 @@ class BuildInvitationCsv
     /** Das Datumsformat, das der Admin auf Papier und in Excel liest. */
     public const DATE_FORMAT = 'd.m.Y H:i';
 
+    /** Die Spalte der eingeladenen Adresse. */
+    public const EMAIL_COLUMN = 1;
+
+    /** Die Spalte mit dem Namen der einladenden Person. */
+    public const INVITED_BY_COLUMN = 7;
+
     /**
      * Die Kopfzeile der Datei.
      *
@@ -32,6 +38,7 @@ class BuildInvitationCsv
         $header = [
             __('Group'),
             __('Email'),
+            __('Name'),
             __('Role'),
             __('Activation link'),
             __('Invited at'),
@@ -58,6 +65,7 @@ class BuildInvitationCsv
         $row = [
             $invitation->team->name,
             $invitation->email,
+            $invitation->name ?? '',
             $invitation->role->label(),
             $this->link($invitation),
             $invitation->created_at?->format(self::DATE_FORMAT) ?? '',

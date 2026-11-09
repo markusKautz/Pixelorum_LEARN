@@ -374,6 +374,10 @@ new class extends Component {
                                 <div class="flex items-center gap-2">
                                     <span class="font-medium">{{ $invitation->email }}</span>
 
+                                    @if ($invitation->name !== null)
+                                        <span class="text-sm text-zinc-500 dark:text-zinc-400" data-test="invitation-name">{{ $invitation->name }}</span>
+                                    @endif
+
                                     @if ($invitation->isExpired())
                                         <flux:badge size="sm" color="amber" data-test="invitation-expired-badge">
                                             {{ __('Expired') }}

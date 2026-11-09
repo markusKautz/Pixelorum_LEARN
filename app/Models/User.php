@@ -32,6 +32,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $two_factor_confirmed_at
  * @property string|null $remember_token
  * @property bool $is_admin
+ * @property bool $name_locked
  * @property int|null $current_team_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -51,14 +52,15 @@ class User extends Authenticatable implements PasskeyUser
     use HasFactory, HasTeams, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
 
     /**
-     * Spiegelt den DB-Default, damit `is_admin` auch auf frisch erstellten
-     * Instanzen ohne refresh() ein bool ist (Cast greift nur auf gesetzte
-     * Attribute).
+     * Spiegelt die DB-Defaults, damit `is_admin` und `name_locked` auch auf
+     * frisch erstellten Instanzen ohne refresh() ein bool sind (Cast greift nur
+     * auf gesetzte Attribute).
      *
      * @var array<string, mixed>
      */
     protected $attributes = [
         'is_admin' => false,
+        'name_locked' => false,
     ];
 
     /**
@@ -73,6 +75,7 @@ class User extends Authenticatable implements PasskeyUser
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
             'is_admin' => 'boolean',
+            'name_locked' => 'boolean',
         ];
     }
 
@@ -84,6 +87,17 @@ class User extends Authenticatable implements PasskeyUser
     protected function email(): Attribute
     {
         return Attribute::set(fn (string $value): string => Str::lower($value));
+    }
+
+    /**
+     * Darf diese Person ihren Namen im eigenen Profil ändern (#23)?
+     *
+     * Die Sperre gilt nur für Teilnehmer_innen. Für Admins bleibt sie wirkungslos,
+     * auch wenn ein gesperrtes Konto später über `lapp:make-admin` befördert wird.
+     */
+    public function canChangeOwnName(): bool
+    {
+        return ! $this->name_locked || $this->is_admin;
     }
 
     /**

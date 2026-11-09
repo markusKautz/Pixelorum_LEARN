@@ -19,22 +19,32 @@ Teilnehmer_innen.
 Unter „Gruppen“ legst du mit „Neue Gruppe“ eine Gruppe an. Auf ihrer Seite
 („Gruppe verwalten“) lädst du Teilnehmer_innen ein:
 
-- **„Teilnehmer_in einladen“** lädt eine einzelne E-Mail-Adresse ein.
+- **„Teilnehmer_in einladen“** lädt eine einzelne E-Mail-Adresse ein, auf Wunsch
+  gleich mit Namen.
 - **„Liste importieren“** („Mehrere einladen“) lädt eine Adressliste als
-  `.csv` oder `.txt`. Gelesen wird die erste Spalte; eine Kopfzeile und weitere
-  Spalten, etwa aus Excel, stören nicht. „Liste prüfen“ zeigt zuerst, welche Zeilen
-  eingeladen werden und welche nicht (ungültig, doppelt, schon Mitglied, schon
-  eingeladen). Erst „Jetzt einladen“ legt die Einladungen an.
+  `.csv` oder `.txt`. Die erste Spalte ist die E-Mail-Adresse, die zweite der Name
+  (`E-Mail;Name`, getrennt durch Semikolon); bleibt sie leer, gibt es keinen
+  Namen. Eine Kopfzeile und weitere Spalten, etwa aus Excel, stören nicht. Achte
+  darauf, dass in der zweiten Spalte der ganze Name steht und nicht nur der
+  Vorname. „Liste prüfen“ zeigt zuerst Namen und Status jeder Zeile: welche
+  eingeladen werden und welche nicht (ungültige Adresse oder ungültiger Name,
+  doppelt, schon Mitglied, schon eingeladen). Erst „Jetzt einladen“ legt die
+  Einladungen an.
 
 Jede Einladung verschickt eine Mail mit einem Aktivierungslink. Mit dem Link legt
-die Person ihr Konto an und wählt ihren Namen selbst. Ein Link gilt **30 Tage**;
+die Person ihr Konto an. Hast du einen Namen angegeben, wählt sie nur noch ihr
+Passwort und kann den Namen im Profil nicht selbst ändern; das steuerst du unter
+[Nutzer verwalten](#nutzer-verwalten). Ohne Namen wählt sie ihn selbst. Hat die
+Adresse schon ein Konto, bleibt dessen Name unverändert. Ein Link gilt **30 Tage**;
 abgelaufene Einladungen löscht LEARN einmal täglich.
 
 **Ohne Mailserver** lädst du mit **„Aktivierungslinks“** eine CSV-Datei mit allen
-Links der Gruppe herunter und verteilst sie selbst. Die Datei enthält gültige
+Links der Gruppe herunter und verteilst sie selbst. Sie enthält auch die Namen.
+Die Datei enthält gültige
 Zugangslinks: Behandle sie wie eine Passwortliste, gib allen nur ihren eigenen
 Link und lösche Kopien und Ausdrucke, sobald alle aktiviert sind. Die Datei lässt
-sich mit `php artisan lapp:invitations:export` neu schreiben.
+sich mit `php artisan lapp:invitations:export` neu schreiben. Wird ein Konto
+gelöscht, verschwinden seine Zeilen aus diesen Dateien.
 
 Unter „Offene Einladungen“ ziehst du eine Einladung mit „Einladung zurückziehen“
 zurück.
@@ -184,6 +194,11 @@ sich hier nicht löschen: dein eigenes (das geht in den Kontoeinstellungen) und 
 des letzten Admins, damit sich niemand aussperrt. Derselbe Schutz gilt in den
 Kontoeinstellungen: Bist du der letzte Admin, siehst du dort statt „Account
 löschen“ einen Hinweis.
+
+Mit „Name bearbeiten“ korrigierst du den Namen jedes Kontos. Bei Teilnehmer_innen
+legt die Checkbox „Name von Teilnehmer_in änderbar“ fest, ob die Person ihn im
+Profil selbst ändern darf. Sie folgt nur deiner Auswahl, eine Namensänderung allein
+ändert sie nicht. Wurde der Name bei der Einladung vorgegeben, ist sie zunächst aus.
 
 Mehrere Teilnehmer_innen löschst du gemeinsam: Hake sie in der Liste an oder wähle über
 das Kästchen im Tabellenkopf alle Teilnehmer_innen der aktuellen Seite, dann „Ausgewählte

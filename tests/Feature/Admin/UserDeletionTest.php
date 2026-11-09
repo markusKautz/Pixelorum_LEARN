@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\Teams\AppendInvitationToCsv;
 use App\Actions\Users\DeleteUser;
 use App\Exceptions\LastAdminException;
 use App\Models\LearningPath;
@@ -15,6 +16,7 @@ use App\Models\TeamInvitation;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
 use function Pest\Laravel\mock;
@@ -216,6 +218,50 @@ test('the delete button is hidden for the acting admin', function () {
     expect(substr_count($component->html(), 'data-test="user-delete-button"'))->toBe(1)
         ->and($component->instance()->users->pluck('id')->all())
         ->toContain($learner->id, $admin->id);
+});
+
+test('deleting a user removes their lines from every invitation file and keeps the rest', function () {
+    $append = app(AppendInvitationToCsv::class);
+    $firstGroup = Team::factory()->create();
+    $secondGroup = Team::factory()->create();
+    $learner = User::factory()->apprentice($firstGroup)->create(['email' => 'weg@example.at']);
+
+    $append->handle(TeamInvitation::factory()->create(['team_id' => $firstGroup->id, 'email' => 'weg@example.at', 'name' => 'Klar Name']));
+    $append->handle(TeamInvitation::factory()->create(['team_id' => $firstGroup->id, 'email' => 'bleibt@example.at']));
+    $append->handle(TeamInvitation::factory()->create(['team_id' => $secondGroup->id, 'email' => 'weg@example.at']));
+
+    app(DeleteUser::class)->handle($learner);
+
+    $first = Storage::disk('local')->get($append->pathFor($firstGroup));
+    $second = Storage::disk('local')->get($append->pathFor($secondGroup));
+
+    expect($first)->not->toContain('weg@example.at')
+        ->and($first)->not->toContain('Klar Name')
+        ->and($first)->toContain('bleibt@example.at')
+        ->and($first)->toStartWith(AppendInvitationToCsv::BOM)
+        ->and($first)->toContain(__('Activation link'))
+        ->and($second)->not->toContain('weg@example.at');
+});
+
+test('deleting an admin clears only their name from the lines they issued', function () {
+    User::factory()->admin()->create();
+    $append = app(AppendInvitationToCsv::class);
+    $group = Team::factory()->create();
+    $departing = User::factory()->admin()->create(['name' => 'Scheidende Person']);
+
+    $append->handle(TeamInvitation::factory()->create([
+        'team_id' => $group->id,
+        'email' => 'eingeladen@example.at',
+        'invited_by' => $departing->id,
+    ]));
+
+    app(DeleteUser::class)->handle($departing);
+
+    $line = explode("\r\n", Storage::disk('local')->get($append->pathFor($group)))[1];
+    $row = str_getcsv($line, ';', '"', '');
+
+    expect($row[1])->toBe('eingeladen@example.at')
+        ->and($row[7])->toBe('');
 });
 
 test('apprentices cannot delete users', function () {

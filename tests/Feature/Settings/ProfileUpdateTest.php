@@ -136,6 +136,45 @@ test('the last admin cannot delete their own account and stays logged in', funct
     $this->assertAuthenticatedAs($admin);
 });
 
+test('a locked name cannot be changed in the profile', function () {
+    $user = User::factory()->nameLocked()->create(['name' => 'Anna Muster']);
+
+    $component = Livewire::actingAs($user)
+        ->test('pages::settings.profile')
+        ->assertSeeHtml('data-test="profile-name-locked"')
+        ->set('name', 'Jemand Anderes')
+        ->call('updateProfileInformation')
+        ->assertHasErrors(['name']);
+
+    expect($component->errors()->first('name'))->toBe('Dein Name wurde von deinem Kursadmin festgelegt. Wende dich an deinen Kursadmin, wenn er geändert werden soll.')
+        ->and($user->fresh()->name)->toBe('Anna Muster');
+});
+
+test('a locked name still allows changing the email address', function () {
+    $user = User::factory()->nameLocked()->create(['name' => 'Anna Muster']);
+
+    Livewire::actingAs($user)
+        ->test('pages::settings.profile')
+        ->set('email', 'neu@example.at')
+        ->call('updateProfileInformation')
+        ->assertHasNoErrors();
+
+    expect($user->fresh()->email)->toBe('neu@example.at');
+});
+
+test('the lock does not apply to admins', function () {
+    $admin = User::factory()->admin()->nameLocked()->create(['name' => 'Anna Muster']);
+
+    Livewire::actingAs($admin)
+        ->test('pages::settings.profile')
+        ->assertDontSeeHtml('data-test="profile-name-locked"')
+        ->set('name', 'Neuer Name')
+        ->call('updateProfileInformation')
+        ->assertHasNoErrors();
+
+    expect($admin->fresh()->name)->toBe('Neuer Name');
+});
+
 test('correct password must be provided to delete account', function () {
     $user = User::factory()->create();
 

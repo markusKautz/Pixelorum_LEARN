@@ -398,3 +398,145 @@ test('a failing mail transport does not undo the invitation', function () {
 
     expect(Storage::disk('local')->files('invitations'))->toHaveCount(1);
 });
+
+test('an invitation stores a trimmed preset name', function () {
+    Notification::fake();
+
+    $admin = User::factory()->admin()->create();
+    $team = Team::factory()->create();
+
+    Livewire::actingAs($admin)
+        ->test('pages::teams.invite-member-modal', ['team' => $team])
+        ->set('inviteEmail', 'anna@example.at')
+        ->set('inviteName', '  Anna Muster ')
+        ->call('createInvitation')
+        ->assertHasNoErrors();
+
+    $this->assertDatabaseHas('team_invitations', ['email' => 'anna@example.at', 'name' => 'Anna Muster']);
+});
+
+test('an invitation without a name stores none', function () {
+    Notification::fake();
+
+    $admin = User::factory()->admin()->create();
+    $team = Team::factory()->create();
+
+    Livewire::actingAs($admin)
+        ->test('pages::teams.invite-member-modal', ['team' => $team])
+        ->set('inviteEmail', 'anna@example.at')
+        ->set('inviteName', '   ')
+        ->call('createInvitation')
+        ->assertHasNoErrors();
+
+    $this->assertDatabaseHas('team_invitations', ['email' => 'anna@example.at', 'name' => null]);
+});
+
+test('an overlong preset name is rejected and creates no invitation', function () {
+    $admin = User::factory()->admin()->create();
+    $team = Team::factory()->create();
+
+    Livewire::actingAs($admin)
+        ->test('pages::teams.invite-member-modal', ['team' => $team])
+        ->set('inviteEmail', 'anna@example.at')
+        ->set('inviteName', str_repeat('a', 256))
+        ->call('createInvitation')
+        ->assertHasErrors(['inviteName' => 'max']);
+
+    expect(TeamInvitation::count())->toBe(0);
+});
+
+test('activation with a preset name hides the name field and locks the name', function () {
+    $invitation = TeamInvitation::factory()->expiresIn(30)->create([
+        'email' => 'anna@example.at',
+        'name' => 'Anna Muster',
+    ]);
+
+    Livewire::test('pages::teams.accept-invitation', ['invitation' => $invitation])
+        ->assertSee('Du aktivierst den Zugang für Anna Muster.')
+        ->assertDontSeeHtml('data-test="invitation-name-input"')
+        ->set('password', 'sicheres-passwort')
+        ->set('password_confirmation', 'sicheres-passwort')
+        ->call('register')
+        ->assertHasNoErrors()
+        ->assertRedirect(route('dashboard'));
+
+    $user = User::where('email', 'anna@example.at')->firstOrFail();
+
+    expect($user->name)->toBe('Anna Muster')
+        ->and($user->name_locked)->toBeTrue();
+});
+
+test('a name sent along with the request cannot replace the preset name', function () {
+    $invitation = TeamInvitation::factory()->expiresIn(30)->create([
+        'email' => 'anna@example.at',
+        'name' => 'Anna Muster',
+    ]);
+
+    Livewire::test('pages::teams.accept-invitation', ['invitation' => $invitation])
+        ->set('name', 'Jemand Anderes')
+        ->set('password', 'sicheres-passwort')
+        ->set('password_confirmation', 'sicheres-passwort')
+        ->call('register')
+        ->assertHasNoErrors();
+
+    expect(User::where('email', 'anna@example.at')->firstOrFail()->name)->toBe('Anna Muster');
+});
+
+test('activation without a preset name asks for it and leaves the name changeable', function () {
+    $invitation = TeamInvitation::factory()->expiresIn(30)->create(['email' => 'anna@example.at']);
+
+    Livewire::test('pages::teams.accept-invitation', ['invitation' => $invitation])
+        ->assertSeeHtml('data-test="invitation-name-input"')
+        ->set('name', 'Selbst Gewählt')
+        ->set('password', 'sicheres-passwort')
+        ->set('password_confirmation', 'sicheres-passwort')
+        ->call('register')
+        ->assertHasNoErrors();
+
+    $user = User::where('email', 'anna@example.at')->firstOrFail();
+
+    expect($user->name)->toBe('Selbst Gewählt')
+        ->and($user->name_locked)->toBeFalse();
+});
+
+test('a preset name neither renames nor locks an existing account', function () {
+    $user = User::factory()->create(['email' => 'anna@example.at', 'name' => 'Bestehender Name']);
+    $invitation = TeamInvitation::factory()->expiresIn(30)->create([
+        'email' => 'anna@example.at',
+        'name' => 'Anna Muster',
+    ]);
+
+    Livewire::actingAs($user)
+        ->test('pages::teams.accept-invitation', ['invitation' => $invitation])
+        ->assertRedirect(route('dashboard'));
+
+    expect($invitation->fresh()->accepted_at)->not->toBeNull()
+        ->and($user->fresh()->name)->toBe('Bestehender Name')
+        ->and($user->fresh()->name_locked)->toBeFalse();
+});
+
+test('the invitation mail greets by the full preset name', function () {
+    $invitation = TeamInvitation::factory()->create(['name' => 'Anna Muster']);
+
+    $mail = (new App\Notifications\Teams\TeamInvitation($invitation))->toMail($invitation);
+
+    expect($mail->greeting)->toBe('Hallo Anna Muster!');
+});
+
+test('the invitation mail keeps the default greeting without a name', function () {
+    $invitation = TeamInvitation::factory()->create();
+
+    $mail = (new App\Notifications\Teams\TeamInvitation($invitation))->toMail($invitation);
+
+    expect($mail->greeting)->toBeNull();
+});
+
+test('the pending invitations of a group show the preset name', function () {
+    $admin = User::factory()->admin()->create();
+    $group = Team::factory()->create();
+    TeamInvitation::factory()->expiresIn(30)->create(['team_id' => $group->id, 'name' => 'Anna Muster']);
+
+    Livewire::actingAs($admin)
+        ->test('pages::admin.groups.show', ['team' => $group])
+        ->assertSee('Anna Muster');
+});

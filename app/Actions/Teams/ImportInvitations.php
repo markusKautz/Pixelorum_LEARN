@@ -26,7 +26,7 @@ class ImportInvitations
     ) {}
 
     /**
-     * @param  Collection<int, array{email: string, status: InvitationImportStatus}>  $rows
+     * @param  Collection<int, array{email: string, name: string|null, status: InvitationImportStatus}>  $rows
      * @return array{invited: int, skipped: array<int, array{email: string, reason: string}>}
      */
     public function handle(Team $team, Collection $rows, User $inviter): array
@@ -37,6 +37,7 @@ class ImportInvitations
             return $invitable->map(function (array $row) use ($team, $inviter): TeamInvitation {
                 $invitation = $team->invitations()->create([
                     'email' => $row['email'],
+                    'name' => $row['name'],
                     'role' => TeamRole::Member,
                     'invited_by' => $inviter->id,
                     'expires_at' => now()->addDays(TeamInvitation::EXPIRY_DAYS),
